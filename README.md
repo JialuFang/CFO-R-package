@@ -18,9 +18,26 @@ ntox: A J*K matrix (J<=K) containing the number of patients experienced dose-lim
 
 ...
 
+**Values**
+
+(j,k): Recommended dose combination for the next cohort
+
+...
 
 
-# 2dCFO_sim
+### 2dCFO_sim
+
+**Description**
+
+Conduct simulations and get operating characteristics for the 2dCFO design with customized number of iterations.
+
+**Parameters**
+
+target: The target DLT rate
+
+...
+
+
 
 
 
