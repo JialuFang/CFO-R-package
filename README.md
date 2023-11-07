@@ -48,7 +48,7 @@ Jialu Fang and Wenliang Wang
 Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 
 **examples**
-## determine the dose level for the next cohort of new patients
+determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
 CFO.next(phi=0.2, cys=cys, cns=cns, alp.prior=0.2, bet.prior=0.8, cover.doses=c(0,0,0))
 
