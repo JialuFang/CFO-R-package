@@ -156,13 +156,15 @@ optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
 #'          quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to 
 #'          minimize the probability of making incorrect decisions.The decision process is summarized in Table 1
 #'          of Jin and Yin (2022).
+#'          
+#'          
 #'          An overdose control rule is implemented to ensure patient safety. If the data suggest excessive 
 #'          toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios 
 #'          lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level) 
 #'          or when higher dose levels have been eliminated.
 #'          
 #' @return The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT 
-#'         rate ($target), the current counts of DLTs and patients for the left, current, and right dose levels ($cys and $cns), 
+#'         rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns), 
 #'         the decision for whether to move to the left or right dose level for the next cohort ($decision), and the 
 #'         corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the 
 #'         current dose, and 3 corresponds to escalation.
@@ -234,3 +236,4 @@ CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
   class(out) <- "CFO"
   return(out)
 }
+

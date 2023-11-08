@@ -1,0 +1,126 @@
+overdose.fn <- function(phi, add.args=list()){
+  y <- add.args$y
+  n <- add.args$n
+  alp.prior <- add.args$alp.prior
+  bet.prior <- add.args$bet.prior
+  pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
+  # print(data.frame("prob of overdose" = pp))
+  if ((pp >= 0.95) & (add.args$n>=3)){
+    return(TRUE)
+  }else{
+    return(FALSE)
+  }
+}
+
+#' Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.
+#' 
+#' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.
+#'
+#' @usage CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
+#'                 alp.prior = phi, bet.prior = 1 - phi, seed=100)
+#'
+#' @param phi the target DLT rate
+#' @param p.true the true DLT rates under the different dose levels
+#' @param ncohort the total number of cohorts
+#' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
+#' @param cohortsize the sample size in each cohort
+#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
+#'                            This prior distribution is set to Beta(\code{alpha.prior}, \code{beta.prior}). 
+#'                            The default value is \code{phi} and \code{1-phi}.
+#' @param seed the random seed for simulation
+#'                            
+#' @details The \code{CFO.simu()} function is designed to determine the Maximum Tolerated Dose (MTD) for a single CFO trial. 
+#'          Given the toxicity outcomes from previous cohorts, each cohort is sequentially assigned to the most suitable dose
+#'          level based on the decision rule. Early stopping criteria are incorporated into the CFO design to ensure patient 
+#'          safety and benefit. If there is substantial evidence indicating that the current dose level exhibits excessive 
+#'          toxicity (\eqn{\Pr(p_C > \phi|x_C, m_C \geq 3) > 0.95}), we exclude the current dose level as well as higher dose 
+#'          levels from the trial. The trial will be terminated if the lowest dose level is overly toxicity. \cr
+#'          Upon reaching the predefined maximum sample size or satisfying the early stopping criteria, the experiment is 
+#'          concluded, and the MTD is determined using isotonic regression.
+#' 
+#'
+#' @return The \code{CFO.next()} function returns a list object comprising the following components: the target DLT 
+#'         rate ($target), the actual DLT rates under different dose levels ($p.true), the selected MTD ($MTD), 
+#'         the total number of DLTs and patients for all dose levels ($DLT.ns and $dose.ns), and the over-toxicity status 
+#'         for all dose levels ($over.doses). Specifically, the value of 1 represents over-toxicity at that dose level, 
+#'         while the value of 0 indicates safety at that dose level.
+#' 
+#' @author Jialu Fang and Wenliang Wang
+#' 
+#' @references Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
+#'
+#' @examples
+#' ## find the MTD for a single CFO trial
+#' phi <- 0.2; ncohort <- 12; cohortsize <- 3
+#' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
+#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
+#'          alp.prior = phi, bet.prior = 1 - phi, seed = 100)
+#' @import BOIN
+#' @export
+CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3, 
+                        alp.prior = phi, bet.prior = 1 - phi, seed = 100){
+  earlystop <- 0
+  ndose <- length(p.true)
+  cidx <- init.level
+  add.args <- list(alp.prior=alp.prior, bet.prior=alp.prior)
+  
+  tys <- rep(0, ndose) # number of responses for different doses.
+  tns <- rep(0, ndose) # number of subject for different doses.
+  tover.doses <- rep(0, ndose) # Whether each dose is overdosed or not, 1 yes
+  
+  set.seed(seed)
+  
+  for (i in 1:ncohort){
+    pc <- p.true[cidx] 
+    
+    # sample from current dose
+    cres <- rbinom(cohortsize, 1, pc)
+    
+    # update results
+    tys[cidx] <- tys[cidx] + sum(cres)
+    tns[cidx] <- tns[cidx] + cohortsize
+    
+    
+    
+    cy <- tys[cidx]
+    cn <- tns[cidx]
+    
+    add.args <- c(list(y=cy, n=cn, tys=tys, tns=tns, cidx=cidx), add.args)
+    
+    if (overdose.fn(phi, add.args)){
+      tover.doses[cidx:ndose] <- 1
+    }
+    
+    if (tover.doses[1] == 1){
+      earlystop <- 1
+      break()
+    }
+    
+    
+    # the results for current 3 dose levels
+    if (cidx!=1){
+      cys <- tys[(cidx-1):(cidx+1)]
+      cns <- tns[(cidx-1):(cidx+1)]
+      cover.doses <- tover.doses[(cidx-1):(cidx+1)]
+      #cover.doses <- c(0, 0, 0) # No elimination rule
+    }else{
+      cys <- c(NA, tys[1:(cidx+1)])
+      cns <- c(NA, tns[1:(cidx+1)])
+      cover.doses <- c(NA, tover.doses[1:(cidx+1)])
+      #cover.doses <- c(NA, 0, 0) # No elimination rule
+    }
+    
+    idx.chg <- CFO.next(phi, cys, cns, add.args$alp.prior, add.args$bet.prior, cover.doses)$index - 2
+    cidx <- idx.chg + cidx
+  }
+  
+  
+  if (earlystop==0){
+    MTD <- select.mtd(phi, tns, tys)$MTD
+  }else{
+    MTD <- 99
+  }
+  list(target=phi, p.true=p.true, MTD=MTD, dose.ns=tns, DLT.ns=tys, over.doses=tover.doses)
+}
+
