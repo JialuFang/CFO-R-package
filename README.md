@@ -120,7 +120,11 @@ p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 
 CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, alp.prior = phi, bet.prior = 1 - phi, seed = 100)
 
-## ACFO
+## aCFO
+
+### aCFO.next
+
+**Description**
 
 
 ## 2dCFO
