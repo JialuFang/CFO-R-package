@@ -20,7 +20,6 @@ prob.int <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior){
   const.max <- integrate(fn.max, lower=0, upper=1)$value
   p1 <- integrate(fn.min, lower=0, upper=phi)$value/const.min
   p2 <- integrate(fn.max, lower=0, upper=phi)$value/const.max
-  
   list(p1=p1, p2=p2)
 }
 
@@ -41,6 +40,28 @@ OR.values <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior, type){
     OR <- (1/oddsC)/oddsR
   }
   return(OR)
+}
+
+OR.union.values <- function(phi, ctns, ctys, alp.prior, bet.prior, type){
+  ndose <- length(ctys)
+  if (type=="L"){
+    OR.list <- rep(0, ndose-1)
+    for (i in 1:(ndose-1)){
+      OR.list[i] <- OR.values(phi, ctys[i], ctns[i], ctys[ndose], ctns[ndose], alp.prior, bet.prior, type)
+    }
+    # print("The first left OR:")
+    # print(OR.list[ndose-1])
+  }else if (type=="R"){
+    OR.list <- rep(0, ndose-1)
+    for (i in 2:ndose){
+      OR.list[i-1] <- OR.values(phi, ctys[1], ctns[1], ctys[i], ctns[i], alp.prior, bet.prior, type)
+    }
+    # print("The first right OR:")
+    # print(OR.list[1])
+  }
+  # print("sum of OR:")
+  # print(sum(OR.list))
+  return(sum(OR.list))
 }
 
 All.OR.table <- function(phi, n1, n2, type, alp.prior, bet.prior){
@@ -131,65 +152,105 @@ optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
   list(gamma=gam, min.err=min.err)
 }
 
+optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
+  ndose <- length(ctns)
+  if (type == "L"){
+    gamma.list <- rep(0, ndose-1)
+    for (i in 1:(ndose-1)){
+      gamma.list[i] <- optim.gamma.fn(ctns[i], ctns[ndose], phi, type, alp.prior, bet.prior)$gamma
+    }
+    # print("the first left gamma:")
+    # print(gamma.list[ndose-1])
+  }else if (type == "R"){
+    gamma.list <- rep(0, ndose-1)
+    for (i in 2:ndose){
+      gamma.list[i-1] <- optim.gamma.fn(ctns[1], ctns[i], phi, type, alp.prior, bet.prior)$gamma
+    }
+    # print("the first right gamma:")
+    # print(gamma.list[1])
+  }
+  # print("sum of gamma:")
+  # print(sum(gamma.list))
+  return(sum(gamma.list))
+}
+
 #' 
-#' Determination of the dose level for next cohort in CFO design
+#' Determination of the dose level for next cohort in aCFO design
 #' 
-#' In CFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
+#' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
+#' @usage aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
 #'
 #' @param phi the target DLT rate
-#' @param cys the current number of DLTs observed in patients for the left, current, and right dose levels.
-#' @param cns the current number of patients for the left, current, and right dose levels.
+#' @param tys the current number of DLTs observed in patients for all dose levels.
+#' @param tns the current number of patients for all dose levels.
 #' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
 #'                            This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
 #'                            The default value is \code{phi} and \code{1-phi}.
-#' @param cover.doses whether the dose level (left, current and right) is over-toxic or not. 
+#' @param tover.doses whether the dose level (from the first to last dose level) is over-toxic or not. 
 #'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
+#' @param cidx dose level for current cohort
 #'
-#' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
-#'          dose level and its adjacent levels. This evaluation is based on odds ratios denoted as \eqn{O_k}, where 
-#'          k = L, C, R represents left, current, and right dose levels. Additionally, we define \eqn{\overline{O}_k = 1/O_k}. 
-#'          The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalation, while \eqn{\overline{O}_C / O_R} 
-#'          quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to 
-#'          minimize the probability of making incorrect decisions.The decision process is summarized in Table 1
-#'          of Jin and Yin (2022). \cr
-#'          An overdose control rule is implemented to ensure patient safety. If the data suggest excessive 
-#'          toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios 
-#'          lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level) 
-#'          or when higher dose levels have been eliminated.
-#'          
-#' @return The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT 
+#' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
+#'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
+#'          cohorts, aCFO compares the evidence from the current dose level with all doses to its left and right. 
+#'          This design is rooted in the odds ratio, specifically \eqn{O_C / \overline{O}_{J}} and 
+#'          \eqn{\overline{O}_C / O_R} from the CFO design. By aggregating odds ratios from the left and right sides, 
+#'          it forms two collective statistics: \eqn{ {\rm OR}_L =\sum_{i=1}^{J} O_C/ \overline{O}_{L_i} } for dose 
+#'          de-escalation (movement to the left) and \eqn{ {\rm OR}_R = \sum_{i=1}^{H} \overline{O}_C / O_{R_i} } 
+#'          for dose escalation (movement to the right), where J and H represent the counts of doses on the left and 
+#'          right sides of the current dose, respectively. For the new statistic \eqn{ {\rm OR}_L } and \eqn{ {\rm OR}_R }, 
+#'          their corresponding thresholds are derived by summing up its individual thresholds \eqn{\gamma_{L_i}} and 
+#'          \eqn{\gamma_{R_i}}, i.e., \eqn{\sum_{i=1}^{J}\gamma_{L_i}} and \eqn{\sum_{i=1}^{H}\gamma_{R_i}}. \cr
+#'          Besides，The aCFO design retains the same early stopping criteria as the CFO design. Overall，while preserving 
+#'          the nature of the CFO design (model-free and calibration-free), the aCFO designs enhance the efﬁciency by 
+#'          incorporating more dose information.
+#' 
+#' @return The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT 
 #'         rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns), 
-#'         the decision in the CFO design of whether to move to the left or right dose level for the next cohort ($decision), and the 
+#'         the decision in the aCFO design of whether to move to the left or right dose level for the next cohort ($decision), and the 
 #'         corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the 
 #'         current dose, and 3 corresponds to escalation.
-#'         
-#' @author Jialu Fang and Wenliang Wang
+#' 
+#' @author Jialu Fang 
 #' 
 #' @references Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
-#' 
+#'
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
-#' cys <- c(0,1,0); cns <- c(3,6,0)
-#' CFO.next(phi=0.2, cys=cys, cns=cns, alp.prior=0.2, bet.prior=0.8, cover.doses=c(0,0,0))
+#' tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
+#' aCFO.next(phi=0.2, tys=tys, tns=tns, alp.prior=0.2, 
+#'           bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), cidx=3)
 #' 
 #' @import stats
 #' @export
-CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses){
+aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx){
+  ndose <- length(tys)
+  if (cidx!=1){
+    cys <- tys[(cidx-1):(cidx+1)]
+    cns <- tns[(cidx-1):(cidx+1)]
+    cover.doses <- tover.doses[(cidx-1):(cidx+1)]
+    #cover.doses <- c(0, 0, 0) # No elimination rule
+  }else{
+    cys <- c(NA, tys[1:(cidx+1)])
+    cns <- c(NA, tns[1:(cidx+1)])
+    cover.doses <- c(NA, tover.doses[1:(cidx+1)])
+    #cover.doses <- c(NA, 0, 0) # No elimination rule
+  }
+  
   if (cover.doses[2] == 1){
     index <- 1
     decision <- "de-escalation"
   }
   else{
     if (is.na(cys[1]) & (cover.doses[3]==1)){
-      index <- 2 
+      index <- 2
       decision <- "stay"
     }
     else  if (is.na(cys[1]) & (!(cover.doses[3]==1))){
-      gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
-      OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
+      OR.v2 <- OR.union.values(phi, tns[cidx:ndose], tys[cidx:ndose], alp.prior, bet.prior, type="R")
+      gam2 <- optim.gamma.union.fn(tns[cidx:ndose], phi, "R", alp.prior, bet.prior)
       if (OR.v2>gam2){
         index <- 3
         decision <- "escalation"
@@ -199,8 +260,8 @@ CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
       }
     }
     else  if (is.na(cys[3]) | (cover.doses[3]==1)){
-      gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
-      OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
+      gam1 <- optim.gamma.union.fn(tns[1:cidx], phi, "L", alp.prior, bet.prior)
+      OR.v1 <- OR.union.values(phi, tns[1:cidx], tys[1:cidx], alp.prior, bet.prior, type="L")
       if (OR.v1>gam1){
         index <- 1
         decision <- "de-escalation"
@@ -210,10 +271,10 @@ CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
       }
     }
     else  if (!(is.na(cys[1]) | is.na(cys[3]) | cover.doses[3]==1)){
-      gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
-      gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
-      OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
-      OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
+      gam1 <- optim.gamma.union.fn(tns[1:cidx], phi, "L", alp.prior, bet.prior)
+      gam2 <- optim.gamma.union.fn(tns[cidx:ndose], phi, "R", alp.prior, bet.prior)
+      OR.v1 <- OR.union.values(phi, tns[1:cidx], tys[1:cidx], alp.prior, bet.prior, type="L")
+      OR.v2 <- OR.union.values(phi, tns[cidx:ndose], tys[cidx:ndose], alp.prior, bet.prior, type="R")
       v1 <- OR.v1 > gam1
       v2 <- OR.v2 > gam2
       if (v1 & !v2){
@@ -228,8 +289,7 @@ CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
       }
     }
   }
-  out <- list(target=phi, cys=cys, cns=cns, index=index, decision=decision)
-  class(out) <- "CFO"
+  out <- list(target=phi, tys=tys, tns=tns, index=index, decision=decision)
+  class(out) <- "aCFO"
   return(out)
 }
-

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO.next.R
 \name{CFO.next}
 \alias{CFO.next}
-\title{Determination of the dose level for next cohort}
+\title{Determination of the dose level for next cohort in CFO design}
 \usage{
 CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
 }
@@ -23,12 +23,12 @@ The value is set as 1 if the dose level is overly toxicity; otherwise, it is set
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT
 rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
-the decision for whether to move to the left or right dose level for the next cohort ($decision), and the
+the decision in the CFO design of whether to move to the left or right dose level for the next cohort ($decision), and the
 corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the
 current dose, and 3 corresponds to escalation.
 }
 \description{
-Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
+In CFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 }
 \details{
 The CFO design determines the dose level for the next cohort by assessing evidence from the current
@@ -37,13 +37,11 @@ k = L, C, R represents left, current, and right dose levels. Additionally, we de
 The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalation, while \eqn{\overline{O}_C / O_R}
 quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to
 minimize the probability of making incorrect decisions.The decision process is summarized in Table 1
-of Jin and Yin (2022).
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     An overdose control rule is implemented to ensure patient safety. If the data suggest excessive 
-     toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios 
-     lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level) 
-     or when higher dose levels have been eliminated.
-}\if{html}{\out{</div>}}
+of Jin and Yin (2022). \cr
+An overdose control rule is implemented to ensure patient safety. If the data suggest excessive
+toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios
+lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level)
+or when higher dose levels have been eliminated.
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
