@@ -15,11 +15,15 @@ CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
 **Parameters**
 
 phi: the target DLT rate
+
 cys: the current number of DLTs observed in patients for the left, current, and right dose levels.
+
 cns: the current number of patients for the left, current, and right dose levels.
+
 alp.prior,bet.prior: the parameters of the prior distribution for the true DLT rate at any dose level.
                     This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
                     The default value is \code{phi} and \code{1-phi}.
+                    
 cover.doses: whether the dose level (left, current and right) is over-toxic or not. 
             The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
             
@@ -74,13 +78,19 @@ CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, alp.prior = phi, bet.
 **Parameters**
 
 phi: the target DLT rate
+
 p.true: the true DLT rates under the different dose levels
+
 ncohort: the total number of cohorts
+
 init.level: the dose level assigned to the first cohort. The default value \code{init.level} is 1.
+
 cohortsize: the sample size in each cohort
+
 alp.prior,bet.prior: the parameters of the prior distribution for the true DLT rate at any dose level.
                     This prior distribution is set to Beta(\code{alpha.prior}, \code{beta.prior}). 
                     The default value is \code{phi} and \code{1-phi}.
+                    
 seed: the random seed for simulation
             
 **Details**
@@ -135,13 +145,18 @@ aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
 **Parameters**
 
 phi: the target DLT rate
+
 tys: the current number of DLTs observed in patients for all dose levels.
+
 tns: the current number of patients for all dose levels.
+
 alp.prior,bet.prior: the parameters of the prior distribution for the true DLT rate at any dose level.
                      This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
                      The default value is \code{phi} and \code{1-phi}.
+                     
 tover.doses: whether the dose level (from the first to last dose level) is over-toxic or not. 
             The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
+            
 cidx: dose level for current cohort
             
 **Details**
