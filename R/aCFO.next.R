@@ -181,7 +181,7 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #'
 #' @usage aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
 #'
-#' @param phi the target DLT rate
+#' @param phi the target DLT rate.
 #' @param tys the current number of DLTs observed in patients for all dose levels.
 #' @param tns the current number of patients for all dose levels.
 #' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
@@ -189,7 +189,7 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #'                            The default value is \code{phi} and \code{1-phi}.
 #' @param tover.doses whether the dose level (from the first to last dose level) is over-toxic or not. 
 #'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
-#' @param cidx dose level for current cohort
+#' @param cidx dose level for current cohort.
 #'
 #' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
 #'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 

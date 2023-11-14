@@ -138,7 +138,7 @@ optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
 #'
 #' @usage CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
 #'
-#' @param phi the target DLT rate
+#' @param phi the target DLT rate.
 #' @param cys the current number of DLTs observed in patients for the left, current, and right dose levels.
 #' @param cns the current number of patients for the left, current, and right dose levels.
 #' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.

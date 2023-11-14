@@ -7,7 +7,7 @@
 CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
 }
 \arguments{
-\item{phi}{the target DLT rate}
+\item{phi}{the target DLT rate.}
 
 \item{cys}{the current number of DLTs observed in patients for the left, current, and right dose levels.}
 

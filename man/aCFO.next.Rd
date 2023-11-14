@@ -7,7 +7,7 @@
 aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
 }
 \arguments{
-\item{phi}{the target DLT rate}
+\item{phi}{the target DLT rate.}
 
 \item{tys}{the current number of DLTs observed in patients for all dose levels.}
 
@@ -20,7 +20,7 @@ The default value is \code{phi} and \code{1-phi}.}
 \item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
 The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
-\item{cidx}{dose level for current cohort}
+\item{cidx}{dose level for current cohort.}
 }
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT
