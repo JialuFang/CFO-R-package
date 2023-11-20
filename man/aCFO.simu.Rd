@@ -2,7 +2,7 @@
 % Please edit documentation in R/aCFO.simu.R
 \name{aCFO.simu}
 \alias{aCFO.simu}
-\title{Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.}
+\title{Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.}
 \usage{
 aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
                 alp.prior = phi, bet.prior = 1 - phi, seed=100, accumulation = FALSE)
@@ -35,7 +35,7 @@ for all dose levels ($over.doses). Specifically, the value of 1 represents over-
 while the value of 0 indicates safety at that dose level.
 }
 \description{
-Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.
+Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 }
 \details{
 The \code{aCFO.simu()} function is designed to determine the Maximum Tolerated Dose (MTD) for a single CFO or aCFO
@@ -63,5 +63,5 @@ Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clin
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 }
 \author{
-Jialu Fang and Wenliang Wang
+Jialu Fang
 }

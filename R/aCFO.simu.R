@@ -12,9 +12,9 @@ overdose.fn <- function(phi, add.args=list()){
   }
 }
 
-#' Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.
+#' Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 #' 
-#' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) trial.
+#' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 #'
 #' @usage aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
 #'                 alp.prior = phi, bet.prior = 1 - phi, seed=100, accumulation = FALSE)
@@ -48,7 +48,7 @@ overdose.fn <- function(phi, add.args=list()){
 #'         for all dose levels ($over.doses). Specifically, the value of 1 represents over-toxicity at that dose level, 
 #'         while the value of 0 indicates safety at that dose level.
 #' 
-#' @author Jialu Fang and Wenliang Wang
+#' @author Jialu Fang
 #' 
 #' @references Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
@@ -68,7 +68,7 @@ aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
                         alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = FALSE){
   earlystop <- 0
   ndose <- length(p.true)
-  cidx <- init.level
+  curDose <- init.level
   add.args <- list(alp.prior=alp.prior, bet.prior=alp.prior)
   
   tys <- rep(0, ndose) # number of responses for different doses.
@@ -78,24 +78,24 @@ aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
   set.seed(seed)
   
   for (i in 1:ncohort){
-    pc <- p.true[cidx] 
+    pc <- p.true[curDose] 
     
     # sample from current dose
     cres <- rbinom(cohortsize, 1, pc)
     
     # update results
-    tys[cidx] <- tys[cidx] + sum(cres)
-    tns[cidx] <- tns[cidx] + cohortsize
+    tys[curDose] <- tys[curDose] + sum(cres)
+    tns[curDose] <- tns[curDose] + cohortsize
     
     
     
-    cy <- tys[cidx]
-    cn <- tns[cidx]
+    cy <- tys[curDose]
+    cn <- tns[curDose]
     
-    add.args <- c(list(y=cy, n=cn, tys=tys, tns=tns, cidx=cidx), add.args)
+    add.args <- c(list(y=cy, n=cn, tys=tys, tns=tns, curDose=curDose), add.args)
     
     if (overdose.fn(phi, add.args)){
-      tover.doses[cidx:ndose] <- 1
+      tover.doses[curDose:ndose] <- 1
     }
     
     if (tover.doses[1] == 1){
@@ -105,23 +105,23 @@ aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
     
     if (accumulation == FALSE){
       # the results for current 3 dose levels
-      if (cidx!=1){
-        cys <- tys[(cidx-1):(cidx+1)]
-        cns <- tns[(cidx-1):(cidx+1)]
-        cover.doses <- tover.doses[(cidx-1):(cidx+1)]
+      if (curDose!=1){
+        cys <- tys[(curDose-1):(curDose+1)]
+        cns <- tns[(curDose-1):(curDose+1)]
+        cover.doses <- tover.doses[(curDose-1):(curDose+1)]
         #cover.doses <- c(0, 0, 0) # No elimination rule
       }else{
-        cys <- c(NA, tys[1:(cidx+1)])
-        cns <- c(NA, tns[1:(cidx+1)])
-        cover.doses <- c(NA, tover.doses[1:(cidx+1)])
+        cys <- c(NA, tys[1:(curDose+1)])
+        cns <- c(NA, tns[1:(curDose+1)])
+        cover.doses <- c(NA, tover.doses[1:(curDose+1)])
         #cover.doses <- c(NA, 0, 0) # No elimination rule
       }
       idx.chg <- CFO.next(phi, cys, cns, add.args$alp.prior, add.args$bet.prior, cover.doses)$index - 2
     } else if (accumulation == TRUE){
-      idx.chg <- aCFO.next (phi, tys, tns, add.args$alp.prior, add.args$bet.prior, tover.doses, cidx)$index - 2
+      idx.chg <- aCFO.next (phi, tys, tns, add.args$alp.prior, add.args$bet.prior, tover.doses, curDose)$index - 2
     }
 
-    cidx <- idx.chg + cidx
+    curDose <- idx.chg + curDose
   }
   
   

@@ -4,7 +4,7 @@
 \alias{aCFO.next}
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
-aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
+aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose)
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -20,7 +20,7 @@ The default value is \code{phi} and \code{1-phi}.}
 \item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
 The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
-\item{cidx}{dose level for current cohort.}
+\item{curDose}{the current dose level.}
 }
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT
@@ -52,7 +52,7 @@ incorporating more dose information.
 ## determine the dose level for the next cohort of new patients
 tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
 aCFO.next(phi=0.2, tys=tys, tns=tns, alp.prior=0.2, 
-          bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), cidx=3)
+          bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), curDose=3)
 
 }
 \references{

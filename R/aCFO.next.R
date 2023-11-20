@@ -179,7 +179,7 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #' 
 #' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx)
+#' @usage aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose)
 #'
 #' @param phi the target DLT rate.
 #' @param tys the current number of DLTs observed in patients for all dose levels.
@@ -189,7 +189,7 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #'                            The default value is \code{phi} and \code{1-phi}.
 #' @param tover.doses whether the dose level (from the first to last dose level) is over-toxic or not. 
 #'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
-#' @param cidx dose level for current cohort.
+#' @param curDose the current dose level.
 #'
 #' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
 #'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
@@ -221,21 +221,21 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #' ## determine the dose level for the next cohort of new patients
 #' tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
 #' aCFO.next(phi=0.2, tys=tys, tns=tns, alp.prior=0.2, 
-#'           bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), cidx=3)
+#'           bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), curDose=3)
 #' 
 #' @import stats
 #' @export
-aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx){
+aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose){
   ndose <- length(tys)
-  if (cidx!=1){
-    cys <- tys[(cidx-1):(cidx+1)]
-    cns <- tns[(cidx-1):(cidx+1)]
-    cover.doses <- tover.doses[(cidx-1):(cidx+1)]
+  if (curDose!=1){
+    cys <- tys[(curDose-1):(curDose+1)]
+    cns <- tns[(curDose-1):(curDose+1)]
+    cover.doses <- tover.doses[(curDose-1):(curDose+1)]
     #cover.doses <- c(0, 0, 0) # No elimination rule
   }else{
-    cys <- c(NA, tys[1:(cidx+1)])
-    cns <- c(NA, tns[1:(cidx+1)])
-    cover.doses <- c(NA, tover.doses[1:(cidx+1)])
+    cys <- c(NA, tys[1:(curDose+1)])
+    cns <- c(NA, tns[1:(curDose+1)])
+    cover.doses <- c(NA, tover.doses[1:(curDose+1)])
     #cover.doses <- c(NA, 0, 0) # No elimination rule
   }
   
@@ -249,8 +249,8 @@ aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx){
       decision <- "stay"
     }
     else  if (is.na(cys[1]) & (!(cover.doses[3]==1))){
-      OR.v2 <- OR.union.values(phi, tns[cidx:ndose], tys[cidx:ndose], alp.prior, bet.prior, type="R")
-      gam2 <- optim.gamma.union.fn(tns[cidx:ndose], phi, "R", alp.prior, bet.prior)
+      OR.v2 <- OR.union.values(phi, tns[curDose:ndose], tys[curDose:ndose], alp.prior, bet.prior, type="R")
+      gam2 <- optim.gamma.union.fn(tns[curDose:ndose], phi, "R", alp.prior, bet.prior)
       if (OR.v2>gam2){
         index <- 3
         decision <- "escalation"
@@ -260,8 +260,8 @@ aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx){
       }
     }
     else  if (is.na(cys[3]) | (cover.doses[3]==1)){
-      gam1 <- optim.gamma.union.fn(tns[1:cidx], phi, "L", alp.prior, bet.prior)
-      OR.v1 <- OR.union.values(phi, tns[1:cidx], tys[1:cidx], alp.prior, bet.prior, type="L")
+      gam1 <- optim.gamma.union.fn(tns[1:curDose], phi, "L", alp.prior, bet.prior)
+      OR.v1 <- OR.union.values(phi, tns[1:curDose], tys[1:curDose], alp.prior, bet.prior, type="L")
       if (OR.v1>gam1){
         index <- 1
         decision <- "de-escalation"
@@ -271,10 +271,10 @@ aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, cidx){
       }
     }
     else  if (!(is.na(cys[1]) | is.na(cys[3]) | cover.doses[3]==1)){
-      gam1 <- optim.gamma.union.fn(tns[1:cidx], phi, "L", alp.prior, bet.prior)
-      gam2 <- optim.gamma.union.fn(tns[cidx:ndose], phi, "R", alp.prior, bet.prior)
-      OR.v1 <- OR.union.values(phi, tns[1:cidx], tys[1:cidx], alp.prior, bet.prior, type="L")
-      OR.v2 <- OR.union.values(phi, tns[cidx:ndose], tys[cidx:ndose], alp.prior, bet.prior, type="R")
+      gam1 <- optim.gamma.union.fn(tns[1:curDose], phi, "L", alp.prior, bet.prior)
+      gam2 <- optim.gamma.union.fn(tns[curDose:ndose], phi, "R", alp.prior, bet.prior)
+      OR.v1 <- OR.union.values(phi, tns[1:curDose], tys[1:curDose], alp.prior, bet.prior, type="L")
+      OR.v2 <- OR.union.values(phi, tns[curDose:ndose], tys[curDose:ndose], alp.prior, bet.prior, type="R")
       v1 <- OR.v1 > gam1
       v2 <- OR.v2 > gam2
       if (v1 & !v2){
