@@ -205,6 +205,90 @@ aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, alp.prior = phi, bet
 find the MTD for a single aCFO trial
 aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = TRUE)
 
+## CFO_lateonset
+
+### lateonset.next
+
+**Description**
+
+Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including 
+Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO), benchmark CFO, TITE-aCFO design, the f-aCFO design 
+and benchmark aCFO design.
+
+**Usage** 
+
+lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, accumulation, doses, tover.doses, simu, add.args=list(alp.prior=phi, bet.prior=1-phi))
+
+**Parameters**
+
+curDose: the current dose level.
+
+phi: the target DLT rate.
+
+tau: maximal assessment window size
+
+impute.method: the imputing method for handling pending DLT data. \code{impute.method = 'frac'} corresponds to 
+                   fractional framework. \code{impute.method = 'TITE'} corresponds to time-to-event framework.
+                   \code{impute.method = 'No'} implies no use of any imputing method, corresponding to the 
+                   benchmark CFO and benchmark aCFO designs.
+                   
+enter.times: the time at which each subject existing in the trial enters the trial.
+
+dlt.times: the time to DLT for each subject existing in the trial.  If no DLT occurs for a certain subject, 
+           \code{dlt.times} is set to 0.
+           
+current.t: the current time.
+
+accumulation: set \code{accumulation=FALSE} to conduct the CFO-type design; set \code{accumulation=TRUE} to 
+              conduct the aCFO-type design.
+              
+doses: the dose level for each subject existing in the trial.
+
+tover.doses: whether the dose level (from the first to last dose level) is over-toxic or not. 
+             The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
+simu: whether simulation or not, if \code{simu=TRUE}, \code{lateonset.next()} also return \code{tover.doses}.
+add.args: additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+          and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+          any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+
+**Details**
+
+Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. As a 
+result, the TITE framework and fractional framework serve as two imputation methods to handle pending data 
+related to late-onset outcomes. This approach extends the original designs to integrate time information 
+for delayed outcomes, leading to the development of TITE-CFO, fCFO, TITE-aCFO, and f-aCFO designs. \cr
+In the TITE framework context, an assumption about the distribution of time to DLT must be pre-specified, 
+whereas the fractional framework does not require justification for a specific distribution of the time to 
+DLT. Consequently, fCFO and f-aCFO adapt to a more diverse range of scenarios.\cr
+The function \code{lateonset.next()} also provides the option to set \code{impute.method = "No"} to execute 
+the benchmark CFO and aCFO design. These two methods await complete observation of toxicity outcomes for 
+the previous cohorts before determining the next dose assignment. This enhances precision but comes at the 
+expense of a prolonged trial duration.
+
+**Values**
+
+The \code{lateonset.next()} function returns the recommended dose level for treating the next cohort of 
+patients ($dose). if \code{simu=TRUE}, \code{lateonset.next()} also return a vector indicating whether the 
+dose level (from the first to last dose level) is over-toxic or not ($tover.doses).
+
+**Author**
+
+Jialu Fang
+
+**References**
+
+Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+\emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
+
+Jin, H., & Yin, G. (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
+phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}.
+
+Yin, G., Zheng, S., & Xu, J. (2013). Fractional dose-finding methods with late-onset toxicity in 
+phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
+
+**Examples**
+
+
 
 ## 2dCFO
 
