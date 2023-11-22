@@ -95,78 +95,14 @@ TITEImpute <- function(enter.times, dlt.times, current.time, tau, dose.levels, n
 }
 
 #------------------------------------------------------------------------------------------
-# The function is to obtain the DLT results (with TITE) for each subject
-#------------------------------------------------------------------------------------------
-gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
-  #args:
-  #   dist: TITE distribution, 1-uniform, 2-weibull, 3-log-log
-  #   n: Num of subjects to generate
-  #   pi: Target DLT rate, pi=Pr(T<=tau)
-  #   tau: Maximal window size
-  #   alpha: Parameter for generate time
-  #Return:
-  #   if no DLT, tox.t=0
-  ############ subroutines ############
-  weib<-function(n, pi, pihalft)
-  {
-    ## solve parameters for Weibull given pi=1-S(T) and phalft=1-S(T/2)
-    alpha = log(log(1-pi)/log(1-pihalft))/log(2);
-    lambda = -log(1-pi)/(tau^alpha);
-    t = (-log(runif(n))/lambda)^(1/alpha);
-    return(t);
-  }
-  
-  llogit<-function(n, pi, pihalft)
-  {
-    ## solve parameters for log-logistic given pi=1-S(T) and phalft=1-S(T/2)
-    alpha = log((1/(1-pi)-1)/(1/(1-pihalft)-1))/log(2);
-    lambda = (1/(1-pi)-1)/(tau^alpha);
-    t = ((1/runif(n)-1)/lambda)^(1/alpha);
-    return(t);
-  }  
-  ############ end of subroutines ############
-  
-  
-  tox = rep(0, n);
-  t.tox = rep(0, n);
-  
-  #### uniform
-  if(dist==1) {  # 50% event in (0, 1/2T)
-    tox = rbinom(n, 1, pi);
-    ntox.st = sum(tox);
-    t.tox[tox==1]=runif(ntox.st, 0, tau);
-    t.tox[tox==0]=0;
-  }
-  #### Weibull
-  if(dist==2)
-  {
-    pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
-    t.tox = weib(n, pi, pihalft);
-    tox[t.tox<=tau]=1;
-    ntox.st = sum(tox);
-    t.tox[tox==0]=0;
-  }
-  #### log-logistic
-  if(dist==3)
-  {
-    pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
-    t.tox = llogit(n, pi, pihalft);
-    tox[t.tox<=tau]=1;
-    ntox.st = sum(tox);
-    t.tox[tox==0]=0;
-  }
-  return(list(tox=tox, t.tox=t.tox, ntox.st=ntox.st));
-}
-
-
 #' Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities
 #' 
 #' Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including 
-#' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO), benchmark CFO, TITE-aCFO design, the f-aCFO design 
-#' and benchmark aCFO design.
+#' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO 
+#' design and benchmark aCFO design.
 #' 
-#' @usage lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t,
-#'                       accumulation, doses, tover.doses, simu, 
+#' @usage lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
+#'                       current.t, accumulation, doses, tover.doses, simu, 
 #'                       add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param curDose the current dose level.
@@ -341,9 +277,9 @@ lateonset.next <- function(curDose, phi, tau, impute.method, enter.times, dlt.ti
         cns <- c(sum(doses==(curDose-1)), cn, sum(doses==(curDose+1)))
         cover.doses <- tover.doses[(curDose-1):(curDose+1)]
       }
-      dose.chg <- CFO.next(phi, cys, cns, add.args$alp.prior, add.args$bet.prior, cover.doses)$index - 2
+      dose.chg <- CFO.next(phi, cys, cns, cover.doses, add.args)$index - 2
     }else{
-      dose.chg <- aCFO.next (phi, tys, tns, add.args$alp.prior, add.args$bet.prior, tover.doses, curDose)$index - 2
+      dose.chg <- aCFO.next (phi, tys, tns, tover.doses, curDose, add.args)$index - 2
     }
     dose <- dose.chg + curDose
   }

@@ -179,17 +179,18 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #' 
 #' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose)
+#' @usage aCFO.next(phi, tys, tns, tover.doses, curDose, 
+#'                  add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param tys the current number of DLTs observed in patients for all dose levels.
 #' @param tns the current number of patients for all dose levels.
-#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
-#'                            This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
-#'                            The default value is \code{phi} and \code{1-phi}.
 #' @param tover.doses whether the dose level (from the first to last dose level) is over-toxic or not. 
 #'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
 #' @param curDose the current dose level.
+#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #'
 #' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
 #'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
@@ -220,12 +221,18 @@ optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
-#' aCFO.next(phi=0.2, tys=tys, tns=tns, alp.prior=0.2, 
-#'           bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), curDose=3)
+#' aCFO.next(phi=0.2, tys=tys, tns=tns, tover.doses=c(0,0,0,0,0,0,0), curDose=3,
+#'          add.args=list(alp.prior=0.2, bet.prior=0.8))
 #' 
 #' @import stats
 #' @export
-aCFO.next <- function(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose){
+aCFO.next <- function(phi, tys, tns, tover.doses, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+  if (is.null(add.args$alp.prior)){
+    add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
+  }
+  alp.prior <- add.args$alp.prior
+  bet.prior <- add.args$bet.prior
+  
   ndose <- length(tys)
   if (curDose!=1){
     cys <- tys[(curDose-1):(curDose+1)]

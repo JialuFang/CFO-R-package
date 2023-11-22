@@ -4,8 +4,8 @@
 \alias{lateonset.next}
 \title{Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities}
 \usage{
-lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t,
-                      accumulation, doses, tover.doses, simu, 
+lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
+                      current.t, accumulation, doses, tover.doses, simu, 
                       add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
@@ -48,8 +48,8 @@ dose level (from the first to last dose level) is over-toxic or not ($tover.dose
 }
 \description{
 Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including
-Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO), benchmark CFO, TITE-aCFO design, the f-aCFO design
-and benchmark aCFO design.
+Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO
+design and benchmark aCFO design.
 }
 \details{
 Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. As a

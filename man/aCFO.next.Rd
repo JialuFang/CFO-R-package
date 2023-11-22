@@ -4,7 +4,8 @@
 \alias{aCFO.next}
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
-aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose)
+aCFO.next(phi, tys, tns, tover.doses, curDose, 
+                 add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -13,14 +14,14 @@ aCFO.next(phi, tys, tns, alp.prior, bet.prior, tover.doses, curDose)
 
 \item{tns}{the current number of patients for all dose levels.}
 
-\item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
-This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
-The default value is \code{phi} and \code{1-phi}.}
-
 \item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
 The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
 \item{curDose}{the current dose level.}
+
+\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
+any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 }
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT
@@ -51,8 +52,8 @@ incorporating more dose information.
 \examples{
 ## determine the dose level for the next cohort of new patients
 tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
-aCFO.next(phi=0.2, tys=tys, tns=tns, alp.prior=0.2, 
-          bet.prior=0.8, tover.doses=c(0,0,0,0,0,0,0), curDose=3)
+aCFO.next(phi=0.2, tys=tys, tns=tns, tover.doses=c(0,0,0,0,0,0,0), curDose=3,
+         add.args=list(alp.prior=0.2, bet.prior=0.8))
 
 }
 \references{

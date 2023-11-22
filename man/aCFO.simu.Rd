@@ -4,8 +4,8 @@
 \alias{aCFO.simu}
 \title{Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.}
 \usage{
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-                alp.prior = phi, bet.prior = 1 - phi, seed=100, accumulation = FALSE)
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+                add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -18,11 +18,11 @@ aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
 
 \item{cohortsize}{the sample size in each cohort.}
 
-\item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
-This prior distribution is set to Beta(\code{alpha.prior}, \code{beta.prior}).
-The default value is \code{phi} and \code{1-phi}.}
-
 \item{seed}{the random seed for simulation.}
+
+\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
+any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
 \item{accumulation}{set \code{accumulation=FALSE} to conduct the CFO design; set \code{accumulation=TRUE} to conduct the
 aCFO design.}
@@ -52,11 +52,11 @@ level is overly toxicity, the experiment is concluded, and the MTD is determined
 phi <- 0.2; ncohort <- 12; cohortsize <- 3
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 ## find the MTD for a single CFO trial
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-         alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = FALSE)
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+         add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 ## find the MTD for a single aCFO trial
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-         alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = TRUE)
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+         add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = TRUE)
 }
 \references{
 Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.

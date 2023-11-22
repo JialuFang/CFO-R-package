@@ -136,16 +136,16 @@ optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
 #' 
 #' In CFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
+#' @usage CFO.next(phi, cys, cns, cover.doses, add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param cys the current number of DLTs observed in patients for the left, current, and right dose levels.
 #' @param cns the current number of patients for the left, current, and right dose levels.
-#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
-#'                            This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
-#'                            The default value is \code{phi} and \code{1-phi}.
 #' @param cover.doses whether the dose level (left, current and right) is over-toxic or not. 
 #'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
+#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #'
 #' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
 #'          dose level and its adjacent levels. This evaluation is based on odds ratios denoted as \eqn{O_k}, where 
@@ -173,11 +173,18 @@ optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' cys <- c(0,1,0); cns <- c(3,6,0)
-#' CFO.next(phi=0.2, cys=cys, cns=cns, alp.prior=0.2, bet.prior=0.8, cover.doses=c(0,0,0))
+#' CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), 
+#'          add.args=list(alp.prior=0.2, bet.prior=0.8))
 #' 
 #' @import stats
 #' @export
-CFO.next <- function(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses){
+CFO.next <- function(phi, cys, cns, cover.doses, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+  if (is.null(add.args$alp.prior)){
+    add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
+  }
+  alp.prior <- add.args$alp.prior
+  bet.prior <- add.args$bet.prior
+  
   if (cover.doses[2] == 1){
     index <- 1
     decision <- "de-escalation"

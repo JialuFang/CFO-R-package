@@ -16,20 +16,20 @@ overdose.fn <- function(phi, add.args=list()){
 #' 
 #' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 #'
-#' @usage aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'                 alp.prior = phi, bet.prior = 1 - phi, seed=100, accumulation = FALSE)
+#' @usage aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+#'                 add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param cohortsize the sample size in each cohort.
-#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
-#'                            This prior distribution is set to Beta(\code{alpha.prior}, \code{beta.prior}). 
-#'                            The default value is \code{phi} and \code{1-phi}.
 #' @param seed the random seed for simulation.
 #' @param accumulation set \code{accumulation=FALSE} to conduct the CFO design; set \code{accumulation=TRUE} to conduct the 
 #'                     aCFO design.
+#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #'                            
 #' @details The \code{aCFO.simu()} function is designed to determine the Maximum Tolerated Dose (MTD) for a single CFO or aCFO 
 #'          trial. If \code{accumulation = FALSE}, this trial corresponds to the CFO design. If \code{accumulation = TRUE}, it
@@ -57,19 +57,18 @@ overdose.fn <- function(phi, add.args=list()){
 #' phi <- 0.2; ncohort <- 12; cohortsize <- 3
 #' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 #' ## find the MTD for a single CFO trial
-#' aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'          alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = FALSE)
+#' aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+#'          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 #' ## find the MTD for a single aCFO trial
-#' aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'          alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = TRUE)
+#' aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+#'          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = TRUE)
 #' @import BOIN
 #' @export
-aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-                        alp.prior = phi, bet.prior = 1 - phi, seed = 100, accumulation = FALSE){
+aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+                      add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE){
   earlystop <- 0
   ndose <- length(p.true)
   curDose <- init.level
-  add.args <- list(alp.prior=alp.prior, bet.prior=alp.prior)
   
   tys <- rep(0, ndose) # number of responses for different doses.
   tns <- rep(0, ndose) # number of subject for different doses.
@@ -116,9 +115,9 @@ aCFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
         cover.doses <- c(NA, tover.doses[1:(curDose+1)])
         #cover.doses <- c(NA, 0, 0) # No elimination rule
       }
-      idx.chg <- CFO.next(phi, cys, cns, add.args$alp.prior, add.args$bet.prior, cover.doses)$index - 2
+      idx.chg <- CFO.next(phi, cys, cns, cover.doses, add.args)$index - 2
     } else if (accumulation == TRUE){
-      idx.chg <- aCFO.next (phi, tys, tns, add.args$alp.prior, add.args$bet.prior, tover.doses, curDose)$index - 2
+      idx.chg <- aCFO.next (phi, tys, tns, tover.doses, curDose, add.args)$index - 2
     }
 
     curDose <- idx.chg + curDose
