@@ -8,6 +8,8 @@
 #' @param tys A matrix of the total number of successes for each dose combination.
 #' @param tns A matrix of the total number of patients for each dose combination.
 #' @param cur A vector of the current dose indices in the horizontal and vertical direction.
+#' @param alp.prior Parameter alpha for the prior beta distribution.
+#' @param bet.prior Parameter beta for the prior beta distribution.
 #' @param seed Optional; an integer to set as the seed of the random number generator for reproducible results.
 #' 
 #' @return A vector with the next dose indices in the horizontal and vertical directions.
@@ -25,10 +27,10 @@
 #' CFO2d.next(0.3, tys, tns, cur, seed = 1)
 #' 
 
-CFO2d.next <- function(phi, tys, tns, cur, seed=NULL){
+CFO2d.next <- function(phi, tys, tns, cur, alp.prior=0.1, bet.prior=0.9, seed=NULL){
   
   # posterior probability of pj >= phi given data
-  post.prob.fn <- function(phi, y, n, alp.prior=0.1, bet.prior=0.9){
+  post.prob.fn <- function(phi, y, n, alp.prior, bet.prior){
     alp <- alp.prior + y 
     bet <- bet.prior + n - y
     1 - pbeta(phi, alp, bet)
@@ -401,5 +403,5 @@ tys <- matrix(c(0, 0, 1, 0,
                 0, 0, 2, 0,
                 0, 0, 0, 0), 
               nrow = 3, ncol = 4, byrow = TRUE)
-
-CFO2d.next(0.3, tys, tns, c(2,3))
+cur <- c(2,3)
+CFO2d.next(0.3, tys, tns, cur)
