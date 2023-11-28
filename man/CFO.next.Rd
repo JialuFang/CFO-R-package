@@ -4,7 +4,8 @@
 \alias{CFO.next}
 \title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
+CFO.next(phi, cys, cns, cover.doses=c(0,0,0), 
+                add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate}
@@ -13,12 +14,12 @@ CFO.next(phi, cys, cns, alp.prior=phi, bet.prior=1-phi, cover.doses)
 
 \item{cns}{the current number of patients for the left, current, and right dose levels.}
 
+\item{cover.doses}{whether the dose level (left, current and right) is over-toxic or not.
+The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
+
 \item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
 This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
 The default value is \code{phi} and \code{1-phi}.}
-
-\item{cover.doses}{whether the dose level (left, current and right) is over-toxic or not.
-The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 }
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT
@@ -43,10 +44,16 @@ toxicity at the current dose level, we exclude that level and those higher level
 lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level)
 or when higher dose levels have been eliminated.
 }
+\note{
+The \code{cover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled
+($cns) and the number of DLTs observed ($cys), following the overdose control rule. If not predetermined, it is
+assigned default values of 0 for each dose level.
+}
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, alp.prior=0.2, bet.prior=0.8, cover.doses=c(0,0,0))
+CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), 
+         add.args=list(alp.prior=phi, bet.prior=1-phi))
 
 }
 \references{
