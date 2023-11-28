@@ -5,8 +5,8 @@
 \title{Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities}
 \usage{
 lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
-                      current.t, accumulation, doses, tover.doses=c(), simu=FALSE, 
-                      add.args=list(alp.prior=phi, bet.prior=1-phi))
+       current.t, accumulation, doses, tover.doses=c(), simu=FALSE,
+       add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{curDose}{the current dose level.}

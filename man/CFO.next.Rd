@@ -4,8 +4,8 @@
 \alias{CFO.next}
 \title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(phi, cys, cns, cover.doses=c(0,0,0), 
-                add.args=list(alp.prior=phi, bet.prior=1-phi))
+CFO.next(phi, cys, cns, cover.doses=c(0,0,0), curDose,
+       add.args=list(alp.prior=phi,bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate}
@@ -17,6 +17,8 @@ CFO.next(phi, cys, cns, cover.doses=c(0,0,0),
 \item{cover.doses}{whether the dose level (left, current and right) is over-toxic or not.
 The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
+\item{curDose}{the current dose level.}
+
 \item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
 This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
 The default value is \code{phi} and \code{1-phi}.}
@@ -24,9 +26,8 @@ The default value is \code{phi} and \code{1-phi}.}
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT
 rate ($target), the current counts of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
-the decision for whether to move to the left or right dose level for the next cohort ($decision), and the
-corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the
-current dose, and 3 corresponds to escalation.
+the decision for whether to move to the left or right dose level for the next cohort ($decision), and the current
+dose after movement ($curDose).
 }
 \description{
 Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
@@ -52,8 +53,8 @@ assigned default values of 0 for each dose level.
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), 
-         add.args=list(alp.prior=phi, bet.prior=1-phi))
+CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), curDose=3,
+         add.args=list(alp.prior=0.2, bet.prior=0.8))
 
 }
 \references{

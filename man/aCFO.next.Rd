@@ -5,7 +5,7 @@
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
 aCFO.next(phi, tys, tns, tover.doses=c(), curDose, 
-                 add.args=list(alp.prior=phi, bet.prior=1-phi))
+       add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate.}

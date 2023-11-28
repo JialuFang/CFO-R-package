@@ -5,7 +5,7 @@
 \title{Find the maximum tolerated dose (MTD) for a single trial using the CFO-type and aCFO-type designs with late-onset toxicities.}
 \usage{
 lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-                     design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+       design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate.}

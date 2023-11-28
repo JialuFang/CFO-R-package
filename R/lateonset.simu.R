@@ -5,7 +5,7 @@
 #' the f-aCFO design and benchmark aCFO design.
 #'
 #' @usage lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-#'                      design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#'        design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.

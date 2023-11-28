@@ -3,8 +3,8 @@
 #' Obtain the operating characteristics of the CFO-type and aCFO-type designs for multiple simulations.
 #'
 #' @usage CFO.oc(nsimu=5000, design, phi, p.true, ncohort, init.level, cohortsize,
-#'              tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, 
-#'              add.args=list(alp.prior=phi, bet.prior=1-phi))
+#'        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, 
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
 #' @param design option for selecting different designs, including CFO, aCFO, TITE-CFO, TITE-aCFO, fCFO, 

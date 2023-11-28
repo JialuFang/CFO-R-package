@@ -4,7 +4,7 @@
 #' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
 #' @usage aCFO.next(phi, tys, tns, tover.doses=c(), curDose, 
-#'                  add.args=list(alp.prior=phi, bet.prior=1-phi))
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param tys the current number of DLTs observed in patients for all dose levels.

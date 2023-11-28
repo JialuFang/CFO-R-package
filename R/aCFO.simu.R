@@ -3,7 +3,7 @@
 #' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 #'
 #' @usage aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'                 add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.

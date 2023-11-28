@@ -5,8 +5,8 @@
 #' design and benchmark aCFO design.
 #' 
 #' @usage lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
-#'                       current.t, accumulation, doses, tover.doses=c(), simu=FALSE, 
-#'                       add.args=list(alp.prior=phi, bet.prior=1-phi))
+#'        current.t, accumulation, doses, tover.doses=c(), simu=FALSE,
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param curDose the current dose level.
 #' @param phi the target DLT rate.
