@@ -5,20 +5,20 @@
 \title{Find the maximum tolerated dose (MTD) for a single trial using the CFO-type and aCFO-type designs with late-onset toxicities.}
 \usage{
 lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-                     design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+       design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate.}
 
 \item{p.true}{the true DLT rates under the different dose levels.}
 
-\item{tau}{maximal assessment window size}
+\item{tau}{maximal assessment window size.}
 
 \item{cohortsize}{the sample size in each cohort.}
 
 \item{ncohort}{the total number of cohorts.}
 
-\item{accrual}{the accrual rate, i.e., the number of patients accrued in tau time}
+\item{accrual}{the accrual rate, i.e., the number of patients accrued in tau time.}
 
 \item{tite.dist}{the distribution of the time to DLT events. \code{tite.dist=1} corresponds to a uniform distribution,
 \code{tite.dist=2} corresponds to a Weibull distribution, and \code{tite.dist=3} corresponds to a
@@ -41,8 +41,8 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \value{
 The \code{lateonset.simu()} function returns a list object comprising the following components: the target DLT
 rate ($target), the actual DLT rates under different dose levels ($p.true), the selected MTD ($MTD),
-the total number of DLTs and patients for all dose levels ($DLT.ns and $dose.ns), and the duration of the
-trial in months ($total.time).
+the list that includes the dose level assigned to each cohort($dose.list), the total number of DLTs and
+patients for all dose levels ($DLT.ns and $dose.ns), and the duration of the trial in months ($total.time).
 }
 \description{
 Use this function to find the maximum tolerated dose (MTD) for the CFO-type and aCFO-type designs with late-onset toxicities,

@@ -2,12 +2,13 @@
 % Please edit documentation in R/CFO.next.R
 \name{CFO.next}
 \alias{CFO.next}
-\title{Determination of the dose level for next cohort in CFO design}
+\title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(phi, cys, cns, cover.doses, add.args=list(alp.prior=phi, bet.prior=1-phi))
+CFO.next(phi, cys, cns, cover.doses=c(0,0,0), curDose,
+       add.args=list(alp.prior=phi,bet.prior=1-phi))
 }
 \arguments{
-\item{phi}{the target DLT rate.}
+\item{phi}{the target DLT rate}
 
 \item{cys}{the current number of DLTs observed in patients for the left, current, and right dose levels.}
 
@@ -16,19 +17,20 @@ CFO.next(phi, cys, cns, cover.doses, add.args=list(alp.prior=phi, bet.prior=1-ph
 \item{cover.doses}{whether the dose level (left, current and right) is over-toxic or not.
 The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+\item{curDose}{the current dose level.}
+
+\item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
+This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
+The default value is \code{phi} and \code{1-phi}.}
 }
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT
-rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
-the decision in the CFO design of whether to move to the left or right dose level for the next cohort ($decision), and the
-corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the
-current dose, and 3 corresponds to escalation.
+rate ($target), the current counts of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
+the decision for whether to move to the left or right dose level for the next cohort ($decision), and the current
+dose after movement ($curDose).
 }
 \description{
-In CFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
+Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 }
 \details{
 The CFO design determines the dose level for the next cohort by assessing evidence from the current
@@ -37,16 +39,21 @@ k = L, C, R represents left, current, and right dose levels. Additionally, we de
 The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalation, while \eqn{\overline{O}_C / O_R}
 quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to
 minimize the probability of making incorrect decisions.The decision process is summarized in Table 1
-of Jin and Yin (2022). \cr
+of Jin and Yin (2022).
 An overdose control rule is implemented to ensure patient safety. If the data suggest excessive
 toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios
 lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level)
 or when higher dose levels have been eliminated.
 }
+\note{
+The \code{cover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled
+($cns) and the number of DLTs observed ($cys), following the overdose control rule. If not predetermined, it is
+assigned default values of 0 for each dose level.
+}
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), 
+CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), curDose=3,
          add.args=list(alp.prior=0.2, bet.prior=0.8))
 
 }

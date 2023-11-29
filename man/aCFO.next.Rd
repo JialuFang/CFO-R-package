@@ -4,8 +4,8 @@
 \alias{aCFO.next}
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
-aCFO.next(phi, tys, tns, tover.doses, curDose, 
-                 add.args=list(alp.prior=phi, bet.prior=1-phi))
+aCFO.next(phi, tys, tns, tover.doses=c(), curDose, 
+       add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -15,7 +15,9 @@ aCFO.next(phi, tys, tns, tover.doses, curDose,
 \item{tns}{the current number of patients for all dose levels.}
 
 \item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
-The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
+The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
+It should be predetermined. If not predetermined, it is set to NaN and is assigned values of 0
+for each dose level.}
 
 \item{curDose}{the current dose level.}
 
@@ -26,9 +28,8 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT
 rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
-the decision in the aCFO design of whether to move to the left or right dose level for the next cohort ($decision), and the
-corresponding index ($index). Specifically, 1 corresponds to de-escalation, 2 corresponds to staying at the
-current dose, and 3 corresponds to escalation.
+the decision in the aCFO design of whether to move to the left or right dose level for the next cohort ($decision),
+and the current dose after movement ($curDose).
 }
 \description{
 In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
@@ -48,6 +49,11 @@ their corresponding thresholds are derived by summing up its individual threshol
 Besides，The aCFO design retains the same early stopping criteria as the CFO design. Overall，while preserving
 the nature of the CFO design (model-free and calibration-free), the aCFO designs enhance the efﬁciency by
 incorporating more dose information.
+}
+\note{
+The \code{tover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled
+($tns) and the number of DLTs observed ($tys), following the overdose control rule. If not predetermined, it is
+set to NaN and is assigned default values of 0 for each dose level.
 }
 \examples{
 ## determine the dose level for the next cohort of new patients

@@ -4,8 +4,8 @@
 \alias{aCFO.simu}
 \title{Find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.}
 \usage{
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
-                add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
+       add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -16,9 +16,7 @@ aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
 
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
 
-\item{cohortsize}{the sample size in each cohort.}
-
-\item{seed}{the random seed for simulation.}
+\item{cohortsize}{the sample size in each cohort. The default value \code{cohortsize} is 3.}
 
 \item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
@@ -30,9 +28,10 @@ aCFO design.}
 \value{
 The \code{aCFO.simu} function returns a list object comprising the following components: the target DLT
 rate ($target), the actual DLT rates under different dose levels ($p.true), the selected MTD ($MTD),
-the total number of DLTs and patients for all dose levels ($DLT.ns and $dose.ns), and the over-toxicity status
-for all dose levels ($over.doses). Specifically, the value of 1 represents over-toxicity at that dose level,
-while the value of 0 indicates safety at that dose level.
+the list that includes the dose level assigned to each cohort($dose.list), the total number of DLTs and
+patients for all dose levels ($DLT.ns and $dose.ns), and the over-toxicity status for all dose levels
+($over.doses). Specifically, the value of 1 represents over-toxicity at that dose level, while the value
+of 0 indicates safety at that dose level.
 }
 \description{
 Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
@@ -52,10 +51,10 @@ level is overly toxicity, the experiment is concluded, and the MTD is determined
 phi <- 0.2; ncohort <- 12; cohortsize <- 3
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 ## find the MTD for a single CFO trial
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 ## find the MTD for a single aCFO trial
-aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, seed = 100,
+aCFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = TRUE)
 }
 \references{

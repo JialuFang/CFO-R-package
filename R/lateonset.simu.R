@@ -1,69 +1,3 @@
-# The function is to obtain the DLT results (with TITE) for each subject
-gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
-  #args:
-  #   dist: TITE distribution, 1-uniform, 2-weibull, 3-log-log
-  #   n: Num of subjects to generate
-  #   pi: Target DLT rate, pi=Pr(T<=tau)
-  #   tau: Maximal window size
-  #   alpha: Parameter for generate time
-  #Return:
-  #   if no DLT, tox.t=0
-  ############ subroutines ############
-  weib<-function(n, pi, pihalft)
-  {
-    ## solve parameters for Weibull given pi=1-S(T) and phalft=1-S(T/2)
-    alpha = log(log(1-pi)/log(1-pihalft))/log(2);
-    lambda = -log(1-pi)/(tau^alpha);
-    t = (-log(runif(n))/lambda)^(1/alpha);
-    return(t);
-  }
-  
-  llogit<-function(n, pi, pihalft)
-  {
-    ## solve parameters for log-logistic given pi=1-S(T) and phalft=1-S(T/2)
-    alpha = log((1/(1-pi)-1)/(1/(1-pihalft)-1))/log(2);
-    lambda = (1/(1-pi)-1)/(tau^alpha);
-    t = ((1/runif(n)-1)/lambda)^(1/alpha);
-    return(t);
-  }  
-  ############ end of subroutines ############
-  
-  
-  tox = rep(0, n);
-  t.tox = rep(0, n);
-  
-  #### uniform
-  if(dist==1) {  # 50% event in (0, 1/2T)
-    tox = rbinom(n, 1, pi);
-    ntox.st = sum(tox);
-    t.tox[tox==1]=runif(ntox.st, 0, tau);
-    t.tox[tox==0]=0;
-  }
-  #### Weibull
-  if(dist==2)
-  {
-    pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
-    t.tox = weib(n, pi, pihalft);
-    tox[t.tox<=tau]=1;
-    ntox.st = sum(tox);
-    t.tox[tox==0]=0;
-  }
-  #### log-logistic
-  if(dist==3)
-  {
-    pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
-    t.tox = llogit(n, pi, pihalft);
-    tox[t.tox<=tau]=1;
-    ntox.st = sum(tox);
-    t.tox[tox==0]=0;
-  }
-  return(list(tox=tox, t.tox=t.tox, ntox.st=ntox.st));
-}
-
-#------------------------------------------------------------------------------------------
-# main function to RUN simulation
-#------------------------------------------------------------------------------------------
-
 #' Find the maximum tolerated dose (MTD) for a single trial using the CFO-type and aCFO-type designs with late-onset toxicities.
 #'
 #' Use this function to find the maximum tolerated dose (MTD) for the CFO-type and aCFO-type designs with late-onset toxicities, 
@@ -71,14 +5,14 @@ gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
 #' the f-aCFO design and benchmark aCFO design.
 #'
 #' @usage lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-#'                      design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#'        design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
-#' @param tau maximal assessment window size
+#' @param tau maximal assessment window size.
 #' @param cohortsize the sample size in each cohort.
 #' @param ncohort the total number of cohorts.
-#' @param accrual the accrual rate, i.e., the number of patients accrued in tau time 
+#' @param accrual the accrual rate, i.e., the number of patients accrued in tau time.
 #' @param tite.dist the distribution of the time to DLT events. \code{tite.dist=1} corresponds to a uniform distribution, 
 #'                  \code{tite.dist=2} corresponds to a Weibull distribution, and \code{tite.dist=3} corresponds to a 
 #'                  log-logistic distribution.
@@ -100,9 +34,9 @@ gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
 #'          \code{CFO.oc()} function.
 #'
 #' @return The \code{lateonset.simu()} function returns a list object comprising the following components: the target DLT 
-#'         rate ($target), the actual DLT rates under different dose levels ($p.true), the selected MTD ($MTD), 
-#'         the total number of DLTs and patients for all dose levels ($DLT.ns and $dose.ns), and the duration of the 
-#'         trial in months ($total.time).
+#'         rate ($target), the actual DLT rates under different dose levels ($p.true), the selected MTD ($MTD),
+#'         the list that includes the dose level assigned to each cohort($dose.list), the total number of DLTs and 
+#'         patients for all dose levels ($DLT.ns and $dose.ns), and the duration of the trial in months ($total.time).
 #'         
 #' @author Jialu Fang
 #' 
@@ -138,6 +72,77 @@ gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
 #'                 design='b-aCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
                     design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+  
+  ###############################################################################
+  ###############define the functions used for main function#####################
+  ###############################################################################
+  
+  # The function is to obtain the DLT results (with TITE) for each subject
+  gen.tite<-function(dist=1, n, pi, tau=1, alpha=0.5){
+    #args:
+    #   dist: TITE distribution, 1-uniform, 2-weibull, 3-log-log
+    #   n: Num of subjects to generate
+    #   pi: Target DLT rate, pi=Pr(T<=tau)
+    #   tau: Maximal window size
+    #   alpha: Parameter for generate time
+    #Return:
+    #   if no DLT, tox.t=0
+    ############ subroutines ############
+    weib<-function(n, pi, pihalft)
+    {
+      ## solve parameters for Weibull given pi=1-S(T) and phalft=1-S(T/2)
+      alpha = log(log(1-pi)/log(1-pihalft))/log(2);
+      lambda = -log(1-pi)/(tau^alpha);
+      t = (-log(runif(n))/lambda)^(1/alpha);
+      return(t);
+    }
+    
+    llogit<-function(n, pi, pihalft)
+    {
+      ## solve parameters for log-logistic given pi=1-S(T) and phalft=1-S(T/2)
+      alpha = log((1/(1-pi)-1)/(1/(1-pihalft)-1))/log(2);
+      lambda = (1/(1-pi)-1)/(tau^alpha);
+      t = ((1/runif(n)-1)/lambda)^(1/alpha);
+      return(t);
+    }  
+    ############ end of subroutines ############
+    
+    
+    tox = rep(0, n);
+    t.tox = rep(0, n);
+    
+    #### uniform
+    if(dist==1) {  # 50% event in (0, 1/2T)
+      tox = rbinom(n, 1, pi);
+      ntox.st = sum(tox);
+      t.tox[tox==1]=runif(ntox.st, 0, tau);
+      t.tox[tox==0]=0;
+    }
+    #### Weibull
+    if(dist==2)
+    {
+      pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
+      t.tox = weib(n, pi, pihalft);
+      tox[t.tox<=tau]=1;
+      ntox.st = sum(tox);
+      t.tox[tox==0]=0;
+    }
+    #### log-logistic
+    if(dist==3)
+    {
+      pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
+      t.tox = llogit(n, pi, pihalft);
+      tox[t.tox<=tau]=1;
+      ntox.st = sum(tox);
+      t.tox[tox==0]=0;
+    }
+    return(list(tox=tox, t.tox=t.tox, ntox.st=ntox.st));
+  }
+  
+  ###############################################################################
+  ############################MAIN DUNCTION######################################
+  ############################################################################### 
+  
   if (design == 'TITE-CFO'){accumulation = FALSE; impute.method = "TITE"
   }else if (design == 'fCFO'){accumulation = FALSE; impute.method = "frac"
   }else if (design == 'bCFO'){accumulation = FALSE; impute.method = "No"
@@ -146,6 +151,8 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
   }else if (design == 'b-aCFO'){accumulation = TRUE; impute.method = "No"}
   
   ndose <- length(p.true)
+  doselist <- rep(0, ncohort)
+  
   if (is.null(add.args$alp.prior)){
     add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
   }
@@ -161,7 +168,8 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
   tover.doses <- rep(0, ndose)
   
   for (i in 1:ncohort){
-    curP <- p.true[curDose]    
+    curP <- p.true[curDose]
+    doselist[i] <- curDose
     
     if (accrual.dist==0){
       delta.times <- rep(0, cohortsize)
@@ -205,11 +213,11 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
       tover.doses <- res$tover.doses
     }
     
-    if (res$dose==0){
+    if (res$curDose==0){
       earlystop <- 1
       break()
     }else{
-      curDose <- res$dose
+      curDose <- res$curDose
     }
   }
   
@@ -226,6 +234,8 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
   }else{
     MTD <- 99
   }
-  res <- list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, total.time=assess.t[length(assess.t)])
-  res
+  out <- list(MTD=MTD, dose.list=doselist, dose.ns=tns, DLT.ns=tys, p.true=p.true, 
+              target=phi, total.time=assess.t[length(assess.t)])
+  class(out) <- "cfo"
+  return(out)
 }

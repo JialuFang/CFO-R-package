@@ -4,7 +4,7 @@
 \alias{CFO2d.next}
 \title{CFO2d.next function}
 \usage{
-CFO2d.next(phi, tys, tns, cur, seed = NULL)
+CFO2d.next(phi, tys, tns, cur, alp.prior = 0.1, bet.prior = 0.9, seed = NULL)
 }
 \arguments{
 \item{phi}{The efficacy threshold.}
@@ -14,6 +14,10 @@ CFO2d.next(phi, tys, tns, cur, seed = NULL)
 \item{tns}{A matrix of the total number of patients for each dose combination.}
 
 \item{cur}{A vector of the current dose indices in the horizontal and vertical direction.}
+
+\item{alp.prior}{Parameter alpha for the prior beta distribution.}
+
+\item{bet.prior}{Parameter beta for the prior beta distribution.}
 
 \item{seed}{Optional; an integer to set as the seed of the random number generator for reproducible results.}
 }
