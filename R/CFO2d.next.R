@@ -1,36 +1,51 @@
 
 #' CFO2d.next function
 #'
-#' This function is used to determine the next dose level in a two-dimensional 
-#' dose-finding clinical trial setting. It is based on the Continual Feedback On (CFO) method.
+#' This function is used to determine the next dose level in a 2dCFO design.
 #'
 #' @param phi The efficacy threshold.
-#' @param tys A matrix of the total number of successes for each dose combination.
-#' @param tns A matrix of the total number of patients for each dose combination.
-#' @param cur A vector of the current dose indices in the horizontal and vertical direction.
-#' @param alp.prior Parameter alpha for the prior beta distribution.
-#' @param bet.prior Parameter beta for the prior beta distribution.
-#' @param seed Optional; an integer to set as the seed of the random number generator for reproducible results.
+#' @param cys A matrix of the number of successes for each dose combination.
+#' @param cns A matrix of the number of patients for each dose combination.
+#' @param curDose A vector of the current dose indices in the horizontal and vertical direction.
+#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
+#'                            This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
+#'                            The default value is \code{phi} and \code{1-phi}.
+#' @param seed an integer to set as the seed of the random number generator for reproducible results.
 #' 
-#' @return A vector with the next dose indices in the horizontal and vertical directions.
+#' @return A list with the following components:
+#' \itemize{
+#'   \item{target{The target DLT rate.}
+#'   \item{cys}{A matrix of the number of DLT observed at the current dose and its adjacent doses.}
+#'   \item{cns}{A matrix of the number of patients treated at the current dose and its adjacent doses.}
+#'   \item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
+#'   \item{target}{The target DLT rate.}
+#'   \item{curDoses}{The current dose combination.}
+#'   \item{nextDose}{The recommended dose combination for the next cohort.}
+#' }
 #' @export
 #' @examples
-#' tns <- matrix(c(3, 3, 3, 0,
-#'                 0, 0, 6, 0,
-#'                 0, 0, 0, 0), 
-#'               nrow = 3, ncol = 4, byrow = TRUE)
-#' tys <- matrix(c(0, 0, 1, 0,
-#'                 0, 0, 2, 0,
-#'                 0, 0, 0, 0), 
-#'               nrow = 3, ncol = 4, byrow = TRUE)
-#' cur <- c(2,3)
-#' CFO2d.next(0.3, tys, tns, cur, seed = 1)
+#' cns <- matrix(c(3, 3, 0,
+#'                 0, 6, 0,
+#'                 0, 0, 0), 
+#'               nrow = 3, ncol = 3, byrow = TRUE)
+#' 
+#' cys <- matrix(c(0, 1, 0,
+#'                 0, 2, 0,
+#'                 0, 0, 0), 
+#'               nrow = 3, ncol = 3, byrow = TRUE)
+#' curDose <- c(2,3)
+#' CFO2d.next(0.3, cys, cns, curDose = curDose)
 #' 
 
-CFO2d.next <- function(phi, tys, tns, cur, alp.prior=0.1, bet.prior=0.9, seed=NULL){
+CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+  cidx.A <- 0
+  cidx.B <- 0
+  alp.prior <- add.args$alp.prior
+  bet.prior <- add.args$bet.prior
+  set.seed(seed)
   
   # posterior probability of pj >= phi given data
-  post.prob.fn <- function(phi, y, n, alp.prior, bet.prior){
+  post.prob.fn <- function(phi, y, n, alp.prior=0.1, bet.prior=0.9){
     alp <- alp.prior + y 
     bet <- bet.prior + n - y
     1 - pbeta(phi, alp, bet)
@@ -86,6 +101,8 @@ CFO2d.next <- function(phi, tys, tns, cur, alp.prior=0.1, bet.prior=0.9, seed=NU
     }
     return(OR)
   }
+  
+  
   
   All.OR.table <- function(phi, n1, n2, type, alp.prior, bet.prior){
     ret.mat <- matrix(rep(0, (n1+1)*(n2+1)), nrow=n1+1)
@@ -215,193 +232,86 @@ CFO2d.next <- function(phi, tys, tns, cur, alp.prior=0.1, bet.prior=0.9, seed=NU
       }
     }
   }
-
-  make.decision.2dCFO.fn <- function(phi, cys, cns, alp.prior, bet.prior, cover.doses){
-    cidx.A <- 0
-    cidx.B <- 0
-    # horizontal direction
-    idx.chg.A <- make.decision.1dCFO.fn(phi, cys[2,], cns[2,], alp.prior, bet.prior, cover.doses[2,]) - 2
-    # vertical direction
-    idx.chg.B <- make.decision.1dCFO.fn(phi, cys[,2], cns[,2], alp.prior, bet.prior, cover.doses[,2]) - 2
+  
+  
+  # horizontal direction
+  idx.chg.A <- make.decision.1dCFO.fn(phi, cys[2,], cns[2,], alp.prior, bet.prior, cover.doses[2,]) - 2
+  # vertical direction
+  idx.chg.B <- make.decision.1dCFO.fn(phi, cys[,2], cns[,2], alp.prior, bet.prior, cover.doses[,2]) - 2
+  
+  if (idx.chg.A == 1 & idx.chg.B == 1){
+    ### horizontal and vertical only
     
-    if (idx.chg.A == 1 & idx.chg.B == 1){
-      ### horizontal and vertical only
+    OR.R <- OR.values(phi, cys[2,2], cns[2,2], cys[2,3], cns[2,3], alp.prior, bet.prior, type="R")
+    OR.U <- OR.values(phi, cys[2,2], cns[2,2], cys[3,2], cns[3,2], alp.prior, bet.prior, type="R")
+    
+    if (OR.R == OR.U){
+      rand <- rbinom(1,1,0.5)
+      if(rand == 0){
+        cidx.A <- 1
+      } else {
+        cidx.B <- 1
+      }
+    } else if (OR.R > OR.U){
+      cidx.B <- 1
+    } else {
+      cidx.A <- 1
+    }
+    
+  } else if (idx.chg.A == -1 & idx.chg.B == -1){
+    if (is.na(cys[2,1]) & is.na(cys[1,2])){
+      cidx.A <- 0
+      cidx.B <- 0
+    } else if (is.na(cys[2,1])){
+      cidx.A <- -1
+    } else if (is.na(cys[1,2])){
+      cidx.B <- -1
+    } else {
+      OR.L <- OR.values(phi, cys[2,2], cns[2,2], cys[2,1], cns[2,1], alp.prior, bet.prior, type="L")
+      OR.D <- OR.values(phi, cys[2,2], cns[2,2], cys[1,2], cns[1,2], alp.prior, bet.prior, type="L")
       
-      OR.R <- OR.values(phi, cys[2,2], cns[2,2], cys[2,3], cns[2,3], alp.prior, bet.prior, type="R")
-      OR.U <- OR.values(phi, cys[2,2], cns[2,2], cys[3,2], cns[3,2], alp.prior, bet.prior, type="R")
-      
-      message(paste('OR.R: ',OR.R))
-      message(paste('OR.U: ',OR.U))
-      
-      if (OR.R == OR.U){
+      if (OR.L == OR.D){
         rand <- rbinom(1,1,0.5)
         if(rand == 0){
-          cidx.A <- 1
-        } else {
-          cidx.B <- 1
-        }
-      } else if (OR.R > OR.U){
-        cidx.B <- 1
-      } else {
-        cidx.A <- 1
-      }
-      
-    } else if (idx.chg.A == -1 & idx.chg.B == -1){
-      if (is.na(cys[2,1]) & is.na(cys[1,2])){
-        cidx.A <- 0
-        cidx.B <- 0
-      } else if (is.na(cys[2,1])){
-        cidx.A <- -1
-      } else if (is.na(cys[1,2])){
-        cidx.B <- -1
-      } else {
-        OR.L <- OR.values(phi, cys[2,2], cns[2,2], cys[2,1], cns[2,1], alp.prior, bet.prior, type="L")
-        OR.D <- OR.values(phi, cys[2,2], cns[2,2], cys[1,2], cns[1,2], alp.prior, bet.prior, type="L")
-        
-        message(paste('OR.L: ',OR.L))
-        message(paste('OR.D: ',OR.D))
-        
-        if (OR.L == OR.D){
-          rand <- rbinom(1,1,0.5)
-          if(rand == 0){
-            cidx.A <- -1
-          } else {
-            cidx.B <- -1
-          }
-        } else if (OR.L > OR.D){
-          cidx.B <- -1
-        } else {
           cidx.A <- -1
+        } else {
+          cidx.B <- -1
         }
-      }
-    } else if (idx.chg.A == 1 & idx.chg.B == -1){
-      DCR <- make.decision.1dCFO.fn(phi, c(cys[1,2],cys[2,2],cys[2,3]), c(cns[1,2],cns[2,2],cns[2,3]), alp.prior, 
-                                    bet.prior, c(cover.doses[1,2],cover.doses[2,2],cover.doses[2,3])) - 2
-      if (DCR == 1){
-        cidx.B <- 1
-      } else if (DCR == -1){
+      } else if (OR.L > OR.D){
+        cidx.B <- -1
+      } else {
         cidx.A <- -1
       }
-    } else if (idx.chg.A == -1 & idx.chg.B == 1){
-      LCU <- make.decision.1dCFO.fn(phi, c(cys[2,1],cys[2,2],cys[3,2]), c(cns[2,1],cns[2,2],cns[3,2]), alp.prior, 
-                                    bet.prior, c(cover.doses[2,1],cover.doses[2,2],cover.doses[3,2])) - 2
-      if (LCU == 1){
-        cidx.A <- 1
-      } else if (LCU == -1){
-        cidx.B <- -1
-      }
-    } else if (idx.chg.A == 1 & idx.chg.B == 0){
+    }
+  } else if (idx.chg.A == 1 & idx.chg.B == -1){
+    DCR <- make.decision.1dCFO.fn(phi, c(cys[1,2],cys[2,2],cys[2,3]), c(cns[1,2],cns[2,2],cns[2,3]), alp.prior, 
+                                  bet.prior, c(cover.doses[1,2],cover.doses[2,2],cover.doses[2,3])) - 2
+    if (DCR == 1){
       cidx.B <- 1
-    } else if (idx.chg.A == 0 & idx.chg.B == 1){
-      cidx.A <- 1
-    } else if (idx.chg.A == -1 & idx.chg.B == 0){
-      cidx.B <- -1
-    } else if (idx.chg.A == 0 & idx.chg.B == -1){
+    } else if (DCR == -1){
       cidx.A <- -1
     }
-    
-    return (c(cidx.A, cidx.B))
-  }
-  
-  
-  overdose.fn <- function(phi, add.args=list()){
-    y <- add.args$y
-    n <- add.args$n
-    alp.prior <- add.args$alp.prior
-    bet.prior <- add.args$bet.prior
-    pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
-    # message(pp)
-    if ((pp >= 0.95) & (add.args$n>=3)){
-      return(TRUE)
-    }else{
-      return(FALSE)
+  } else if (idx.chg.A == -1 & idx.chg.B == 1){
+    LCU <- make.decision.1dCFO.fn(phi, c(cys[2,1],cys[2,2],cys[3,2]), c(cns[2,1],cns[2,2],cns[3,2]), alp.prior, 
+                                  bet.prior, c(cover.doses[2,1],cover.doses[2,2],cover.doses[3,2])) - 2
+    if (LCU == 1){
+      cidx.A <- 1
+    } else if (LCU == -1){
+      cidx.B <- -1
     }
-    
+  } else if (idx.chg.A == 1 & idx.chg.B == 0){
+    cidx.B <- 1
+  } else if (idx.chg.A == 0 & idx.chg.B == 1){
+    cidx.A <- 1
+  } else if (idx.chg.A == -1 & idx.chg.B == 0){
+    cidx.B <- -1
+  } else if (idx.chg.A == 0 & idx.chg.B == -1){
+    cidx.A <- -1
   }
   
-
-  set.seed(seed)
-  ndose.A <- length(tns[,1])
-  ndose.B <- length(tns[1,])
-  cidx.A <- cur[1]
-  cidx.B <- cur[2]
-  
-  tover.doses <- matrix(0, ndose.A, ndose.B) # Whether each dose is overdosed or not, 1 yes
-  
-  cy <- tys[cidx.A, cidx.B]
-  cn <- tns[cidx.A, cidx.B]
-  
-  add.args <- list(y=cy, n=cn, tys=tys, tns=tns, cidx.A=cidx.A, cidx.B=cidx.B)
-  
-  if (tover.doses[1,1] == 1){
-    message("The lowest dose is overly toxic.")
-    return(c(99, 99))
-  }
-  
-  if (cidx.A!=1 & cidx.B!=1 & cidx.A!=ndose.A & cidx.B!=ndose.B){
-    # no boundary
-    cys <- tys[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
-    cns <- tns[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
-    cover.doses <- tover.doses[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
-  } else if (cidx.A==1 & cidx.B==1){
-    # (1, 1)
-    cys <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tys[1:2,1:2]))
-    cns <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tns[1:2,1:2]))
-    cover.doses <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tover.doses[1:2,1:2]))
-  } else if (cidx.A==ndose.A & cidx.B==ndose.B){
-    # (nA, nB)
-    cys <- rbind(cbind(tys[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
-    cns <- rbind(cbind(tns[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
-    cover.doses <- rbind(cbind(tover.doses[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
-  } else if (cidx.A==1 & cidx.B==ndose.B){
-    # (1, nB) 
-    cys <- rbind(c(NA,NA,NA),cbind(tys[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
-    cns <- rbind(c(NA,NA,NA),cbind(tns[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
-    cover.doses <- rbind(c(NA,NA,NA),cbind(tover.doses[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
-  } else if (cidx.A==ndose.A & cidx.B==1){
-    # (nA, 1) 
-    cys <- rbind(cbind(c(NA,NA), tys[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
-    cns <- rbind(cbind(c(NA,NA), tns[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
-    cover.doses <- rbind(cbind(c(NA,NA), tover.doses[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
-  } else if (cidx.A==1 & cidx.B!=1){
-    # (1, 2:(nB-1))
-    cys <- rbind(c(NA,NA,NA), tys[1:2, (cidx.B-1):(cidx.B+1)])
-    cns <- rbind(c(NA,NA,NA), tns[1:2, (cidx.B-1):(cidx.B+1)])
-    cover.doses <- rbind(c(NA,NA,NA), tover.doses[1:2, (cidx.B-1):(cidx.B+1)])
-  } else if (cidx.A!=1 & cidx.B==1){
-    # (2:(nA-1), 1)
-    cys <- cbind(c(NA,NA,NA), tys[(cidx.A-1):(cidx.A+1), 1:2])
-    cns <- cbind(c(NA,NA,NA), tns[(cidx.A-1):(cidx.A+1), 1:2])
-    cover.doses <- cbind(c(NA,NA,NA), tover.doses[(cidx.A-1):(cidx.A+1), 1:2])
-  } else if (cidx.A==ndose.A & cidx.B!=ndose.B){
-    # (nA, 2:(nB-1))
-    cys <- rbind(tys[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
-    cns <- rbind(tns[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
-    cover.doses <- rbind(tover.doses[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
-  } else if (cidx.A!=ndose.A & cidx.B==ndose.B){
-    # (2:(nA-1), nB)
-    cys <- cbind(tys[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
-    cns <- cbind(tns[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
-    cover.doses <- cbind(tover.doses[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
-  } else {
-    message('no such case')
-  }
-  
-  idx.chg <- make.decision.2dCFO.fn(phi, cys, cns, 0.1, 0.9, cover.doses)
-
-  return(idx.chg+cur)
+  nextDose <- curDose+c(cidx.A, cidx.B)
+  out <- list(target=phi, cys=cys, cns=cns, decision=c(cidx.A, cidx.B), curDose = curDose, nextDose = nextDose)
+  return(out)
 }
 
 
-
-tns <- matrix(c(3, 3, 3, 0,
-                0, 0, 6, 0,
-                0, 0, 0, 0), 
-              nrow = 3, ncol = 4, byrow = TRUE)
-
-tys <- matrix(c(0, 0, 1, 0,
-                0, 0, 2, 0,
-                0, 0, 0, 0), 
-              nrow = 3, ncol = 4, byrow = TRUE)
-cur <- c(2,3)
-CFO2d.next(0.3, tys, tns, cur)
