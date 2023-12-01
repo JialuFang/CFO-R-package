@@ -22,6 +22,11 @@ Plot the objects returned by other functions, including (1) dose allocation of a
 (2) operating characteristics of multiple simulations, including selesction percentage and the
 number of patients treated at each dose
 }
+\details{
+\code{plot()} returns a figure or a series of figures depending on the object entered.
+Additionally, in the example, we set \code{nsimu=100} for testing time considerations.
+In reality, \code{nsimu} is typically set to 5000 to ensure the accuracy of the results.
+}
 \examples{
 ############design without late-onset outcomes################
 nsimu <- 100; phi <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
