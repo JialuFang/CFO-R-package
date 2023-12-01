@@ -64,6 +64,11 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   tns <- matrix(0, ndose.A, ndose.B) # number of subject for different doses.
   tover.doses <- matrix(0, ndose.A, ndose.B) # Whether each dose is overdosed or not, 1 yes
   
+  # Initialize vectors to store dose combinations and number of DLTs for each cohort
+  # sim.res.dose <- vector("list", ncohort) # Change to list to store dose pairs
+  sim.res.dose <- matrix(nrow = ncohort, ncol = 2)
+  sim.res.DLT <- vector("numeric", ncohort)
+  
   overdose.fn <- function(phi, obs, add.args=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
     n <- obs$n
@@ -90,11 +95,14 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
     tys[cidx.A, cidx.B] <- tys[cidx.A, cidx.B] + sum(cres)
     tns[cidx.A, cidx.B] <- tns[cidx.A, cidx.B] + cohortsize
     
+    # sim.res.dose[[i]] <- c(cidx.A, cidx.B) # Store as a pair
+    sim.res.dose[i, ] <- c(cidx.A, cidx.B)
+    sim.res.DLT[i] <- sum(cres)
+    
     cy <- tys[cidx.A, cidx.B]
     cn <- tns[cidx.A, cidx.B]
     
     obs <- c(list(y=cy, n=cn, tys=tys, tns=tns, cidx.A=cidx.A, cidx.B=cidx.B), obs)
-    
     
     if (overdose.fn(phi, obs)){
       tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
@@ -194,10 +202,16 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
     }
   }
   ptoxic <- ptoxic/(ncohort*cohortsize)
-  list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, npercent=npercent, ptoxic=ptoxic, ntox=sum(tys))
+  # sim.res <- list(dose = sim.res.dose, DLT = sim.res.DLT)
+  list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=sim.res.dose, DLT = sim.res.DLT)
 }
 
 
-
+# p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
+# 0.10, 0.15, 0.30, 0.45, 0.55,
+# 0.15, 0.30, 0.45, 0.50, 0.60),
+# nrow = 3, ncol = 5, byrow = TRUE)
+# 
+# CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
 
 
