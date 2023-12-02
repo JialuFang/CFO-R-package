@@ -39,9 +39,9 @@
 #' @examples
 #' Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3.
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
-#' 0.10, 0.15, 0.30, 0.45, 0.55,
-#' 0.15, 0.30, 0.45, 0.50, 0.60), 
-#' nrow = 3, ncol = 5, byrow = TRUE)
+#'                    0.10, 0.15, 0.30, 0.45, 0.55,
+#'                    0.15, 0.30, 0.45, 0.50, 0.60), 
+#'                  nrow = 3, ncol = 5, byrow = TRUE)
 #' 
 #' CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
 
