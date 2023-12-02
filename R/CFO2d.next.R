@@ -22,6 +22,8 @@
 #'   \item{curDoses}{The current dose combination.}
 #'   \item{nextDose}{The recommended dose combination for the next cohort.}
 #' }
+#' 
+#' @author Wenliang Wang
 #' @export
 #' @examples
 #' cns <- matrix(c(3, 3, 0,

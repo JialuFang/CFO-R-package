@@ -19,7 +19,8 @@
 #' @param seed an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'
 #' @details 
-#'
+#' @author Wenliang Wang
+#' 
 #' @return A list with the following components:
 #' \itemize{
 #'   \item{MTD}{A vector of length 2 representing the recommended dose level.}
@@ -32,6 +33,8 @@
 #'   \item{npercent}{The percentage of subjects assigned to the target DLT rate.}
 #'   \item{ptoxic}{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
 #'   \item{ntox}{The total number of DLTs observed.}
+#'   \item{dose}{The dose combination assigned for each cohort.}
+#'   \item{DLT}{The DLT observed at each cohort.}
 #' }
 #' @import BOIN
 #' @export
@@ -207,11 +210,11 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
 }
 
 
-# p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
-# 0.10, 0.15, 0.30, 0.45, 0.55,
-# 0.15, 0.30, 0.45, 0.50, 0.60),
-# nrow = 3, ncol = 5, byrow = TRUE)
-# 
-# CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
+p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
+0.10, 0.15, 0.30, 0.45, 0.55,
+0.15, 0.30, 0.45, 0.50, 0.60),
+nrow = 3, ncol = 5, byrow = TRUE)
+
+CFO2d.res <- CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
 
 
