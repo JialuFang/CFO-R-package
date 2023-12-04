@@ -4,10 +4,6 @@
 #'
 #' @usage CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 #'
-#' @param nsimu the total number of trials to be simulated. The default value is 5000.
-#' @param design option for selecting different designs, including CFO, aCFO, TITE-CFO, TITE-aCFO, fCFO, 
-#'               f-aCFO, bCFO, and b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO 
-#'               denotes the benchmark aCFO.
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts, the default value is 20.
@@ -19,6 +15,10 @@
 #' @param seed an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'
 #' @details 
+#' The `CFO2d.sim` function simulates the operating characteristics of the CFO designs 
+#' in a two-dimensional dose-finding trial. The function uses parameters such as target DLT rate, true DLT rates 
+#' under different dose levels, and cohort details, and provides detailed output for performance evaluation. 
+#' It relies on the BOIN package.
 #' @author Wenliang Wang
 #' 
 #' @return A list with the following components:
@@ -40,13 +40,13 @@
 #' @export
 #'
 #' @examples
-#' Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3.
+#' ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3.
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 #'                    0.10, 0.15, 0.30, 0.45, 0.55,
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #' 
-#' CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
+#' CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 
 
 

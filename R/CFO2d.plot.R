@@ -64,8 +64,3 @@ CFO2d.plot <- function(CFO2d.res){
   print(p)
 }
 
-
-# Usage
-
-CFO2d.res <- CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
-CFO2d.plot(CFO2d.res)
