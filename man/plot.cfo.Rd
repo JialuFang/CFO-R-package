@@ -77,6 +77,15 @@ plot(faCFOtrial)
 faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
 plot(faCFOsimu)
+
+##############two-dim design with late-onset outcomes################
+p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
+                   0.10, 0.15, 0.30, 0.45, 0.55,
+                   0.15, 0.30, 0.45, 0.50, 0.60), 
+                 nrow = 3, ncol = 5, byrow = TRUE)
+CFO2d.res <- CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
+plot(CFO2d.res)
+
 }
 \author{
 Jialu Fang

@@ -19,6 +19,7 @@
 #' 
 #' @importFrom grDevices dev.flush dev.hold devAskNewPage
 #' @importFrom graphics axis barplot mtext par plot
+#' @import ggplot2
 #' @export
 #'
 #' @examples
@@ -71,6 +72,15 @@
 #' faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
 #' plot(faCFOsimu)
+#' 
+#' ##############two-dim design with late-onset outcomes################
+#' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
+#'                    0.10, 0.15, 0.30, 0.45, 0.55,
+#'                    0.15, 0.30, 0.45, 0.50, 0.60), 
+#'                  nrow = 3, ncol = 5, byrow = TRUE)
+#' CFO2d.res <- CFO2d.sim(phi=0.3, p.true, ncohort = 20, cohortsize = 3)
+#' plot(CFO2d.res)
+#' 
 plot.cfo<- function (x,..., name = deparse(substitute(x)))
 {
   new.obj = unlist(strsplit(name, split = "\\$"))
@@ -84,7 +94,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     warning("Please double check and specify the variable to be plotted...\n")
   }
   else {
-    if (!is.null(objectPlot$simu.oc)) { #oc for one-dim multiple simulations
+    if (!is.null(objectPlot$simu.oc)) { #plot for one-dim multiple simulations
       oask <- devAskNewPage(TRUE)
       on.exit(devAskNewPage(oask))
       dev.flush()
@@ -112,8 +122,8 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
       axis(1, at = bplot, labels = seq(1, length(objectPlot$nTox)))
       mtext("Observed toxicity", 3, line = 0, cex = 1.3)
       mtext("Dose level", 1, line = 2, cex = 1)
-    } else if (!is.null(objectPlot$dose.list)) {
-      if (!is.null(objectPlot$total.time)){
+    } else if (!is.null(objectPlot$dose.list)) { #plot for one-dim single trial
+      if (!is.null(objectPlot$total.time)){ #plot for one-dim single trial (design with lateonset outcomes)
         dose <- objectPlot$dose.list
         DLT <- objectPlot$DLT.list
         ncohort <- length(objectPlot$dose.list)
@@ -143,8 +153,8 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           geom_point(aes(shape = factor(DLT_observed,levels=c(0,1,2))), color = 'black', size = 2.5) +
           geom_step(direction = 'hv', color = 'black') +
           scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-          labs(x = "Sequence of patients treated", 
-               y = "Combined dose level",
+          labs(x = "Time (in months)", 
+               y = "Dose level",
                fill = 'DLT observed') +
           theme_minimal() +
           theme(text = element_text(size = 12), legend.title=element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) +
@@ -160,7 +170,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         }
         print(p)
       }
-      else{
+      else{  #plot for one-dim single trial (design without lateonset outcomes)
         dose <- objectPlot$dose.list
         DLT <- objectPlot$DLT.list
         ncohort <- length(objectPlot$dose.list)
@@ -186,7 +196,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           geom_step(direction = 'hv', color = 'black') +
           scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
           labs(x = "Sequence of patients treated", 
-               y = "Combined dose level",
+               y = "Dose level",
                fill = 'DLT observed') +
           theme_minimal() +
           theme(text = element_text(size = 12), legend.title=element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) +
@@ -195,6 +205,41 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         # Display the plot
         print(p)
       }
+    } else if (dim(objectPlot$dose)[2]==2){ #plot for two-dim single trial
+      dose <- objectPlot$dose
+      DLT <- objectPlot$DLT
+      ncohort <- length(objectPlot$DLT)
+      cohortsize <- sum(objectPlot$dose.ns)/ncohort
+      dim <- dim(objectPlot$p.true)
+      
+      # Generate y_labels
+      y_labels <- expand.grid(1:dim[1], 1:dim[2])
+      y_labels <- apply(y_labels, 1, function(x) paste('(', x[1], ',', x[2], ')'))
+      
+      # Generate sequences for each patient
+      sequences <- 1:(ncohort * cohortsize)
+      
+      # Generate dose_levels for each patient
+      dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
+      
+      # Generate DLT_observed for each patient
+      DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)),DLT, rep(cohortsize, ncohort)))
+      
+      df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+      
+      # Create the plot
+      p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
+        geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
+        geom_step(direction = 'hv', color = 'black') +
+        scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+        labs(x = "Sequence of patients treated", 
+             y = "Combined dose level",
+             fill = 'DLT observed') +
+        theme_minimal() +
+        theme(text = element_text(size = 12), legend.title=element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) +
+        scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
+      # Display the plot
+      print(p)
     }
   }
 }

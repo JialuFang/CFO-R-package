@@ -11,8 +11,8 @@ CFO2d.oc(
   cohortsize = 3,
   init.level = c(1, 1),
   add.args = list(alp.prior = phi, bet.prior = 1 - phi),
-  n_sim = 1000,
-  seeds = NULL
+  seed = NULL,
+  n_sim = 1000
 )
 }
 \arguments{
@@ -28,9 +28,9 @@ CFO2d.oc(
 
 \item{add.args}{An optional list of additional arguments, includes 'alp.prior' (default is phi) and 'bet.prior'(default is 1-phi).}
 
-\item{n_sim}{Integer. The number of simulations to run (default is 1000).}
+\item{seed}{A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).}
 
-\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).}
+\item{n_sim}{Integer. The number of simulations to run (default is 1000).}
 }
 \value{
 A list with the averaged operating characteristics across all simulations.
@@ -55,5 +55,5 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 0.15, 0.30, 0.45, 0.50, 0.60), 
 nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 1000)
+CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
 }

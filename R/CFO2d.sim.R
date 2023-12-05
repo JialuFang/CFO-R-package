@@ -207,7 +207,10 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   }
   ptoxic <- ptoxic/(ncohort*cohortsize)
   # sim.res <- list(dose = sim.res.dose, DLT = sim.res.DLT)
-  list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=sim.res.dose, DLT = sim.res.DLT)
+  out<-list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, 
+            npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=sim.res.dose, DLT = sim.res.DLT)
+  class(out) <- "cfo"
+  return(out)
 }
 
 
