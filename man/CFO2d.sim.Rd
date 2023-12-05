@@ -4,7 +4,8 @@
 \alias{CFO2d.sim}
 \title{Generate operating characteristics for multiple simulations}
 \usage{
-CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
+CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
+                 add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -17,27 +18,27 @@ CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=lis
 
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).}
 
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
+\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
+any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{alp.prior, bet.prior}{the parameters of the prior distribution for the true DLT rate at any dose level.
-This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}).
-The default value is \code{phi} and \code{1-phi}.}
+\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 }
 \value{
 A list with the following components:
 \itemize{
-\item{MTD}{A vector of length 2 representing the recommended dose level.}
-\item{dose.ns}{A matrix of the number of patients allocated for different doses.}
-\item{DLT.ns}{A matrix of the number of DLT observed for different doses.}
-\item{p.true}{The matrix of the true DLT rates under the different dose levels.}
-\item{target}{The target DLT rate.}
-\item{over.doses}{A matrix indicating whether each dose is overdosed or not (1 for yes).}
-\item{correct}{A binary indicator of whether the recommended dose level matches the target DLT rate.}
-\item{npercent}{The percentage of subjects assigned to the target DLT rate.}
-\item{ptoxic}{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
-\item{ntox}{The total number of DLTs observed.}
-\item{dose}{The dose combination assigned for each cohort.}
-\item{DLT}{The DLT observed at each cohort.}
+\item{MTD: }{A vector of length 2 representing the recommended dose level.}
+\item{dose.ns: }{A matrix of the number of patients allocated for different doses.}
+\item{DLT.ns: }{A matrix of the number of DLT observed for different doses.}
+\item{p.true: }{The matrix of the true DLT rates under the different dose levels.}
+\item{target: }{The target DLT rate.}
+\item{over.doses: }{A matrix indicating whether each dose is overdosed or not (1 for yes).}
+\item{correct: }{A binary indicator of whether the recommended dose level matches the target DLT rate.}
+\item{npercent: }{The percentage of subjects assigned to the target DLT rate.}
+\item{ptoxic: }{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
+\item{ntox: }{The total number of DLTs observed.}
+\item{dose: }{The dose combination assigned for each cohort.}
+\item{DLT: }{The DLT observed at each cohort.}
 }
 }
 \description{

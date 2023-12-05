@@ -6,10 +6,12 @@
 #' @param phi The efficacy threshold.
 #' @param cys A matrix of the number of successes for each dose combination.
 #' @param cns A matrix of the number of patients for each dose combination.
+#' @param cover.doses whether the dose level (the current dose and its adjacent doses) is over-toxic or not. 
+#'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
 #' @param curDose A vector of the current dose indices in the horizontal and vertical direction.
-#' @param alp.prior,bet.prior the parameters of the prior distribution for the true DLT rate at any dose level.
-#'                            This prior distribution is set to Beta( \code{alpha.prior}, \code{beta.prior}). 
-#'                            The default value is \code{phi} and \code{1-phi}.
+#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param seed an integer to set as the seed of the random number generator for reproducible results.
 #' 
 #' @return A list with the following components:

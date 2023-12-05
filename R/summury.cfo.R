@@ -26,8 +26,8 @@
 #'                      curDose=3, add.args)
 #' summary(decision)
 #' 
-#' ## summarize the object returned by aCFO.simu()
-#' aCFOtrial <- aCFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
+#' ## summarize the object returned by CFO.simu()
+#' aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
 #'                     accumulation = TRUE)
 #' summary(aCFOtrial)
 #' 
@@ -41,7 +41,7 @@
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
 #' summary(faCFOsimu)
 #' 
-summary.boin<- function (object, ...)
+summary.cfo<- function (object, ...)
 {
   if (!is.null(object$simu.oc)) {
     if (object$errStop == 0){

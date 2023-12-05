@@ -44,12 +44,12 @@ CFO2d.plot <- function(CFO2d.res){
   dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
   
   # Generate DLT_observed for each patient
-  DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)), DLT, rep(cohortsize, ncohort)))
+  DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)),DLT, rep(cohortsize, ncohort)))
   
-  df <- data.frame(sequence = sequences, dose_level = dose_levels, DLT_observed = DLT_observed)
+  df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
   
   # Create the plot
-  p <- ggplot(df, aes(x = sequence, y = dose_level)) +
+  p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
     geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
     geom_step(direction = 'hv', color = 'black') +
     scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
