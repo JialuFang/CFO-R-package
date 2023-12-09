@@ -89,12 +89,12 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     strpattern = new.obj[2]
   }
   assign("objectPlot", get(new.obj[1]))
-  
   if (!is.element(strpattern, c("none", names(objectPlot)))) {
     warning("Please double check and specify the variable to be plotted...\n")
   }
   else {
     if (!is.null(objectPlot$simu.oc)) { #plot for one-dim multiple simulations
+      message("1d oc")
       oask <- devAskNewPage(TRUE)
       on.exit(devAskNewPage(oask))
       dev.flush()
@@ -205,41 +205,81 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         # Display the plot
         print(p)
       }
-    } else if (dim(objectPlot$dose)[2]==2){ #plot for two-dim single trial
-      dose <- objectPlot$dose
-      DLT <- objectPlot$DLT
-      ncohort <- length(objectPlot$DLT)
-      cohortsize <- sum(objectPlot$dose.ns)/ncohort
-      dim <- dim(objectPlot$p.true)
-      
-      # Generate y_labels
-      y_labels <- expand.grid(1:dim[1], 1:dim[2])
-      y_labels <- apply(y_labels, 1, function(x) paste('(', x[1], ',', x[2], ')'))
-      
-      # Generate sequences for each patient
-      sequences <- 1:(ncohort * cohortsize)
-      
-      # Generate dose_levels for each patient
-      dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
-      
-      # Generate DLT_observed for each patient
-      DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)),DLT, rep(cohortsize, ncohort)))
-      
-      df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
-      
-      # Create the plot
-      p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
-        geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
-        geom_step(direction = 'hv', color = 'black') +
-        scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-        labs(x = "Sequence of patients treated", 
-             y = "Combined dose level",
-             fill = 'DLT observed') +
-        theme_minimal() +
-        theme(text = element_text(size = 12), legend.title=element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) +
-        scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
-      # Display the plot
-      print(p)
-    }
+    } else if (!is.null(objectPlot$p.true)){ #plot for two-dim simulations
+      if (is.null(objectPlot$selPercent)){
+        dose <- objectPlot$dose
+        DLT <- objectPlot$DLT
+        ncohort <- length(objectPlot$DLT)
+        cohortsize <- sum(objectPlot$dose.ns)/ncohort
+        dim <- dim(objectPlot$p.true)
+        
+        # Generate y_labels
+        y_labels <- expand.grid(1:dim[1], 1:dim[2])
+        y_labels <- apply(y_labels, 1, function(x) paste('(', x[1], ',', x[2], ')'))
+        
+        # Generate sequences for each patient
+        sequences <- 1:(ncohort * cohortsize)
+        
+        # Generate dose_levels for each patient
+        dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
+        
+        # Generate DLT_observed for each patient
+        DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)),DLT, rep(cohortsize, ncohort)))
+        
+        df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+        
+        # Create the plot
+        p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
+          geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
+          geom_step(direction = 'hv', color = 'black') +
+          scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+          labs(x = "Sequence of patients treated", 
+               y = "Combined dose level",
+               fill = 'DLT observed') +
+          theme_minimal() +
+          theme(text = element_text(size = 12), legend.title=element_blank(), legend.position = c(1, 0), legend.justification = c(1, 0)) +
+          scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
+        # Display the plot
+        print(p)
+      } else {
+        attributesToPlot <- c("selPercent", "dose.ns", "DLT.ns")
+        titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
+        ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
+        
+        par(mfrow = c(3, 1))
+        
+        # Loop through each attribute and create a plot
+        for (i in seq_along(attributesToPlot)) {
+          attr <- attributesToPlot[i]
+          # Check if the attribute exists in the objectPlot
+          if (!is.null(objectPlot[[attr]])) {
+            # Extract the matrix
+            matrixToPlot <- objectPlot[[attr]]
+            
+            # Convert the matrix to a vector by column
+            matrixVector <- as.vector(matrixToPlot)
+            
+            # Convert to percentages only for selPercent
+            if (attr == "selPercent") {
+              matrixVector <- matrixVector * 100
+            }
+            
+            # Create x-axis labels
+            dimMatrix <- dim(matrixToPlot)
+            xLabels <- expand.grid(row = 1:dimMatrix[1], col = 1:dimMatrix[2])
+            xLabels <- apply(xLabels, 1, function(x) paste("(", x[1], ",", x[2], ")", sep = ""))
+            
+            # Create the bar plot with horizontal x-axis labels
+            barplot(matrixVector, names.arg = xLabels, las = 2,
+                    xlab = "Index (row,col)", ylab = ylabels[i],
+                    main = titles[i])
+          }
+        }
+        par(mfrow = c(1, 1))
+      }
+    } 
   }
 }
+
+
+
