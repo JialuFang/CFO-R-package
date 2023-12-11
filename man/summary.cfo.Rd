@@ -23,7 +23,7 @@ we set \code{nsimu=100} for testing time considerations. In reality, \code{nsimu
 set to 5000 to ensure the accuracy of the results.
 }
 \examples{
-## setting
+## settings for 1dCFO
 nsimu <- 100; phi <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 add.args=list(alp.prior=phi, bet.prior=1-phi)
@@ -32,22 +32,50 @@ tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
 ## summarize the object returned by CFO.next()
 decision <- CFO.next(phi=0.2, cys=c(0,1,0), cns=c(3,6,0), cover.doses=c(0,0,0), 
                      curDose=3, add.args)
-summary(decision)
+summary.cfo(decision)
 
 ## summarize the object returned by CFO.simu()
 aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
                     accumulation = TRUE)
-summary(aCFOtrial)
+summary.cfo(aCFOtrial)
 
 ## summarize the object returned by lateonset.simu()
 faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, 
                 accrual.dist, design='f-aCFO', init.level, add.args)
-summary(faCFOtrial)
+summary.cfo(faCFOtrial)
 
 ## summarize the object returned by CFO.oc()
 faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-summary(faCFOsimu)
+summary.cfo(faCFOsimu)
+
+## settings for 2dCFO
+p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
+0.10, 0.15, 0.30, 0.45, 0.55,
+0.15, 0.30, 0.45, 0.50, 0.60), 
+nrow = 3, ncol = 5, byrow = TRUE)
+
+cns <- matrix(c(3, 3, 0,
+                0, 6, 0,
+                0, 0, 0), 
+              nrow = 3, ncol = 3, byrow = TRUE)
+cys <- matrix(c(0, 1, 0,
+                0, 2, 0,
+                0, 0, 0), 
+              nrow = 3, ncol = 3, byrow = TRUE)
+curDose <- c(2,3)
+
+## summarize the object returned by CFO2d.next()
+decision <- CFO2d.next(0.3, cys, cns, curDose = curDose)
+summary.cfo(decision)
+
+## summarize the object returned by CFO2d.sim()
+CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
+summary.cfo(CFO2dtrail)
+
+## summarize the object returned by CFO2d.oc()
+CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
+summary.cfo(CFO2dsim)
 
 }
 \author{
