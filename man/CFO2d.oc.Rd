@@ -37,8 +37,8 @@ A list with the averaged operating characteristics across all simulations.
 \itemize{
 \item{p.true}{The matrix of the true DLT rates under the different dose levels.}
 \item{selPercent}{The matrix of the selection percentage of each dose level}
-\item{dose.ns}{A matrix of the averaged number of patients allocated for different doses.}
-\item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses.}
+\item{dose.ns}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
+\item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
 \item{pcorrect}{The percentage of the correct selection of the MTD.}
 \item{npercent}{The averaged percentage of patients assigned to the target DLT rate.}
 \item{ptoxic}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}

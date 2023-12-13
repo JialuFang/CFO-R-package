@@ -19,8 +19,9 @@ User doesn't need to input this parameter.}
 }
 \description{
 Plot the objects returned by other functions, including (1) dose allocation of a single trial;
-(2) operating characteristics of multiple simulations, including selesction percentage and the
-number of patients treated at each dose
+(2) operating characteristics of multiple simulations, including MTD selesction percentage,
+the averaged number of patients allocated for different doses in one simulation and the averaged
+number of DLT observed for different doses in one simulation.
 }
 \details{
 \code{plot()} returns a figure or a series of figures depending on the object entered.
@@ -34,17 +35,17 @@ p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 add.args=list(alp.prior=phi, bet.prior=1-phi)
 ## CFO design
 CFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, accumulation = FALSE)
-plot.cfo(CFOtrial)
+plot(CFOtrial)
 CFOsimu <- CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
-plot.cfo(CFOsimu)
+plot(CFOsimu)
 ## aCFO design
 aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args,
                     accumulation = TRUE)
-plot.cfo(aCFOtrial)
+plot(aCFOtrial)
 aCFOsimu <- CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
-plot.cfo(aCFOsimu)
+plot(aCFOsimu)
 
 
 ##############design with late-onset outcomes################
@@ -52,31 +53,31 @@ tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
 ## TITE-CFO design
 TITECFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
                 accrual.dist, design='TITE-CFO', init.level, add.args)
-plot.cfo(TITECFOtrial)
+plot(TITECFOtrial)
 TITECFOsimu <- CFO.oc (nsimu, design='TITE-CFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-plot.cfo(TITECFOsimu)
+plot(TITECFOsimu)
 ## TITE-aCFO design
 TITEaCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
                  accrual.dist,design='TITE-aCFO', init.level, add.args)
-plot.cfo(TITEaCFOtrial)
+plot(TITEaCFOtrial)
 TITEaCFOsimu <- CFO.oc (nsimu, design='TITE-aCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-plot.cfo(TITEaCFOsimu)
+plot(TITEaCFOsimu)
 ## fCFO design
 fCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
                 accrual.dist, design='fCFO', init.level, add.args)
-plot.cfo(fCFOtrial)
+plot(fCFOtrial)
 fCFOsimu <- CFO.oc (nsimu, design='fCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-plot.cfo(fCFOsimu)
+plot(fCFOsimu)
 ## f-aCFO design
 faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
                 accrual.dist, design='f-aCFO', init.level, add.args)
-plot.cfo(faCFOtrial)
+plot(faCFOtrial)
 faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-plot.cfo(faCFOsimu)
+plot(faCFOsimu)
 
 ##############two-dim design with late-onset outcomes################
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -86,13 +87,13 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 
 ## plot the single trail returned by CFO2d.sim()
 CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
-plot.cfo(CFO2dtrail)
+plot(CFO2dtrail)
 
 ## plot the multiple trails returned by CFO2d.oc()
 CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
-plot.cfo(CFO2dsim)
+plot(CFO2dsim)
 
 }
 \author{
-Jialu Fang
+Jialu Fang and Wenliang Wang
 }

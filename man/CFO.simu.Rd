@@ -32,7 +32,7 @@ The \code{CFO.simu} function returns a list object comprising the following comp
 \itemize{
 \item{target: }{the target DLT rate.}
 \item{p.true: }{the actual DLT rates under different dose levels.}
-\item{MTD: }{the selected MTD.}
+\item{MTD: }{the selected MTD. \code{MTD=99} indicates that this trial was terminated due to early stopping.}
 \item{dose.list: }{the list that includes the dose level assigned to each cohort.}
 \item{DLT.ns: }{the total number of DLTs for all dose levels.}
 \item{dose.ns: }{the total number of patients for all dose levels}

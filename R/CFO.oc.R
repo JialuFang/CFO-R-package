@@ -38,17 +38,19 @@
 #'          is typically set to 5000 to ensure the accuracy of the results.
 #'
 #' @return the \code{ CFO.oc() } function returns basic setup of ($simu.setup and $p.true) and the operating 
-#'         characteristics ($selPercent,$nTox,$nPatients and $simu.oc) of the design. \cr
+#'         characteristics ($selPercent,$dose.ns,$DLT.ns and $simu.oc) of the design. \cr
 #'         The operating characteristics includes \cr
 #'         (1) selection percentage at each dose level ($selPercent) \cr
-#'         (2) number of toxicity observed at each dose level ($nTox) \cr
-#'         (3) number of patients treated at each dose level ($nPatients) \cr
+#'         (2) averaged number of toxicity observed at each dose level in one simulation ($DLT.ns) \cr
+#'         (3) averaged number of patients treated at each dose level in one simulation ($dose.ns) \cr
 #'         (4) percentage of correct selection of the MTD ($simu.oc$MTDSel) \cr
 #'         (5) percentage of patients allocated to the MTD ($simu.oc$MTDAllo) \cr
 #'         (6) percentage of selecting a dose above the MTD ($simu.oc$overSel) \cr
 #'         (7) percentage of allocating patients at dose levels above the MTD ($simu.oc$overAllo) \cr
 #'         (8) percentage of the patients suffering DLT ($simu.oc$averDLT) \cr
-#'         (9) Average trial duration if trials with late-onset toxicities ($simu.oc$averDur)
+#'         (9) average trial duration if trials with late-onset toxicities ($simu.oc$averDur) \cr
+#'         (10) number of simulations terminated due to early stopping ($simu.oc$errStop) \cr
+#'         (11) number of patients entering the trial ($simu.oc$tol.Subjs)
 #' @importFrom dplyr transmute
 #' @export
 #'
@@ -63,7 +65,7 @@
 #' CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
 #'        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
 #' ## get the operating characteristics for 100 simulations using the aCFO design
-#'CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
+#' CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
 #' ## get the operating characteristics for 100 simulations using the TITE-CFO design
 #' CFO.oc (nsimu, design='TITE-CFO', phi, p.true, ncohort, init.level, cohortsize,
@@ -242,17 +244,17 @@ CFO.oc <- function(nsimu=5000, design, phi, p.true, ncohort, init.level, cohorts
   sy <- post.process(results)
   
   if (is.na(impute.method)){
-    out <- list(selPercent=Perc, nPatients=nPatients, nTox=nTox,
-                p.true = p.true, errStop=errStop, tol.Subjs=tol.Subjs,
+    out <- list(selPercent=Perc, dose.ns=nPatients/nsimu, DLT.ns=nTox/nsimu, p.true = p.true, 
                 simu.oc = data.frame(MTDSel=sy$MTD.Sel, MTDAllo=sy$MTD.Allo, 
-                                     overSel=sy$Over.Sel, overAllo=sy$Over.Allo, averDLT=sy$PerDLT),
+                                     overSel=sy$Over.Sel, overAllo=sy$Over.Allo, averDLT=sy$PerDLT,
+                                     errStop=errStop, tol.Subjs=tol.Subjs),
                 simu.setup = data.frame(target = phi,ncohort = ncohort, 
                                         cohortsize = cohortsize, design = design, nsimu = nsimu))
   }else{
-    out <- list(selPercent=Perc, nPatients=nPatients, nTox=nTox,
-                p.true = p.true, errStop=errStop, tol.Subjs=tol.Subjs,
+    out <- list(selPercent=Perc, dose.ns=nPatients/nsimu, DLT.ns=nTox/nsimu, p.true = p.true,
                 simu.oc = data.frame(MTDSel=sy$MTD.Sel, MTDAllo=sy$MTD.Allo, overSel=sy$Over.Sel,
-                                     overAllo=sy$Over.Allo, averDLT=sy$PerDLT, averDur = sy$Duration),
+                                     overAllo=sy$Over.Allo, averDLT=sy$PerDLT, averDur = sy$Duration,
+                                     errStop=errStop, tol.Subjs=tol.Subjs),
                 simu.setup = data.frame(target = phi, ncohort = ncohort, 
                                         cohortsize = cohortsize, design = design, nsimu = nsimu))
   }

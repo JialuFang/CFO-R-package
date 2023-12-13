@@ -315,6 +315,7 @@ CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.ar
   
   nextDose <- curDose+c(cidx.A, cidx.B)
   out <- list(target=phi, cys=cys, cns=cns, decision=c(cidx.A, cidx.B), curDose = curDose, nextDose = nextDose)
+  class(out) <- "cfo"
   return(out)
 }
 

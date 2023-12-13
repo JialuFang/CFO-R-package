@@ -32,22 +32,22 @@ tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
 ## summarize the object returned by CFO.next()
 decision <- CFO.next(phi=0.2, cys=c(0,1,0), cns=c(3,6,0), cover.doses=c(0,0,0), 
                      curDose=3, add.args)
-summary.cfo(decision)
+summary(decision)
 
 ## summarize the object returned by CFO.simu()
 aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
                     accumulation = TRUE)
-summary.cfo(aCFOtrial)
+summary(aCFOtrial)
 
 ## summarize the object returned by lateonset.simu()
 faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, 
                 accrual.dist, design='f-aCFO', init.level, add.args)
-summary.cfo(faCFOtrial)
+summary(faCFOtrial)
 
 ## summarize the object returned by CFO.oc()
 faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
                       tau, accrual, tite.dist, accrual.dist, add.args)
-summary.cfo(faCFOsimu)
+summary(faCFOsimu)
 
 ## settings for 2dCFO
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -67,17 +67,17 @@ curDose <- c(2,3)
 
 ## summarize the object returned by CFO2d.next()
 decision <- CFO2d.next(0.3, cys, cns, curDose = curDose)
-summary.cfo(decision)
+summary(decision)
 
 ## summarize the object returned by CFO2d.sim()
 CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
-summary.cfo(CFO2dtrail)
+summary(CFO2dtrail)
 
 ## summarize the object returned by CFO2d.oc()
 CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
-summary.cfo(CFO2dsim)
+summary(CFO2dsim)
 
 }
 \author{
-Jialu Fang
+Jialu Fang and Wenliang Wang
 }

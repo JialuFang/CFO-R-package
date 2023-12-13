@@ -15,8 +15,8 @@
 #' \itemize{
 #'   \item{p.true}{The matrix of the true DLT rates under the different dose levels.}
 #'   \item{selPercent}{The matrix of the selection percentage of each dose level}
-#'   \item{dose.ns}{A matrix of the averaged number of patients allocated for different doses.}
-#'   \item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses.}
+#'   \item{dose.ns}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
+#'   \item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
 #'   \item{pcorrect}{The percentage of the correct selection of the MTD.}
 #'   \item{npercent}{The averaged percentage of patients assigned to the target DLT rate.}
 #'   \item{ptoxic}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
@@ -55,6 +55,8 @@ CFO2d.oc <- function(phi, p.true, ncohort = 20, cohortsize = 3, init.level = c(1
   avg_results$npercent <- mean(sapply(results, `[[`, "npercent"))
   avg_results$ptoxic <- mean(sapply(results, `[[`, "ptoxic"))
   avg_results$ntox <- mean(sapply(results, `[[`, "ntox"))
+  
+  class(avg_results) <- "cfo"
   
   return(avg_results)
 }

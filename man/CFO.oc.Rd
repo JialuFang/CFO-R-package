@@ -45,17 +45,19 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 }
 \value{
 the \code{ CFO.oc() } function returns basic setup of ($simu.setup and $p.true) and the operating
-characteristics ($selPercent,$nTox,$nPatients and $simu.oc) of the design. \cr
+characteristics ($selPercent,$dose.ns,$DLT.ns and $simu.oc) of the design. \cr
 The operating characteristics includes \cr
 (1) selection percentage at each dose level ($selPercent) \cr
-(2) number of toxicity observed at each dose level ($nTox) \cr
-(3) number of patients treated at each dose level ($nPatients) \cr
+(2) averaged number of toxicity observed at each dose level in one simulation ($DLT.ns) \cr
+(3) averaged number of patients treated at each dose level in one simulation ($dose.ns) \cr
 (4) percentage of correct selection of the MTD ($simu.oc$MTDSel) \cr
 (5) percentage of patients allocated to the MTD ($simu.oc$MTDAllo) \cr
 (6) percentage of selecting a dose above the MTD ($simu.oc$overSel) \cr
 (7) percentage of allocating patients at dose levels above the MTD ($simu.oc$overAllo) \cr
 (8) percentage of the patients suffering DLT ($simu.oc$averDLT) \cr
-(9) Average trial duration if trials with late-onset toxicities ($simu.oc$averDur)
+(9) average trial duration if trials with late-onset toxicities ($simu.oc$averDur) \cr
+(10) number of simulations terminated due to early stopping ($simu.oc$errStop) \cr
+(11) number of patients entering the trial ($simu.oc$tol.Subjs)
 }
 \description{
 Obtain the operating characteristics of the CFO-type and aCFO-type designs for multiple simulations.

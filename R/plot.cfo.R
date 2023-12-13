@@ -1,8 +1,9 @@
 #' Plot the simulation results for CFO-type and aCFO-type designs
 #'
 #' Plot the objects returned by other functions, including (1) dose allocation of a single trial;
-#' (2) operating characteristics of multiple simulations, including selesction percentage and the
-#' number of patients treated at each dose
+#' (2) operating characteristics of multiple simulations, including MTD selesction percentage, 
+#' the averaged number of patients allocated for different doses in one simulation and the averaged 
+#' number of DLT observed for different doses in one simulation.
 #' 
 #' @param x the object returned by other functions
 #' @param ... ignored arguments
@@ -15,7 +16,7 @@
 #'
 #' @return \code{plot()} returns a figure or a series of figures depending on the object entered
 #' 
-#' @author Jialu Fang
+#' @author Jialu Fang and Wenliang Wang
 #' 
 #' @importFrom grDevices dev.flush dev.hold devAskNewPage
 #' @importFrom graphics axis barplot mtext par plot
@@ -29,17 +30,17 @@
 #' add.args=list(alp.prior=phi, bet.prior=1-phi)
 #' ## CFO design
 #' CFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, accumulation = FALSE)
-#' plot.cfo(CFOtrial)
+#' plot(CFOtrial)
 #' CFOsimu <- CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
-#' plot.cfo(CFOsimu)
+#' plot(CFOsimu)
 #' ## aCFO design
 #' aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args,
 #'                     accumulation = TRUE)
-#' plot.cfo(aCFOtrial)
+#' plot(aCFOtrial)
 #' aCFOsimu <- CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
-#' plot.cfo(aCFOsimu)
+#' plot(aCFOsimu)
 #' 
 #' 
 #' ##############design with late-onset outcomes################
@@ -47,31 +48,31 @@
 #' ## TITE-CFO design
 #' TITECFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
 #'                 accrual.dist, design='TITE-CFO', init.level, add.args)
-#' plot.cfo(TITECFOtrial)
+#' plot(TITECFOtrial)
 #' TITECFOsimu <- CFO.oc (nsimu, design='TITE-CFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
-#' plot.cfo(TITECFOsimu)
+#' plot(TITECFOsimu)
 #' ## TITE-aCFO design
 #' TITEaCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
 #'                  accrual.dist,design='TITE-aCFO', init.level, add.args)
-#' plot.cfo(TITEaCFOtrial)
+#' plot(TITEaCFOtrial)
 #' TITEaCFOsimu <- CFO.oc (nsimu, design='TITE-aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
-#' plot.cfo(TITEaCFOsimu)
+#' plot(TITEaCFOsimu)
 #' ## fCFO design
 #' fCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
 #'                 accrual.dist, design='fCFO', init.level, add.args)
-#' plot.cfo(fCFOtrial)
+#' plot(fCFOtrial)
 #' fCFOsimu <- CFO.oc (nsimu, design='fCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
-#' plot.cfo(fCFOsimu)
+#' plot(fCFOsimu)
 #' ## f-aCFO design
 #' faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist,
 #'                 accrual.dist, design='f-aCFO', init.level, add.args)
-#' plot.cfo(faCFOtrial)
+#' plot(faCFOtrial)
 #' faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
-#' plot.cfo(faCFOsimu)
+#' plot(faCFOsimu)
 #' 
 #' ##############two-dim design with late-onset outcomes################
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -81,11 +82,11 @@
 #' 
 #' ## plot the single trail returned by CFO2d.sim()
 #' CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
-#' plot.cfo(CFO2dtrail)
+#' plot(CFO2dtrail)
 #' 
 #' ## plot the multiple trails returned by CFO2d.oc()
 #' CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
-#' plot.cfo(CFO2dsim)
+#' plot(CFO2dsim)
 #' 
 plot.cfo<- function (x,..., name = deparse(substitute(x)))
 {
@@ -100,34 +101,33 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
   }
   else {
     if (!is.null(objectPlot$simu.oc)) { #plot for one-dim multiple simulations
-      message("1d oc")
-      oask <- devAskNewPage(TRUE)
-      on.exit(devAskNewPage(oask))
-      dev.flush()
-      dev.hold()
-      par(mar = c(5, 6, 4, 2))
-      bplot = barplot(objectPlot$selPercent*100, ylab = "selection percentage (%)",
-                      ylim = c(0, 100), cex.names = 1, xaxt = "n",
-                      cex.lab = 1.3)
-      axis(1, at = bplot, labels = seq(1, length(objectPlot$selPercent)))
-      mtext("Selection percentage", 3, line = 0, cex = 1.3)
-      mtext("Dose level", 1, line = 2, cex = 1)
-      dev.flush()
-      dev.hold()
-      bplot = barplot(objectPlot$nPatients, ylab = "number of patients",
-                      ylim = c(0, max(objectPlot$nPatients))*1.3, cex.names = 1,
-                      beside = FALSE, xaxt = "n", cex.lab = 1.3)
-      axis(1, at = bplot, labels = seq(1, length(objectPlot$nPatients)))
-      mtext("Patient allocation", 3, line = 0, cex = 1.3)
-      mtext("Dose level", 1, line = 2, cex = 1)
-      dev.flush()
-      dev.hold()
-      bplot = barplot(objectPlot$nTox, ylab = "number of toxicities",
-                      ylim = c(0, max(objectPlot$nTox)*1.3), cex.names = 1,
-                      beside = FALSE, xaxt = "n", cex.lab = 1.3)
-      axis(1, at = bplot, labels = seq(1, length(objectPlot$nTox)))
-      mtext("Observed toxicity", 3, line = 0, cex = 1.3)
-      mtext("Dose level", 1, line = 2, cex = 1)
+      attributesToPlot <- c("selPercent", "dose.ns", "DLT.ns")
+      titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
+      ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
+      
+      par(mfrow = c(3, 1))
+      
+      # Loop through each attribute and create a plot
+      for (i in seq_along(attributesToPlot)) {
+        attr <- attributesToPlot[i]
+        # Check if the attribute exists in the objectPlot
+        if (!is.null(objectPlot[[attr]])) {
+          # Extract the vector
+          vectorToPlot <- objectPlot[[attr]]
+          
+          # Convert to percentages only for selPercent
+          if (attr == "selPercent") {
+            vectorToPlot <- vectorToPlot * 100
+          }
+          
+          # Create the bar plot with horizontal x-axis labels
+          bplot <- barplot(vectorToPlot, ylab = ylabels[i], main = titles[i], xlab = "Dose level",
+                           cex.names = 1, xaxt = "n", ylim = c(0, max(vectorToPlot))*1.3,
+                           cex.lab = 1.3)
+          axis(1, at = bplot, labels = seq(1, length(objectPlot[[attr]])))
+        }
+      }
+      par(mfrow = c(1, 1))
     } else if (!is.null(objectPlot$dose.list)) { #plot for one-dim single trial
       if (!is.null(objectPlot$total.time)){ #plot for one-dim single trial (design with lateonset outcomes)
         dose <- objectPlot$dose.list
@@ -277,7 +277,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
             
             # Create the bar plot with horizontal x-axis labels
             barplot(matrixVector, names.arg = xLabels, las = 2,
-                    xlab = "Index (row,col)", ylab = ylabels[i],
+                    xlab = "Combined dose level", ylab = ylabels[i],
                     main = titles[i])
           }
         }
@@ -286,6 +286,4 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     } 
   }
 }
-
-
 

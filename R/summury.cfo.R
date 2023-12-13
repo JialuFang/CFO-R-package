@@ -12,7 +12,7 @@
 #'
 #' @return \code{summary()} prints the objects returned by other functions.
 #'
-#' @author Jialu Fang
+#' @author Jialu Fang and Wenliang Wang
 #'
 #' @examples
 #' ## settings for 1dCFO
@@ -24,22 +24,22 @@
 #' ## summarize the object returned by CFO.next()
 #' decision <- CFO.next(phi=0.2, cys=c(0,1,0), cns=c(3,6,0), cover.doses=c(0,0,0), 
 #'                      curDose=3, add.args)
-#' summary.cfo(decision)
+#' summary(decision)
 #' 
 #' ## summarize the object returned by CFO.simu()
 #' aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
 #'                     accumulation = TRUE)
-#' summary.cfo(aCFOtrial)
+#' summary(aCFOtrial)
 #' 
 #' ## summarize the object returned by lateonset.simu()
 #' faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, 
 #'                 accrual.dist, design='f-aCFO', init.level, add.args)
-#' summary.cfo(faCFOtrial)
+#' summary(faCFOtrial)
 #' 
 #' ## summarize the object returned by CFO.oc()
 #' faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
 #'                       tau, accrual, tite.dist, accrual.dist, add.args)
-#' summary.cfo(faCFOsimu)
+#' summary(faCFOsimu)
 #' 
 #' ## settings for 2dCFO
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -59,20 +59,20 @@
 #' 
 #' ## summarize the object returned by CFO2d.next()
 #' decision <- CFO2d.next(0.3, cys, cns, curDose = curDose)
-#' summary.cfo(decision)
+#' summary(decision)
 #' 
 #' ## summarize the object returned by CFO2d.sim()
 #' CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
-#' summary.cfo(CFO2dtrail)
+#' summary(CFO2dtrail)
 #' 
 #' ## summarize the object returned by CFO2d.oc()
 #' CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
-#' summary.cfo(CFO2dsim)
+#' summary(CFO2dsim)
 #' 
 summary.cfo<- function (object, ...)
 {
   if (!is.null(object$simu.oc)) {
-    if (object$errStop == 0){
+    if (object$simu.oc$errStop == 0){
       cat("No instance of early stopping was observed in",
           object$simu.setup$nsimu, "simulations. \n")
     }else{
@@ -84,11 +84,11 @@ summary.cfo<- function (object, ...)
     cat("selection percentage at each dose level:\n")
     cat(formatC(object$selPercent, digits = 3, format = "f"),
         sep = "  ", "\n")
-    cat("number of patients treated at each dose level:\n")
-    cat(formatC(object$nPatients, format = "d"),
+    cat("average number of patients treated at each dose level:\n")
+    cat(formatC(object$dose.ns, digits = 3, format = "f"),
         sep = "  ", "\n")
-    cat("number of toxicity observed at each dose level:\n")
-    cat(formatC(object$nTox,  format = "d"),
+    cat("average number of toxicity observed at each dose level:\n")
+    cat(formatC(object$DLT.ns,  digits = 3, format = "f"),
         sep = "  ", "\n")
     cat("percentage of correct selection of the MTD:", 
         formatC(object$simu.oc$MTDSel, digits = 3, format = "f"), "\n")
@@ -103,7 +103,7 @@ summary.cfo<- function (object, ...)
     
     if (!is.null(object$simu.oc$averDur)){
       cat("Average trial duration if trials with late-onset toxicities:",
-          formatC(object$simu.oc$averDur, digits = 3, format = "f"),"% \n")
+          formatC(object$simu.oc$averDur, digits = 3, format = "f")," \n")
     }
   }
   
@@ -111,9 +111,9 @@ summary.cfo<- function (object, ...)
     # Summary for 2dCFO multiple trail simulation
     cat("selection percentage at each dose level:\n")
     print(object$selPercent)
-    cat("Average number of patients treated at each dose level:\n")
+    cat("average number of patients treated at each dose level:\n")
     print(object$dose.ns)
-    cat("Average number of toxicity observed at each dose level:\n")
+    cat("average number of toxicity observed at each dose level:\n")
     print(object$DLT.ns)
     cat("percentage of correct selection of the MTD:", 
         formatC(object$pcorrect, digits = 3, format = "f"), "\n")
@@ -125,25 +125,22 @@ summary.cfo<- function (object, ...)
         formatC(object$ntox/sum(object$dose.ns), digits = 3, format = "f")," \n")
   }
   
-  
-  
   if(!is.null(object$MTD)){
     if (length(object$MTD) == 1) {
       if (object$MTD == 99) {
-        cat("The selected MTD is dose level ", object$MTD, "\n\n")
+        cat("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }
       else {
-        cat("The selected MTD is dose level (", object$MTD[1], ",",object$MTD[2], ")\n\n")
-      }
-      cat("For",length(object$dose.list),"cohorts, the dose level assigned to each cohort is: \n")
-      cat(formatC(object$dose.list, format = "d"), sep = "  ", "\n")
-      cat("number of toxicity observed at each dose level:\n")
-      cat(formatC(object$DLT.ns, format = "d"), sep = "  ", "\n")
-      cat("number of patients treated at each dose level:\n")
-      cat(formatC(object$dose.ns, format = "d"), sep = "  ", "\n")
-      if (!is.null(object$total.time)){
-        cat("the duration of the trial in months:",
-            formatC(object$total.time, digits = 3, format = "f"),"% \n")
+        cat("For",length(object$dose.list),"cohorts, the dose level assigned to each cohort is: \n")
+        cat(formatC(object$dose.list, format = "d"), sep = "  ", "\n")
+        cat("number of toxicity observed at each dose level:\n")
+        cat(formatC(object$DLT.ns, format = "d"), sep = "  ", "\n")
+        cat("number of patients treated at each dose level:\n")
+        cat(formatC(object$dose.ns, format = "d"), sep = "  ", "\n")
+        if (!is.null(object$total.time)){
+          cat("the duration of the trial in months:",
+              formatC(object$total.time, digits = 3, format = "f")," \n")
+        }
       }
     } else {
       if (object$MTD[1] == 99 | object$MTD[2] == 99) {
@@ -175,8 +172,6 @@ summary.cfo<- function (object, ...)
     cat("The next cohort will be assigned to dose level", object$curDose, "\n")
   }
 }
-
-
 
 
 
