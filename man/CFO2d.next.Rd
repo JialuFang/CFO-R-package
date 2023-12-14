@@ -38,7 +38,8 @@ A list with the following components:
 \item{target}{The target DLT rate.}
 \item{cys}{A matrix of the number of DLT observed at the current dose and its adjacent doses.}
 \item{cns}{A matrix of the number of patients treated at the current dose and its adjacent doses.}
-\item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
+\item{index}{A vector of length 2 representing the decision index for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
+\item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions. }
 \item{target}{The target DLT rate.}
 \item{curDoses}{The current dose combination.}
 \item{nextDose}{The recommended dose combination for the next cohort.}

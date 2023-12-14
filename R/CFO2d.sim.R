@@ -166,7 +166,7 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
       message('no such case')
     }
     
-    idx.chg <- CFO2d.next(phi, cys, cns, cover.doses, c(cidx.A, cidx.B), add.args, seed)$decision
+    idx.chg <- CFO2d.next(phi, cys, cns, cover.doses, c(cidx.A, cidx.B), add.args, seed)$index
     cidx.A <- cidx.A + idx.chg[1]
     cidx.B <- cidx.B + idx.chg[2]
   }

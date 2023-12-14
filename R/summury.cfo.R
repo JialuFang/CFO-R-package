@@ -168,8 +168,14 @@ summary.cfo<- function (object, ...)
   }
   
   if(!is.null(object$decision)){
-    cat("The decision regarding the direction of movement is", object$decision, "\n")
-    cat("The next cohort will be assigned to dose level", object$curDose, "\n")
+    if(length(object$decision)==2){
+      cat("The decision regarding the direction of movement for drug A is", object$decision[1], "\n")
+      cat("The decision regarding the direction of movement for drug B is", object$decision[2], "\n")
+      cat("The next cohort will be assigned to dose level (", object$nextDose[1],",",object$nextDose[2],")", "\n")
+    } else {
+      cat("The decision regarding the direction of movement is", object$decision, "\n")
+      cat("The next cohort will be assigned to dose level", object$curDose, "\n")
+    }
   }
 }
 
