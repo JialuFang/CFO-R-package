@@ -186,7 +186,7 @@ summary.cfo<- function (object, ...)
       if (is.na(object$overTox)) {
         cat("All tested doses are not overly toxic. \n\n")
       } else {
-        cat("The dose level which experiences overly toxicity is", object$overTox, "\n")
+        cat("Dose level", object$overTox, "and all levels above exhibit excessive toxicity", "\n")
       }
       if (object$decision == "stop"){
         cat("The lowest dose level is overly toxic. We terminate the entire trial for safety.")

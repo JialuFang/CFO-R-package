@@ -53,7 +53,7 @@
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' cys <- c(0,1,0); cns <- c(3,6,0)
-#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8), seed=1)
 #' 
 #' cys <- c(NA,3,0); cns <- c(NA,3,0)
 #' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=1, add.args=list(alp.prior=0.2, bet.prior=0.8))
@@ -243,7 +243,7 @@ CFO.next <- function(phi, cys, cns, curDose,add.args=list(alp.prior=phi, bet.pri
   cover.doses <- ifelse(is.na(cys), NA, cover.doses)
   
   position <- which(cover.doses == 1)[1]
-  overTox <- c("Left", "Current", "Right")[position]
+  overTox <- c(-1, 0, 1)[position] + curDose
   
   if ((cover.doses[2] == 1)&(curDose == 1)){
     index <- NA
