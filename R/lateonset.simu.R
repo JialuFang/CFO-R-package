@@ -217,20 +217,21 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
       current.t <- enter.times[length(enter.times)] + tau
       lateonset.simu 
       res <- lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                            doses, tover.doses, TRUE, add.args)
+                            doses, ndose, TRUE, add.args)
       tover.doses <- res$tover.doses
       current.t <- current.t + delta.time
     }else{
       res <- lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                                doses, tover.doses, TRUE, add.args)
+                                doses, ndose, TRUE, add.args)
       tover.doses <- res$tover.doses
+      overTox <- res$overTox
     }
     
-    if (res$curDose==0){
+    if (tover.doses[1] == 1){
       earlystop <- 1
       break()
-    }else{
-      curDose <- res$curDose
+    } else{
+      curDose <- res$nextDose
     }
   }
   

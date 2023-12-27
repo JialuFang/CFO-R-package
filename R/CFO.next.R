@@ -3,8 +3,7 @@
 #' 
 #' Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage CFO.next(phi, cys, cns, cover.doses=c(0,0,0), curDose,
-#'        add.args=list(alp.prior=phi,bet.prior=1-phi), seed=NULL)
+#' @usage CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), seed=NULL)
 #'
 #' @param phi the target DLT rate
 #' @param cys the current number of DLTs observed in patients for the left, current, and right dose levels.
@@ -13,8 +12,6 @@
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param curDose the current dose level.
-#' @param cover.doses whether the dose level (left, current and right) is over-toxic or not. 
-#'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
 #' @param seed an integer to set as the seed of the random number generator for reproducible results.
 #'
 #' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
@@ -29,14 +26,24 @@
 #'          lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level) 
 #'          or when higher dose levels have been eliminated.
 #'          
-#' @note    The \code{cover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled 
-#'          ($cns) and the number of DLTs observed ($cys), following the overdose control rule. If not predetermined, it is 
-#'          assigned default values of 0 for each dose level.
+#' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and 
+#'          \code{cns} where there is no data are filled with NA.
+#' 
+#'          The position indicated by \code{overTox} experience overly toxicity. In the complete single trial, the dose 
+#'          level and all the dose levels above will be eliminated.
 #'          
-#' @return The \code{CFO.next()} function returns a list object comprising the following elements: the target DLT 
-#'         rate ($target), the current counts of DLTs and patients for the left, current, and right dose levels ($cys and $cns), 
-#'         the decision for whether to move to the left or right dose level for the next cohort ($decision), and the current 
-#'         dose after movement ($curDose).
+#' @return The \code{CFO.next()} function returns a list object comprising the following elements:
+#' \itemize{
+#'   \item{target: }{the target DLT rate.}
+#'   \item{cys: }{the current counts of DLTs observed at the left, current, and right dose levels}
+#'   \item{cns: }{the current counts of patients treated at the left, current, and right dose levels}
+#'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
+#'   movement directions, and \code{stop} indicates stopping the experiment}
+#'   \item{curDoses: }{the current level.}
+#'   \item{nextDose: }{the recommended dose level for the next cohort.}
+#'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
+#'   occurrence of overly toxicity did not happen.}
+#' }
 #'         
 #' @author Jialu Fang and Wenliang Wang
 #' 
@@ -46,13 +53,17 @@
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' cys <- c(0,1,0); cns <- c(3,6,0)
-#' CFO.next(phi=0.2, cys=cys, cns=cns, cover.doses=c(0,0,0), curDose=3,
-#'          add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' 
+#' cys <- c(NA,3,0); cns <- c(NA,3,0)
+#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=1, add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' 
+#' cys <- c(0,3,NA); cns <- c(3,3,NA)
+#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=7, add.args=list(alp.prior=0.2, bet.prior=0.8))
 #' 
 #' @import stats
 #' @export
-CFO.next <- function(phi, cys, cns, cover.doses=c(0,0,0), curDose,
-                     add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+CFO.next <- function(phi, cys, cns, curDose,add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -61,6 +72,20 @@ CFO.next <- function(phi, cys, cns, cover.doses=c(0,0,0), curDose,
     alp <- alp.prior + y 
     bet <- bet.prior + n - y
     1 - pbeta(phi, alp, bet)
+  }
+  
+  overdose.fn <- function(phi, add.args=list()){
+    y <- add.args$y
+    n <- add.args$n
+    alp.prior <- add.args$alp.prior
+    bet.prior <- add.args$bet.prior
+    pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
+    # print(data.frame("prob of overdose" = pp))
+    if ((pp >= 0.95) & (add.args$n>=3)){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
   }
   
   prob.int <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior){
@@ -201,58 +226,84 @@ CFO.next <- function(phi, cys, cns, cover.doses=c(0,0,0), curDose,
   bet.prior <- add.args$bet.prior
   set.seed(seed)
   
-  if (cover.doses[2] == 1){
-    index <- -1
-    decision <- "de-escalation"
-  }
-  else{
-    if (is.na(cys[1]) & (cover.doses[3]==1)){
-      index <- 0
-      decision <- "stay"
-    }
-    else  if (is.na(cys[1]) & (!(cover.doses[3]==1))){
-      gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
-      OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
-      if (OR.v2>gam2){
-        index <- 1
-        decision <- "escalation"
-      }else{
-        index <- 0
-        decision <- "stay"
-      }
-    }
-    else  if (is.na(cys[3]) | (cover.doses[3]==1)){
-      gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
-      OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
-      if (OR.v1>gam1){
-        index <- -1
-        decision <- "de-escalation"
-      }else{
-        index <- 0
-        decision <- "stay"
-      }
-    }
-    else  if (!(is.na(cys[1]) | is.na(cys[3]) | cover.doses[3]==1)){
-      gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
-      gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
-      OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
-      OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
-      v1 <- OR.v1 > gam1
-      v2 <- OR.v2 > gam2
-      if (v1 & !v2){
-        index <- -1
-        decision <- "de-escalation"
-      }else if (!v1 & v2){
-        index <- 1
-        decision <- "escalation"
-      }else{
-        index <- 0
-        decision <- "stay"
+  cover.doses <- c(0,0,0)
+  for (i in 1:3){
+    cy <- cys[i]
+    cn <- cns[i]
+    if (is.na(cn)){
+      cover.doses[i] <- NA
+    }else{
+      add.args <- c(list(y=cy, n=cn),list(alp.prior=phi, bet.prior=1-phi))
+      if (overdose.fn(phi, add.args)){
+        cover.doses[i:3] <- 1
+        break()
       }
     }
   }
-  curDose <- curDose+index
-  out <- list(target=phi, cys=cys, cns=cns, decision=decision, curDose = curDose)
+  cover.doses <- ifelse(is.na(cys), NA, cover.doses)
+  
+  position <- which(cover.doses == 1)[1]
+  overTox <- c("Left", "Current", "Right")[position]
+  
+  if ((cover.doses[2] == 1)&(curDose == 1)){
+    index <- NA
+    decision <- "stop"
+  } else {
+    if (cover.doses[2] == 1){
+      index <- -1
+      decision <- "de-escalation"
+    }
+    else{
+      if (is.na(cys[1]) & (cover.doses[3]==1)){
+        index <- 0
+        decision <- "stay"
+      }
+      else  if (is.na(cys[1]) & (!(cover.doses[3]==1))){
+        gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
+        OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
+        if (OR.v2>gam2){
+          index <- 1
+          decision <- "escalation"
+        }else{
+          index <- 0
+          decision <- "stay"
+        }
+      }
+      else  if (is.na(cys[3]) | (cover.doses[3]==1)){
+        gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
+        OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
+        if (OR.v1>gam1){
+          index <- -1
+          decision <- "de-escalation"
+        }else{
+          index <- 0
+          decision <- "stay"
+        }
+      }
+      else  if (!(is.na(cys[1]) | is.na(cys[3]) | cover.doses[3]==1)){
+        gam1 <- optim.gamma.fn(cns[1], cns[2], phi, "L", alp.prior, bet.prior)$gamma 
+        gam2 <- optim.gamma.fn(cns[2], cns[3], phi, "R", alp.prior, bet.prior)$gamma 
+        OR.v1 <- OR.values(phi, cys[1], cns[1], cys[2], cns[2], alp.prior, bet.prior, type="L")
+        OR.v2 <- OR.values(phi, cys[2], cns[2], cys[3], cns[3], alp.prior, bet.prior, type="R")
+        v1 <- OR.v1 > gam1
+        v2 <- OR.v2 > gam2
+        if (v1 & !v2){
+          index <- -1
+          decision <- "de-escalation"
+        }else if (!v1 & v2){
+          index <- 1
+          decision <- "escalation"
+        }else{
+          index <- 0
+          decision <- "stay"
+        }
+      }
+    }
+  }
+  
+  nextDose <- curDose+index
+  out <- list(target=phi, cys=cys, cns=cns, decision=decision, curDose = curDose, 
+              nextDose=nextDose, overTox=overTox)
   class(out) <- "cfo"
   return(out)
 }

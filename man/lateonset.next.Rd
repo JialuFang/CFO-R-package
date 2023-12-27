@@ -5,7 +5,7 @@
 \title{Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities}
 \usage{
 lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
-       current.t, accumulation, doses, tover.doses=c(), simu=FALSE,
+       current.t, accumulation, doses, ndose, simu=FALSE,
        add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 }
 \arguments{
@@ -32,10 +32,7 @@ conduct the aCFO-type design.}
 
 \item{doses}{the dose level for each subject existing in the trial.}
 
-\item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
-The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
-It should be predetermined. If not predetermined, it is set to NaN and is assigned values of 0
-for each dose level.}
+\item{ndose}{the number of dose level.}
 
 \item{simu}{whether simulation or not, if \code{simu=TRUE}, \code{lateonset.next()} also return \code{tover.doses}.}
 
@@ -46,9 +43,18 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \item{seed}{an integer to set as the seed of the random number generator for reproducible results.}
 }
 \value{
-The \code{lateonset.next()} function returns the recommended dose level for treating the next cohort of
-patients ($curDose). if \code{simu=TRUE}, \code{lateonset.next()} also return a vector indicating whether the
-dose level (from the first to last dose level) is over-toxic or not ($tover.doses).
+The \code{lateonset.next()} function returns
+\itemize{
+\item{target: }{the target DLT rate.}
+\item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the
+movement directions, and \code{stop} indicates stopping the experiment}
+\item{curDoses: }{the current level.}
+\item{nextDose: }{the recommended dose level for the next cohort.}
+\item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
+occurrence of overly toxicity did not happen.}
+\item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
+or not. It will be returned only if \code{simu=TRUE}.}
+}
 }
 \description{
 Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including
@@ -68,11 +74,6 @@ the benchmark CFO and aCFO design. These two methods await complete observation 
 the previous cohorts before determining the next dose assignment. This enhances precision but comes at the
 expense of a prolonged trial duration.
 }
-\note{
-The \code{tover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled
-($tns) and the number of DLTs observed ($tys), following the overdose control rule. If not predetermined, it is
-set to NaN and is assigned default values of 0 for each dose level.
-}
 \examples{
 ## Given the parameters for the function, the unit for time-related parameters is in months. 
 ## The parameter generation follows the following guidelines: 
@@ -81,32 +82,31 @@ set to NaN and is assigned default values of 0 for each dose level.
 ## 3) the arrival times of patients are distributed uniformly.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
-phi<-0.2
+phi<-0.2; ndose<-7
 add.args=list(alp.prior=phi, bet.prior=1-phi)
 enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
 dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.6962,0)
 current.t<-8.134413
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
-tover.doses<-c(0,0,0,0,0,0,0)
 ## determine the dose level for the next cohort using the TITE-CFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 ## determine the dose level for the next cohort using the TITE-aCFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 ## determine the dose level for the next cohort using the f-CFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 ## determine the dose level for the next cohort using the f-aCFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 ## determine the dose level for the next cohort using the benchmark CFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 ## determine the dose level for the next cohort using the benchmark aCFO design
 lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 
 }
 \references{

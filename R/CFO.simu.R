@@ -125,17 +125,13 @@ CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
       if (curDose!=1){
         cys <- tys[(curDose-1):(curDose+1)]
         cns <- tns[(curDose-1):(curDose+1)]
-        cover.doses <- tover.doses[(curDose-1):(curDose+1)]
-        #cover.doses <- c(0, 0, 0) # No elimination rule
       }else{
         cys <- c(NA, tys[1:(curDose+1)])
         cns <- c(NA, tns[1:(curDose+1)])
-        cover.doses <- c(NA, tover.doses[1:(curDose+1)])
-        #cover.doses <- c(NA, 0, 0) # No elimination rule
       }
-      curDose <- CFO.next(phi, cys, cns, cover.doses, curDose, add.args)$curDose
-    } else if (accumulation == TRUE){
-      curDose <- aCFO.next (phi, tys, tns, tover.doses, curDose, add.args)$curDose
+      curDose <- CFO.next(phi, cys, cns, curDose, add.args)$nextDose
+    }else if (accumulation == TRUE){
+      curDose <- aCFO.next(phi, tys, tns, curDose, add.args)$nextDose
     }
   }
   

@@ -5,7 +5,7 @@
 #' design and benchmark aCFO design.
 #' 
 #' @usage lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
-#'        current.t, accumulation, doses, tover.doses=c(), simu=FALSE,
+#'        current.t, accumulation, doses, ndose, simu=FALSE,
 #'        add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 #'
 #' @param curDose the current dose level.
@@ -21,11 +21,8 @@
 #' @param current.t the current time.
 #' @param accumulation set \code{accumulation=FALSE} to conduct the CFO-type design; set \code{accumulation=TRUE} to 
 #'                     conduct the aCFO-type design.
+#' @param ndose the number of dose level.
 #' @param doses the dose level for each subject existing in the trial.
-#' @param tover.doses whether the dose level (from the first to last dose level) is over-toxic or not. 
-#'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
-#'                    It should be predetermined. If not predetermined, it is set to NaN and is assigned values of 0 
-#'                    for each dose level.
 #' @param simu whether simulation or not, if \code{simu=TRUE}, \code{lateonset.next()} also return \code{tover.doses}.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
@@ -43,14 +40,19 @@
 #'          the benchmark CFO and aCFO design. These two methods await complete observation of toxicity outcomes for 
 #'          the previous cohorts before determining the next dose assignment. This enhances precision but comes at the 
 #'          expense of a prolonged trial duration.
-#'          
-#' @note   The \code{tover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled 
-#'          ($tns) and the number of DLTs observed ($tys), following the overdose control rule. If not predetermined, it is 
-#'          set to NaN and is assigned default values of 0 for each dose level.
 #' 
-#' @return The \code{lateonset.next()} function returns the recommended dose level for treating the next cohort of 
-#'         patients ($curDose). if \code{simu=TRUE}, \code{lateonset.next()} also return a vector indicating whether the 
-#'         dose level (from the first to last dose level) is over-toxic or not ($tover.doses).
+#' @return The \code{lateonset.next()} function returns 
+#' \itemize{
+#'   \item{target: }{the target DLT rate.}
+#'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
+#'   movement directions, and \code{stop} indicates stopping the experiment}
+#'   \item{curDoses: }{the current level.}
+#'   \item{nextDose: }{the recommended dose level for the next cohort.}
+#'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
+#'   occurrence of overly toxicity did not happen.}
+#'   \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
+#'   or not. It will be returned only if \code{simu=TRUE}.}
+#' }
 #' 
 #' @author Jialu Fang 
 #' 
@@ -72,40 +74,38 @@
 #' ## 3) the arrival times of patients are distributed uniformly.
 #' ## 4) the time to DLT events is simulated using a Weibull distribution, with 50% of these events 
 #' ##    occurring in the first half of the assessment window.
-#' phi<-0.2
+#' phi<-0.2; ndose<-7
 #' add.args=list(alp.prior=phi, bet.prior=1-phi)
 #' enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
 #'                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
 #' dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.6962,0)
 #' current.t<-8.134413
 #' doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
-#' tover.doses<-c(0,0,0,0,0,0,0)
 #' ## determine the dose level for the next cohort using the TITE-CFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-#'                accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 #' ## determine the dose level for the next cohort using the TITE-aCFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-#'                accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 #' ## determine the dose level for the next cohort using the f-CFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-#'                accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 #' ## determine the dose level for the next cohort using the f-aCFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-#'                accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 #' ## determine the dose level for the next cohort using the benchmark CFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-#'                accumulation = FALSE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
 #' ## determine the dose level for the next cohort using the benchmark aCFO design
 #' lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-#'                accumulation = TRUE, doses, tover.doses, simu=FALSE, add.args)
+#'                accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
 #' 
 lateonset.next <- function(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, 
-                           accumulation, doses, tover.doses=c(), simu=FALSE, 
+                           accumulation, doses, ndose, simu=FALSE, 
                            add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
-  
   # Below functions are to impute missing y 
   #------------------------------------------------------------------------------------------
   fracImpute <- function(enter.times, dlt.times, current.time, tau){ 
@@ -227,12 +227,7 @@ lateonset.next <- function(curDose, phi, tau, impute.method, enter.times, dlt.ti
   ############################MAIN DUNCTION######################################
   ############################################################################### 
   set.seed(seed)
-  ndose <- length(tover.doses)
-  if (is.null(tover.doses)){
-    tover.doses <- rep(0,ndose)
-    warning("tover.doses is set to NaN and is assigned default values of ", 
-            paste(tover.doses, collapse = ","))
-  }
+
   if (is.null(add.args$alp.prior)){
     add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
   }
@@ -244,89 +239,74 @@ lateonset.next <- function(curDose, phi, tau, impute.method, enter.times, dlt.ti
     y.raw <- impute.res$y.raw
     y.impute <- impute.res$y.impute
     if (impute.res$No.impute){
-      if (accumulation == FALSE){
-        cn <- sum(doses==curDose)
-        cy <- sum(y.raw[doses==curDose])
-      }else{
-        for (i in 1:ndose){
-          tys <- c(tys, sum(y.raw[doses==i]))
-          tns <- c(tns, sum(doses==i))
-        } 
-      }
+      for (i in 1:ndose){
+        tys <- c(tys, sum(y.raw[doses==i]))
+        tns <- c(tns, sum(doses==i))
+      } 
     }
     else{
-      if (accumulation == FALSE){
-        cn <- sum(doses==curDose)
-        cy <- sum(y.impute[doses==curDose])
-      }else{
-        for (i in 1:ndose){
-          tys <- c(tys, sum(y.impute[doses==i]))
-          tns <- c(tns, sum(doses==i))
-        }
+      for (i in 1:ndose){
+        tys <- c(tys, sum(y.impute[doses==i]))
+        tns <- c(tns, sum(doses==i))
       }
     }
   }else if(impute.method == "TITE"){
     impute.res <-  TITEImpute(enter.times, dlt.times, current.t, tau, doses, ndose, c(phi/2, 1-phi/2))
     y.raw <- impute.res$y.raw
     y.impute <- impute.res$y.impute
-    if (accumulation == FALSE){
-      cy <- sum(y.impute[doses==curDose])
-      cn <- sum(doses==curDose)
-    }else{
-      for (i in 1:ndose){
-        tys <- c(tys, sum(y.impute[doses==i]))
-        tns <- c(tns, sum(doses==i))
-      } 
+    for (i in 1:ndose){
+      tys <- c(tys, sum(y.impute[doses==i]))
+      tns <- c(tns, sum(doses==i))
     }
   }else if(impute.method == "No"){
     assesstime = enter.times+tau;	
     dlt.times[dlt.times==0]= tau+1;
     y.impute <- (dlt.times<=tau)*(assesstime<=current.t)
-    if (accumulation == FALSE){
-      cy <- sum(y.impute[doses==curDose])
-      cn <- sum(doses==curDose)
-    }else{
-      for (i in 1:ndose){
-        tys <- c(tys, sum(y.impute[doses==i]))
-        tns <- c(tns, sum(doses==i))
-      }
+    for (i in 1:ndose){
+      tys <- c(tys, sum(y.impute[doses==i]))
+      tns <- c(tns, sum(doses==i))
     }
   }
   
-  ### early stop
-  if (accumulation == FALSE) add.args <- c(list(y=cy, n=cn), add.args) else add.args <- c(list(y=tys[curDose], n=tns[curDose]), add.args)
-  if (overdose.fn(phi, add.args)){
-    tover.doses[curDose:ndose] <- 1
+  tover.doses <- rep(0, ndose)
+  for (i in 1:ndose){
+    cy <- tys[i]
+    cn <- tns[i]
+    add.args <- c(list(y=cy, n=cn), add.args)
+    if (overdose.fn(phi, add.args)){
+      tover.doses[i:ndose] <- 1
+      break()
+    }
   }
-  if (tover.doses[1] == 1){
-    dose <- 0
+  position <- which(tover.doses == 1)[1]
+  
+  if (accumulation == FALSE){
+    if (curDose==1){
+      cys <- c(NA, tys[1:(curDose+1)])
+      cns <- c(NA, tns[1:(curDose+1)])
+    }else if (curDose==ndose){
+      cys <- c(tys[(curDose-1):ndose], NA)
+      cns <- c(tns[(curDose-1):ndose], NA)
+    }else {
+      cys <- tys[(curDose-1):(curDose+1)]
+      cns <- tns[(curDose-1):(curDose+1)]
+    }
+    res <- CFO.next(phi, cys, cns, curDose, add.args)
   }else{
-    if (accumulation == FALSE){
-      if (curDose==1){
-        cys <- c(NA, cy, sum(y.impute[doses==2]))
-        cns <- c(NA, cn, sum(doses==2))
-        cover.doses <- c(NA, tover.doses[1:2])
-      }else if (curDose==ndose){
-        cys <- c(sum(y.impute[doses==(curDose-1)]), cy, NA)
-        cns <- c(sum(doses==(curDose-1)), cn, NA)
-        cover.doses <- c(tover.doses[(curDose-1):curDose], NA)
-      }else {
-        cys <- c(sum(y.impute[doses==(curDose-1)]), cy, sum(y.impute[doses==(curDose+1)]))
-        cns <- c(sum(doses==(curDose-1)), cn, sum(doses==(curDose+1)))
-        cover.doses <- tover.doses[(curDose-1):(curDose+1)]
-      }
-      curDose <- CFO.next(phi, cys, cns, cover.doses, curDose, add.args)$curDose
-    }else{
-      curDose <- aCFO.next (phi, tys, tns, tover.doses, curDose, add.args)$curDose
-    }
+    res <- aCFO.next (phi, tys, tns, curDose, add.args)
   }
-  
+  nextDose <- res$nextDose
+  decision <- res$decision
+  overTox <- res$overTox
+
   if (simu){
-    res <- list(curDose=curDose, tover.doses=tover.doses)
-    return(res)
+    out <- list(target=phi, decision=decision, curDose = curDose, 
+                nextDose=nextDose, overTox=overTox, tover.doses=tover.doses)
   }else{
-    res <- list(curDose=curDose)
-    return(res)
+    out <- list(target=phi, decision=decision, curDose = curDose,
+                nextDose=nextDose, overTox=overTox)
   }
+  class(out) <- "cfo"
+  return(out)
 }
 

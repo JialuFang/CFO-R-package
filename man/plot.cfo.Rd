@@ -30,9 +30,9 @@ In reality, \code{nsimu} is typically set to 5000 to ensure the accuracy of the 
 }
 \examples{
 ############design without late-onset outcomes################
-nsimu <- 100; phi <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
+nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-add.args=list(alp.prior=phi, bet.prior=1-phi)
+phi <- 0.2; add.args=list(alp.prior=phi, bet.prior=1-phi)
 ## CFO design
 CFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, accumulation = FALSE)
 plot(CFOtrial)

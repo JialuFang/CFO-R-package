@@ -4,8 +4,7 @@
 \alias{aCFO.next}
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
-aCFO.next(phi, tys, tns, tover.doses=c(), curDose, 
-       add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
+aCFO.next(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi),seed=NULL)
 }
 \arguments{
 \item{phi}{the target DLT rate.}
@@ -13,11 +12,6 @@ aCFO.next(phi, tys, tns, tover.doses=c(), curDose,
 \item{tys}{the current number of DLTs observed in patients for all dose levels.}
 
 \item{tns}{the current number of patients for all dose levels.}
-
-\item{tover.doses}{whether the dose level (from the first to last dose level) is over-toxic or not.
-The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
-It should be predetermined. If not predetermined, it is set to NaN and is assigned values of 0
-for each dose level.}
 
 \item{curDose}{the current dose level.}
 
@@ -28,10 +22,18 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \item{seed}{an integer to set as the seed of the random number generator for reproducible results.}
 }
 \value{
-The \code{aCFO.next()} function returns a list object comprising the following elements: the target DLT
-rate ($target), the current number of DLTs and patients for the left, current, and right dose levels ($cys and $cns),
-the decision in the aCFO design of whether to move to the left or right dose level for the next cohort ($decision),
-and the current dose after movement ($curDose).
+The \code{aCFO.next()} function returns a list object comprising the following elements:
+\itemize{
+\item{target: }{the target DLT rate.}
+\item{tys: }{the current counts of DLTs observed at all dose levels}
+\item{tns: }{the current counts of patients treated at all dose levels}
+\item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the
+movement directions, and \code{stop} indicates stopping the experiment}
+\item{curDoses: }{the current level.}
+\item{nextDose: }{the recommended dose level for the next cohort.}
+\item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
+occurrence of overly toxicity did not happen.}
+}
 }
 \description{
 In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
@@ -53,15 +55,23 @@ the nature of the CFO design (model-free and calibration-free), the aCFO designs
 incorporating more dose information.
 }
 \note{
-The \code{tover.doses()} should be predetermined. It can be calculated based on the number of patients enrolled
-($tns) and the number of DLTs observed ($tys), following the overdose control rule. If not predetermined, it is
-set to NaN and is assigned default values of 0 for each dose level.
+When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
+\code{cns} where there is no data are filled with NA.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     The positions indicated by \code{overTox} experience overly toxicity. In the complete single trial, the dose 
+     level and all the dose levels above will be eliminated.
+}\if{html}{\out{</div>}}
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
 tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
-aCFO.next(phi=0.2, tys=tys, tns=tns, tover.doses=c(0,0,0,0,0,0,0), curDose=3,
-         add.args=list(alp.prior=0.2, bet.prior=0.8))
+aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=3,add.args=list(alp.prior=0.2, bet.prior=0.8))
+
+tys <- c(3,0,0,0,0,0,0); tns <- c(3,0,0,0,0,0,0)
+aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=1,add.args=list(alp.prior=0.2, bet.prior=0.8))
+
+tys <- c(0,0,0,0,0,0,3); tns <- c(3,3,3,3,3,3,3)
+aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=7,add.args=list(alp.prior=0.2, bet.prior=0.8))
 
 }
 \references{
