@@ -9,9 +9,9 @@ CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), s
 \arguments{
 \item{phi}{the target DLT rate}
 
-\item{cys}{the current number of DLTs observed in patients for the left, current, and right dose levels.}
+\item{cys}{the current number of DLTs observed at the left, current, and right dose levels.}
 
-\item{cns}{the current number of patients for the left, current, and right dose levels.}
+\item{cns}{the current number of patients treated at the left, current, and right dose levels.}
 
 \item{curDose}{the current dose level.}
 
@@ -24,7 +24,7 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements:
 \itemize{
-\item{target: }{the target DLT rate.}
+\item{taget: }{the target DLT rate.}
 \item{cys: }{the current counts of DLTs observed at the left, current, and right dose levels}
 \item{cns: }{the current counts of patients treated at the left, current, and right dose levels}
 \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the

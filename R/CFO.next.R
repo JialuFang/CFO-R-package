@@ -6,8 +6,8 @@
 #' @usage CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), seed=NULL)
 #'
 #' @param phi the target DLT rate
-#' @param cys the current number of DLTs observed in patients for the left, current, and right dose levels.
-#' @param cns the current number of patients for the left, current, and right dose levels.
+#' @param cys the current number of DLTs observed at the left, current, and right dose levels.
+#' @param cns the current number of patients treated at the left, current, and right dose levels.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
@@ -34,7 +34,7 @@
 #'          
 #' @return The \code{CFO.next()} function returns a list object comprising the following elements:
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
+#'   \item{taget: }{the target DLT rate.}
 #'   \item{cys: }{the current counts of DLTs observed at the left, current, and right dose levels}
 #'   \item{cns: }{the current counts of patients treated at the left, current, and right dose levels}
 #'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
