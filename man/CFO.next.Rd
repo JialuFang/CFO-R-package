@@ -4,7 +4,7 @@
 \alias{CFO.next}
 \title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), seed=NULL)
+CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi))
 }
 \arguments{
 \item{phi}{the target DLT rate}
@@ -18,8 +18,6 @@ CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), s
 \item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
-
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results.}
 }
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements:
@@ -62,7 +60,7 @@ When the current dose level is the lowest or highest (i.e., at the boundary), th
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8), seed=1)
+CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8))
 
 cys <- c(NA,3,0); cns <- c(NA,3,0)
 CFO.next(phi=0.2, cys=cys, cns=cns, curDose=1, add.args=list(alp.prior=0.2, bet.prior=0.8))

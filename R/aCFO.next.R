@@ -3,7 +3,7 @@
 #' 
 #' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage aCFO.next(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi),seed=NULL)
+#' @usage aCFO.next(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate.
 #' @param tys the current number of DLTs observed in patients for all dose levels.
@@ -12,7 +12,6 @@
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
-#' @param seed an integer to set as the seed of the random number generator for reproducible results.
 #'
 #' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
 #'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
@@ -66,7 +65,7 @@
 #' 
 #' @import stats
 #' @export
-aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi)){
   
 ###############################################################################
 ###############define the functions used for main function#####################
@@ -253,7 +252,6 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
   ############################MAIN DUNCTION######################################
   ###############################################################################
   ndose <- length(tys)
-  set.seed(seed)
   
   if (is.null(add.args$alp.prior)){
     add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))

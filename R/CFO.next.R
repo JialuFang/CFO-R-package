@@ -3,7 +3,7 @@
 #' 
 #' Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi), seed=NULL)
+#' @usage CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi))
 #'
 #' @param phi the target DLT rate
 #' @param cys the current number of DLTs observed at the left, current, and right dose levels.
@@ -12,7 +12,6 @@
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param curDose the current dose level.
-#' @param seed an integer to set as the seed of the random number generator for reproducible results.
 #'
 #' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
 #'          dose level and its adjacent levels. This evaluation is based on odds ratios denoted as \eqn{O_k}, where 
@@ -53,7 +52,7 @@
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' cys <- c(0,1,0); cns <- c(3,6,0)
-#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8), seed=1)
+#' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8))
 #' 
 #' cys <- c(NA,3,0); cns <- c(NA,3,0)
 #' CFO.next(phi=0.2, cys=cys, cns=cns, curDose=1, add.args=list(alp.prior=0.2, bet.prior=0.8))
@@ -63,7 +62,7 @@
 #' 
 #' @import stats
 #' @export
-CFO.next <- function(phi, cys, cns, curDose,add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+CFO.next <- function(phi, cys, cns, curDose,add.args=list(alp.prior=phi, bet.prior=1-phi)){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -224,7 +223,6 @@ CFO.next <- function(phi, cys, cns, curDose,add.args=list(alp.prior=phi, bet.pri
   }
   alp.prior <- add.args$alp.prior
   bet.prior <- add.args$bet.prior
-  set.seed(seed)
   
   cover.doses <- c(0,0,0)
   for (i in 1:3){

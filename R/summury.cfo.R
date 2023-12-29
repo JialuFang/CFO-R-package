@@ -141,6 +141,7 @@ summary.cfo<- function (object, ...)
         cat("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }
       else {
+        cat("The selected MTD is dose level", object$MTD, "\n")
         cat("For",length(object$dose.list),"cohorts, the dose level assigned to each cohort is: \n")
         cat(formatC(object$dose.list, format = "d"), sep = "  ", "\n")
         cat("number of toxicity observed at each dose level:\n")

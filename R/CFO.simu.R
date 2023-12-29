@@ -48,7 +48,7 @@
 #' phi <- 0.2; ncohort <- 12; cohortsize <- 3
 #' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 #' ## find the MTD for a single CFO trial
-#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
+#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
 #'          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
 #' ## find the MTD for a single aCFO trial
 #' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
