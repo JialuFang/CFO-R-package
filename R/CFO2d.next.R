@@ -6,8 +6,6 @@
 #' @param phi The efficacy threshold.
 #' @param cys A matrix of the number of successes for each dose combination.
 #' @param cns A matrix of the number of patients for each dose combination.
-#' @param cover.doses whether the dose level (the current dose and its adjacent doses) is over-toxic or not. 
-#'                    The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.
 #' @param curDose A vector of the current dose indices in the horizontal and vertical direction.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
@@ -42,12 +40,13 @@
 #' CFO2d.next(0.3, cys, cns, curDose = curDose)
 #' 
 
-CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   cidx.A <- 0
   cidx.B <- 0
   alp.prior <- add.args$alp.prior
   bet.prior <- add.args$bet.prior
   set.seed(seed)
+  cover.doses=matrix(0,3,3)
   
   # posterior probability of pj >= phi given data
   post.prob.fn <- function(phi, y, n, alp.prior=0.1, bet.prior=0.9){
@@ -76,6 +75,16 @@ CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.ar
     list(p1=p1, p2=p2)
   }
   
+  overdose.fn <- function(phi, y, n, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+    alp.prior <- add.args$alp.prior
+    bet.prior <- add.args$bet.prior
+    pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
+    if ((pp >= 0.95) & (n>=3)){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+  }
   
   OR.values <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior, type){
     ps <- prob.int(phi, y1, n1, y2, n2, alp.prior, bet.prior)
@@ -238,6 +247,18 @@ CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.ar
     }
   }
   
+  if (overdose.fn(phi, cys[2,2], cns[2,2])){
+    cover.doses[2,2] <- 1
+  }
+  if (overdose.fn(phi, cys[2,3], cns[2,3])){
+    cover.doses[2,3] <- 1
+    cover.doses[3,3] <- 1
+  }
+  if (overdose.fn(phi, cys[3,2], cns[3,2])){
+    cover.doses[3,2] <- 1
+    cover.doses[3,3] <- 1
+  }
+  
   
   # horizontal direction
   idx.chg.A <- make.decision.1dCFO.fn(phi, cys[2,], cns[2,], alp.prior, bet.prior, cover.doses[2,]) - 2
@@ -321,4 +342,3 @@ CFO2d.next <- function(phi, cys, cns, cover.doses=matrix(0,3,3), curDose, add.ar
   class(out) <- "cfo"
   return(out)
 }
-

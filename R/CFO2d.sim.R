@@ -84,8 +84,8 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
     }else{
       return(FALSE)
     }
-    
   }
+  
   post.prob.fn <- function(phi, y, n, alp.prior=phi, bet.prior=1-phi){
     alp <- alp.prior + y 
     bet <- bet.prior + n - y

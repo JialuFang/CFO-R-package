@@ -8,7 +8,6 @@ CFO2d.next(
   phi,
   cys,
   cns,
-  cover.doses = matrix(0, 3, 3),
   curDose,
   add.args = list(alp.prior = phi, bet.prior = 1 - phi),
   seed = NULL
@@ -20,9 +19,6 @@ CFO2d.next(
 \item{cys}{A matrix of the number of successes for each dose combination.}
 
 \item{cns}{A matrix of the number of patients for each dose combination.}
-
-\item{cover.doses}{whether the dose level (the current dose and its adjacent doses) is over-toxic or not.
-The value is set as 1 if the dose level is overly toxicity; otherwise, it is set to 0.}
 
 \item{curDose}{A vector of the current dose indices in the horizontal and vertical direction.}
 
