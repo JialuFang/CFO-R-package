@@ -2,23 +2,22 @@
 #' 
 #' Use this function to find the maximum tolerated dose (MTD) for a single Calibration-Free Odds (CFO) or accumulative CFO (aCFO) trial.
 #'
-#' @usage CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'        add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE, seed=NULL)
+#' @usage CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design,
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param cohortsize the sample size in each cohort. The default value \code{cohortsize} is 3.
-#' @param accumulation set \code{accumulation=FALSE} to conduct the CFO design; set \code{accumulation=TRUE} to conduct the 
-#'                     aCFO design.
+#' @param design option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param seed an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'                            
 #' @details The \code{CFO.simu()} function is designed to determine the Maximum Tolerated Dose (MTD) for a single CFO or aCFO 
-#'          trial. If \code{accumulation = FALSE}, this trial corresponds to the CFO design. If \code{accumulation = TRUE}, it
+#'          trial. If \code{design = 'CFO'}, this trial corresponds to the CFO design. If \code{design = 'aCFO'}, it
 #'          corresponds to the aCFO design. \cr
 #'          Given the toxicity outcomes from previous cohorts, each cohort is sequentially assigned to the most suitable dose 
 #'          level based on the CFO or aCFO decision rule. Early stopping criteria are incorporated into the CFO or aCFO design 
@@ -48,15 +47,15 @@
 #' phi <- 0.2; ncohort <- 12; cohortsize <- 3
 #' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 #' ## find the MTD for a single CFO trial
-#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, 
-#'          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE)
+#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='CFO',
+#'          add.args=list(alp.prior=phi, bet.prior=1-phi))
 #' ## find the MTD for a single aCFO trial
-#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3,
-#'          add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = TRUE)
+#' CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='aCFO',
+#'          add.args=list(alp.prior=phi, bet.prior=1-phi))
 #' @import BOIN
 #' @export
-CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
-                      add.args=list(alp.prior=phi, bet.prior=1-phi), accumulation = FALSE, seed=NULL){
+CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3, design,
+                      add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -120,7 +119,7 @@ CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
       break()
     }
     
-    if (accumulation == FALSE){
+    if (design == 'CFO'){
       # the results for current 3 dose levels
       if (curDose!=1){
         cys <- tys[(curDose-1):(curDose+1)]
@@ -130,8 +129,10 @@ CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
         cns <- c(NA, tns[1:(curDose+1)])
       }
       curDose <- CFO.next(phi, cys, cns, curDose, add.args)$nextDose
-    }else if (accumulation == TRUE){
+    }else if (design == 'aCFO'){
       curDose <- aCFO.next(phi, tys, tns, curDose, add.args)$nextDose
+    }else{
+      stop("The input design is invalid; it can only be set as 'CFO' or 'aCFO'.")
     }
   }
   
@@ -147,3 +148,13 @@ CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3,
   return(out)
 }
 
+
+funtry <-function(design){
+  if (design=="CFO"){
+    print("aaa")
+  } else if (design=="aCFO"){
+    print("bbb")
+  } else{
+    stop("wrong")
+  }
+}

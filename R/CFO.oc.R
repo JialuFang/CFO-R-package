@@ -187,19 +187,10 @@ CFO.oc <- function(nsimu=5000, design, phi, p.true, ncohort, init.level, cohorts
   ############################MAIN DUNCTION######################################
   ###############################################################################  
   
-  if (design == 'TITE-CFO'){accumulation = FALSE; impute.method = "TITE"
-  }else if (design == 'fCFO'){accumulation = FALSE; impute.method = "frac"
-  }else if (design == 'bCFO'){accumulation = FALSE; impute.method = "No"
-  }else if (design == 'TITE-aCFO'){accumulation = TRUE; impute.method = "TITE"
-  }else if (design == 'f-aCFO'){accumulation = TRUE; impute.method = "frac"
-  }else if (design == 'b-aCFO'){accumulation = TRUE; impute.method = "No"
-  }else if (design == 'CFO'){accumulation = FALSE; impute.method = NaN
-  }else if (design == 'aCFO'){accumulation = TRUE; impute.method = NaN
-  }
   run.fn <- function(i){
     set.seed(seeds[i])
-    if (is.na(impute.method)){
-      res <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize, add.args, accumulation)
+    if (design == 'CFO' || design == 'aCFO'){
+      res <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize, design, add.args)
     }else{
       res <- lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
                             design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
@@ -245,7 +236,7 @@ CFO.oc <- function(nsimu=5000, design, phi, p.true, ncohort, init.level, cohorts
   
   sy <- post.process(results)
   
-  if (is.na(impute.method)){
+  if (design == 'CFO' || design == 'aCFO'){
     out <- list(selPercent=Perc, dose.ns=nPatients/nsimu, DLT.ns=nTox/nsimu, p.true = p.true, 
                 simu.oc = data.frame(MTDSel=sy$MTD.Sel, MTDAllo=sy$MTD.Allo, 
                                      overSel=sy$Over.Sel, overAllo=sy$Over.Allo, averDLT=sy$PerDLT,
