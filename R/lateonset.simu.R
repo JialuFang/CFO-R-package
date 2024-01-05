@@ -20,8 +20,9 @@
 #'                     patients in each cohort arriving simultaneously at a given accrual rate. When \code{tite.dist=2}, 
 #'                     it corresponds to a uniform distribution, and when \code{tite.dist=3}, it corresponds to an 
 #'                     exponential distribution.
-#' @param design option for selecting different designs, including TITE-CFO, TITE-aCFO, fCFO, f-aCFO, bCFO, and
-#'               b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO denotes the benchmark aCFO.
+#' @param design option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'}, 
+#'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
+#'               to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
@@ -155,13 +156,6 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
   ############################MAIN DUNCTION######################################
   ############################################################################### 
   
-  if (design == 'TITE-CFO'){accumulation = FALSE; impute.method = "TITE"
-  }else if (design == 'fCFO'){accumulation = FALSE; impute.method = "frac"
-  }else if (design == 'bCFO'){accumulation = FALSE; impute.method = "No"
-  }else if (design == 'TITE-aCFO'){accumulation = TRUE; impute.method = "TITE"
-  }else if (design == 'f-aCFO'){accumulation = TRUE; impute.method = "frac"
-  }else if (design == 'b-aCFO'){accumulation = TRUE; impute.method = "No"}
-  
   set.seed(seed)
   ndose <- length(p.true)
   doselist <- rep(0, ncohort)
@@ -216,13 +210,12 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
     if (design == 'bCFO' || design == 'b-aCFO'){
       current.t <- enter.times[length(enter.times)] + tau
       lateonset.simu 
-      res <- lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                            doses, add.args)
+      res <- lateonset.next(phi, p.true, curDose, design, tau, enter.times, dlt.times, current.t, doses, add.args)
       tover.doses <- res$tover.doses
+      overTox <- res$overTox
       current.t <- current.t + delta.time
     }else{
-      res <- lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                                doses, add.args)
+      res <- lateonset.next(phi, p.true, curDose, design, tau, enter.times, dlt.times, current.t, doses, add.args)
       tover.doses <- res$tover.doses
       overTox <- res$overTox
     }

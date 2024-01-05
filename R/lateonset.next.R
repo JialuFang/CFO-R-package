@@ -4,24 +4,20 @@
 #' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO 
 #' design and benchmark aCFO design.
 #' 
-#' @usage lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, 
-#'        dlt.times, current.t, accumulation, doses, 
-#'        add.args=list(alp.prior=phi, bet.prior=1-phi))
+#' @usage lateonset.next(phi, p.true, curDose, design, tau, enter.times, 
+#'        dlt.times, current.t, doses, add.args=list(alp.prior=phi, bet.prior=1-phi))
 #'
-#' @param curDose the current dose level.
 #' @param phi the target DLT rate.
 #' @param p.true The true DLT rates under the different dose levels.
+#' @param curDose the current dose level.
+#' @param design option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'}, 
+#'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
+#'               to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.
 #' @param tau maximal assessment window size
-#' @param impute.method the imputing method for handling pending DLT data. \code{impute.method = 'frac'} corresponds to 
-#'                      fractional framework. \code{impute.method = 'TITE'} corresponds to time-to-event framework.
-#'                      \code{impute.method = 'No'} implies no use of any imputing method, corresponding to the 
-#'                      benchmark CFO and benchmark aCFO designs.
 #' @param enter.times the time at which each subject existing in the trial enters the trial.
 #' @param dlt.times the time to DLT for each subject existing in the trial.  If no DLT occurs for a certain subject, 
 #'                  \code{dlt.times} is set to 0.
 #' @param current.t the current time.
-#' @param accumulation set \code{accumulation=FALSE} to conduct the CFO-type design; set \code{accumulation=TRUE} to 
-#'                     conduct the aCFO-type design.
 #' @param doses the dose level for each subject existing in the trial.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
@@ -34,7 +30,7 @@
 #'          In the TITE framework context, an assumption about the distribution of time to DLT must be pre-specified, 
 #'          whereas the fractional framework does not require justification for a specific distribution of the time to 
 #'          DLT. Consequently, fCFO and f-aCFO adapt to a more diverse range of scenarios.\cr
-#'          The function \code{lateonset.next()} also provides the option to set \code{impute.method = "No"} to execute 
+#'          The function \code{lateonset.next()} also provides the option to execute 
 #'          the benchmark CFO and aCFO design. These two methods await complete observation of toxicity outcomes for 
 #'          the previous cohorts before determining the next dose assignment. This enhances precision but comes at the 
 #'          expense of a prolonged trial duration.
@@ -80,27 +76,26 @@
 #' current.t<-8.13
 #' doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 #' ## determine the dose level for the next cohort using the TITE-CFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times, dlt.times, 
-#'                current.t, accumulation = FALSE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' ## determine the dose level for the next cohort using the TITE-aCFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times, dlt.times,  
-#'                current.t, accumulation = TRUE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' ## determine the dose level for the next cohort using the f-CFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times, 
-#'                current.t, accumulation = FALSE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='fCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' ## determine the dose level for the next cohort using the f-aCFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times,  
-#'                current.t, accumulation = TRUE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' ## determine the dose level for the next cohort using the benchmark CFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
-#'                current.t, accumulation = FALSE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='bCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' ## determine the dose level for the next cohort using the benchmark aCFO design
-#' lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
-#'                current.t, accumulation = TRUE, doses, add.args)
+#' lateonset.next(phi, p.true, curDose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, add.args)
 #' 
-lateonset.next <- function(curDose, phi, p.true, tau, impute.method, enter.times, dlt.times, 
-                           current.t, accumulation, doses,   
-                           add.args=list(alp.prior=phi, bet.prior=1-phi)){
+lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.times, 
+                           current.t, doses, add.args=list(alp.prior=phi, bet.prior=1-phi)){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -223,7 +218,14 @@ lateonset.next <- function(curDose, phi, p.true, tau, impute.method, enter.times
   
   ###############################################################################
   ############################MAIN DUNCTION######################################
-  ############################################################################### 
+  ###############################################################################
+  if (design == 'TITE-CFO'){accumulation = FALSE; impute.method = "TITE"
+  }else if (design == 'fCFO'){accumulation = FALSE; impute.method = "frac"
+  }else if (design == 'bCFO'){accumulation = FALSE; impute.method = "No"
+  }else if (design == 'TITE-aCFO'){accumulation = TRUE; impute.method = "TITE"
+  }else if (design == 'f-aCFO'){accumulation = TRUE; impute.method = "frac"
+  }else if (design == 'b-aCFO'){accumulation = TRUE; impute.method = "No"}
+  
   ndose <- length(p.true)
   if (is.null(add.args$alp.prior)){
     add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))

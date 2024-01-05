@@ -7,9 +7,10 @@
 #'        add.args=list(alp.prior=phi, bet.prior=1-phi), seed = NULL)
 #'
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
-#' @param design option for selecting different designs, including CFO, aCFO, TITE-CFO, TITE-aCFO, fCFO, 
-#'               f-aCFO, bCFO, and b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO 
-#'               denotes the benchmark aCFO.
+#' @param design option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},
+#'               \code{'TITE-CFO'}, \code{'TITE-aCFO'}, \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, 
+#'               and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO, and 
+#'               \code{'b-aCFO'} denotes the benchmark aCFO.
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts.

@@ -29,8 +29,9 @@ patients in each cohort arriving simultaneously at a given accrual rate. When \c
 it corresponds to a uniform distribution, and when \code{tite.dist=3}, it corresponds to an
 exponential distribution.}
 
-\item{design}{option for selecting different designs, including TITE-CFO, TITE-aCFO, fCFO, f-aCFO, bCFO, and
-b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO denotes the benchmark aCFO.}
+\item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
+\code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
+to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
 

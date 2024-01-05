@@ -11,9 +11,10 @@ CFO.oc(nsimu=5000, design, phi, p.true, ncohort, init.level, cohortsize,
 \arguments{
 \item{nsimu}{the total number of trials to be simulated. The default value is 5000.}
 
-\item{design}{option for selecting different designs, including CFO, aCFO, TITE-CFO, TITE-aCFO, fCFO,
-f-aCFO, bCFO, and b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO
-denotes the benchmark aCFO.}
+\item{design}{option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},
+\code{'TITE-CFO'}, \code{'TITE-aCFO'}, \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'},
+and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO, and
+\code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{phi}{the target DLT rate.}
 
