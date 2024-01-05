@@ -90,19 +90,19 @@ lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times,
                current.t, accumulation = FALSE, doses, add.args)
 ## determine the dose level for the next cohort using the TITE-aCFO design
 lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times, dlt.times,  
-               current.t, accumulation = TRUE, doses, ndose, add.args)
+               current.t, accumulation = TRUE, doses, add.args)
 ## determine the dose level for the next cohort using the f-CFO design
 lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times, 
-               current.t, accumulation = FALSE, doses, ndose, add.args)
+               current.t, accumulation = FALSE, doses, add.args)
 ## determine the dose level for the next cohort using the f-aCFO design
 lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times,  
-               current.t, accumulation = TRUE, doses, ndose, add.args)
+               current.t, accumulation = TRUE, doses, add.args)
 ## determine the dose level for the next cohort using the benchmark CFO design
 lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
-               current.t, accumulation = FALSE, doses, ndose, add.args)
+               current.t, accumulation = FALSE, doses, add.args)
 ## determine the dose level for the next cohort using the benchmark aCFO design
 lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
-               current.t, accumulation = TRUE, doses, ndose, add.args)
+               current.t, accumulation = TRUE, doses, add.args)
 
 }
 \references{
