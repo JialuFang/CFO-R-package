@@ -1,6 +1,4 @@
-#' Generate operating characteristics for multiple simulations
-#' 
-#' Obtain the operating characteristics of the CFO-type and aCFO-type designs for multiple simulations.
+#' Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
 #'
 #' @usage CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
 #'                  add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
@@ -73,7 +71,7 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   sim.res.dose <- matrix(nrow = ncohort, ncol = 2)
   sim.res.DLT <- vector("numeric", ncohort)
   
-  overdose.fn <- function(phi, obs, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+  overdose.2d <- function(phi, obs, add.args=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
     n <- obs$n
     alp.prior <- add.args$alp.prior
@@ -108,9 +106,9 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
     
     obs <- c(list(y=cy, n=cn, tys=tys, tns=tns, cidx.A=cidx.A, cidx.B=cidx.B), obs)
     
-    if (overdose.fn(phi, obs)){
-      tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
-    }
+    # if (overdose.2d(phi, obs)){
+    #   tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
+    # }
     
     if (tover.doses[1,1] == 1){
       earlystop <- 1
@@ -166,7 +164,7 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
       message('no such case')
     }
     
-    idx.chg <- CFO2d.next(phi, cys, cns, cover.doses, c(cidx.A, cidx.B), add.args, seed)$index
+    idx.chg <- CFO2d.next(phi, cys, cns, c(cidx.A, cidx.B), add.args, seed=seed)$index
     cidx.A <- cidx.A + idx.chg[1]
     cidx.B <- cidx.B + idx.chg[2]
   }
@@ -212,6 +210,5 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   class(out) <- "cfo"
   return(out)
 }
-
 
 

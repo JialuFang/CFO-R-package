@@ -1,5 +1,3 @@
-#' CFO2d.sim.multi
-#'
 #' This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.
 #'
 #' @param phi Target dose-intensity level (DIL) rate.

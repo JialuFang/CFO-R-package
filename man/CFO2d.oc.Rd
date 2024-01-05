@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO2d.oc.R
 \name{CFO2d.oc}
 \alias{CFO2d.oc}
-\title{CFO2d.sim.multi}
+\title{This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.}
 \usage{
 CFO2d.oc(
   phi,

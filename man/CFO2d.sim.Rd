@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO2d.sim.R
 \name{CFO2d.sim}
 \alias{CFO2d.sim}
-\title{Generate operating characteristics for multiple simulations}
+\title{Obtain the operating characteristics of the 2dCFO designs for multiple simulations.}
 \usage{
 CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
                  add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
@@ -42,7 +42,7 @@ A list with the following components:
 }
 }
 \description{
-Obtain the operating characteristics of the CFO-type and aCFO-type designs for multiple simulations.
+Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
 }
 \details{
 The \code{CFO2d.sim} function simulates the operating characteristics of the CFO designs

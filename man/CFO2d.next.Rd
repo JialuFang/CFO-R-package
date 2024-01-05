@@ -14,11 +14,11 @@ CFO2d.next(
 )
 }
 \arguments{
-\item{phi}{The efficacy threshold.}
+\item{phi}{The target DLT rate.}
 
-\item{cys}{A matrix of the number of successes for each dose combination.}
+\item{cys}{A matrix of the number of DLTs observed for each dose combination.}
 
-\item{cns}{A matrix of the number of patients for each dose combination.}
+\item{cns}{A matrix of the number of patients allocated for each dose combination.}
 
 \item{curDose}{A vector of the current dose indices in the horizontal and vertical direction.}
 

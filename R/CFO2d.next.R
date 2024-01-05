@@ -3,9 +3,9 @@
 #'
 #' This function is used to determine the next dose level in a 2dCFO design.
 #'
-#' @param phi The efficacy threshold.
-#' @param cys A matrix of the number of successes for each dose combination.
-#' @param cns A matrix of the number of patients for each dose combination.
+#' @param phi The target DLT rate.
+#' @param cys A matrix of the number of DLTs observed for each dose combination.
+#' @param cns A matrix of the number of patients allocated for each dose combination.
 #' @param curDose A vector of the current dose indices in the horizontal and vertical direction.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
@@ -250,13 +250,23 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
   if (overdose.fn(phi, cys[2,2], cns[2,2])){
     cover.doses[2,2] <- 1
   }
-  if (overdose.fn(phi, cys[2,3], cns[2,3])){
-    cover.doses[2,3] <- 1
-    cover.doses[3,3] <- 1
+  if (!is.na(cns[2,3])){
+    if (overdose.fn(phi, cys[2,3], cns[2,3])){
+      cover.doses[2,3] <- 1
+      cover.doses[3,3] <- 1
+    }
+  } else {
+    cover.doses[2,3] <- NA
+    cover.doses[3,3] <- NA
   }
-  if (overdose.fn(phi, cys[3,2], cns[3,2])){
-    cover.doses[3,2] <- 1
-    cover.doses[3,3] <- 1
+  if (!is.na(cns[3,2])){
+    if (overdose.fn(phi, cys[3,2], cns[3,2])){
+      cover.doses[3,2] <- 1
+      cover.doses[3,3] <- 1
+    }
+  } else {
+    cover.doses[3,2] <- NA
+    cover.doses[3,3] <- NA
   }
   
   
