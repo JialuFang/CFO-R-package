@@ -5,7 +5,7 @@
 #' the f-aCFO design and benchmark aCFO design.
 #'
 #' @usage lateonset.simu(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-#'        design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
+#'        design, init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 #'
 #' @param phi the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
@@ -22,7 +22,7 @@
 #'                     exponential distribution.
 #' @param design option for selecting different designs, including TITE-CFO, TITE-aCFO, fCFO, f-aCFO, bCFO, and
 #'               b-aCFO. Specifically, bCFO refers to the benchmark CFO, and b-aCFO denotes the benchmark aCFO.
-#' @param init.dose the dose level assigned to the first cohort. The default value \code{init.level} is 1.
+#' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
@@ -66,24 +66,24 @@
 #' tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
 #' ## find the MTD for a single TITE-CFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='TITE-CFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='TITE-CFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 # ## find the MTD for a single TITE-aCFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='TITE-aCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='TITE-aCFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 # ## find the MTD for a single fCFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='fCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='fCFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 # ## find the MTD for a single f-aCFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='f-aCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='f-aCFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 # ## find the MTD for a single benchmark CFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='bCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='bCFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 # ## find the MTD for a single benchmark aCFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
-#                 design='b-aCFO', init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#                 design='b-aCFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
 lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist, 
-                    design, init.dose=1, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+                    design, init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   
   ###############################################################################
   ###############define the functions used for main function#####################
@@ -176,7 +176,7 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
   dlts <- NULL # dlt event for each subject
   doses <- NULL # dose level for each subject
   current.t<- 0
-  curDose <- init.dose  #current dose level
+  curDose <- init.level  #current dose level
   
   tover.doses <- rep(0, ndose)
   
@@ -216,13 +216,13 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
     if (design == 'bCFO' || design == 'b-aCFO'){
       current.t <- enter.times[length(enter.times)] + tau
       lateonset.simu 
-      res <- lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                            doses, ndose, TRUE, add.args)
+      res <- lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
+                            doses, add.args)
       tover.doses <- res$tover.doses
       current.t <- current.t + delta.time
     }else{
-      res <- lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
-                                doses, ndose, TRUE, add.args)
+      res <- lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, dlt.times, current.t, accumulation,
+                                doses, add.args)
       tover.doses <- res$tover.doses
       overTox <- res$overTox
     }

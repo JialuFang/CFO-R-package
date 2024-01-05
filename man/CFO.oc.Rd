@@ -6,7 +6,7 @@
 \usage{
 CFO.oc(nsimu=5000, design, phi, p.true, ncohort, init.level, cohortsize,
        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, 
-       add.args=list(alp.prior=phi, bet.prior=1-phi))
+       add.args=list(alp.prior=phi, bet.prior=1-phi), seed = NULL)
 }
 \arguments{
 \item{nsimu}{the total number of trials to be simulated. The default value is 5000.}
@@ -42,6 +42,8 @@ exponential distribution. 'NaN' should be assigned if the design without late-on
 \item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+
+\item{seed}{A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).}
 }
 \value{
 the \code{ CFO.oc() } function returns basic setup of ($simu.setup and $p.true) and the operating

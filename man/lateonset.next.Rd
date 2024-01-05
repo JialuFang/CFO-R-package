@@ -4,14 +4,16 @@
 \alias{lateonset.next}
 \title{Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities}
 \usage{
-lateonset.next(curDose, phi, tau, impute.method, enter.times, dlt.times,
-       current.t, accumulation, doses, ndose, simu=FALSE,
+lateonset.next(curDose, phi, p.true, tau, impute.method, enter.times, 
+       dlt.times, current.t, accumulation, doses, 
        add.args=list(alp.prior=phi, bet.prior=1-phi))
 }
 \arguments{
 \item{curDose}{the current dose level.}
 
 \item{phi}{the target DLT rate.}
+
+\item{p.true}{The true DLT rates under the different dose levels.}
 
 \item{tau}{maximal assessment window size}
 
@@ -31,10 +33,6 @@ benchmark CFO and benchmark aCFO designs.}
 conduct the aCFO-type design.}
 
 \item{doses}{the dose level for each subject existing in the trial.}
-
-\item{ndose}{the number of dose level.}
-
-\item{simu}{whether simulation or not, if \code{simu=TRUE}, \code{lateonset.next()} also return \code{tover.doses}.}
 
 \item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
@@ -80,31 +78,31 @@ expense of a prolonged trial duration.
 ## 3) the arrival times of patients are distributed uniformly.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
-phi<-0.2; ndose<-7
+phi<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 add.args=list(alp.prior=phi, bet.prior=1-phi)
 enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
-dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.6962,0)
-current.t<-8.134413
+dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.7,0)
+current.t<-8.13
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 ## determine the dose level for the next cohort using the TITE-CFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times, dlt.times, 
+               current.t, accumulation = FALSE, doses, add.args)
 ## determine the dose level for the next cohort using the TITE-aCFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="TITE", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="TITE", enter.times, dlt.times,  
+               current.t, accumulation = TRUE, doses, ndose, add.args)
 ## determine the dose level for the next cohort using the f-CFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times, 
+               current.t, accumulation = FALSE, doses, ndose, add.args)
 ## determine the dose level for the next cohort using the f-aCFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="frac", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="frac", enter.times, dlt.times,  
+               current.t, accumulation = TRUE, doses, ndose, add.args)
 ## determine the dose level for the next cohort using the benchmark CFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-               accumulation = FALSE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
+               current.t, accumulation = FALSE, doses, ndose, add.args)
 ## determine the dose level for the next cohort using the benchmark aCFO design
-lateonset.next(curDose=4, phi, tau=3, impute.method="No", enter.times, dlt.times, current.t, 
-               accumulation = TRUE, doses, ndose, simu=FALSE, add.args)
+lateonset.next(curDose=4, phi, p.true, tau=3, impute.method="No", enter.times, dlt.times,  
+               current.t, accumulation = TRUE, doses, ndose, add.args)
 
 }
 \references{
