@@ -58,4 +58,3 @@ CFO2d.oc <- function(phi, p.true, ncohort = 20, cohortsize = 3, init.level = c(1
   
   return(avg_results)
 }
-
