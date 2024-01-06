@@ -55,7 +55,7 @@ cys <- matrix(c(0, 1, 0,
                 0, 0, 0), 
               nrow = 3, ncol = 3, byrow = TRUE)
 curDose <- c(2,3)
-CFO2d.next(0.3, cys, cns, curDose = curDose)
+CFO2d.next(phi = 0.3, cys, cns, curDose = curDose, seed = 1)
 
 }
 \author{
