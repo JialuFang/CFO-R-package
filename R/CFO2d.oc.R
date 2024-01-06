@@ -7,7 +7,7 @@
 #' @param init.level A numeric vector of length 2 representing the initial dose level (default is c(1,1)).
 #' @param add.args An optional list of additional arguments, includes 'alp.prior' (default is phi) and 'bet.prior'(default is 1-phi).
 #' @param n_sim Integer. The number of simulations to run (default is 1000).
-#' @param seed A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).
+#' @param seeds A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).
 #'
 #' @return A list with the averaged operating characteristics across all simulations.
 #' \itemize{
@@ -28,14 +28,14 @@
 #' 0.15, 0.30, 0.45, 0.50, 0.60), 
 #' nrow = 3, ncol = 5, byrow = TRUE)
 #' 
-#' CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
+#' CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:100, n_sim = 100)
 
 CFO2d.oc <- function(phi, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), add.args = list(alp.prior = phi, bet.prior = 1 - phi), 
-                     seed = NULL, n_sim = 1000) {
+                     seeds = NULL, n_sim = 1000) {
   
   # Run the CFO2d.sim function n_sim times using lapply
   results <- lapply(1:n_sim, function(i) {
-    CFO2d.sim(phi, p.true, ncohort, cohortsize, init.level, add.args)
+    CFO2d.sim(phi, p.true, ncohort, cohortsize, init.level, add.args, seed = seeds[i])
   })
   
   selPercent <- matrix(0, dim(p.true)[1], dim(p.true)[2])
@@ -58,8 +58,4 @@ CFO2d.oc <- function(phi, p.true, ncohort = 20, cohortsize = 3, init.level = c(1
   
   return(avg_results)
 }
-
-
-
-
 
