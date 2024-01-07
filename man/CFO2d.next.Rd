@@ -32,8 +32,8 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 A list with the following components:
 \itemize{
 \item{target}{The target DLT rate.}
-\item{cys}{A matrix of the number of DLT observed at the current dose and its adjacent doses.}
-\item{cns}{A matrix of the number of patients treated at the current dose and its adjacent doses.}
+\item{cys}{A 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.}
+\item{cns}{A 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.}
 \item{index}{A vector of length 2 representing the decision index for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
 \item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions. }
 \item{target}{The target DLT rate.}

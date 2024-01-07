@@ -211,4 +211,3 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   class(out) <- "cfo"
   return(out)
 }
-
