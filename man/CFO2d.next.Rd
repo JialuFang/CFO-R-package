@@ -39,6 +39,7 @@ A list with the following components:
 \item{target}{The target DLT rate.}
 \item{curDoses}{The current dose combination.}
 \item{nextDose}{The recommended dose combination for the next cohort.}
+\item{overTox}{The dose levels that are considered overly toxic.}
 }
 }
 \description{

@@ -180,6 +180,11 @@ summary.cfo<- function (object, ...)
   
   if(!is.null(object$decision)){
     if(length(object$decision)==2){
+      if (is.na(object$overTox)) {
+        cat("All tested doses are not overly toxic. \n\n")
+      } else {
+        cat("Dose level", object$overTox, "and all levels above exhibit excessive toxicity", "\n")
+      }
       cat("The decision regarding the direction of movement for drug A is", object$decision[1], "\n")
       cat("The decision regarding the direction of movement for drug B is", object$decision[2], "\n")
       cat("The next cohort will be assigned to dose level (", object$nextDose[1],",",object$nextDose[2],")", "\n")

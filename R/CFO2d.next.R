@@ -22,6 +22,7 @@
 #'   \item{target}{The target DLT rate.}
 #'   \item{curDoses}{The current dose combination.}
 #'   \item{nextDose}{The recommended dose combination for the next cohort.}
+#'   \item{overTox}{The dose levels that are considered overly toxic.}
 #' }
 #' 
 #' @author Wenliang Wang
@@ -47,6 +48,7 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
   bet.prior <- add.args$bet.prior
   set.seed(seed)
   cover.doses=matrix(0,3,3)
+  overTox <- NA
   
   # posterior probability of pj >= phi given data
   post.prob.fn <- function(phi, y, n, alp.prior=0.1, bet.prior=0.9){
@@ -249,11 +251,13 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
   
   if (overdose.fn(phi, cys[2,2], cns[2,2])){
     cover.doses[2,2] <- 1
+    overTox <- curDose
   }
   if (!is.na(cns[2,3])){
     if (overdose.fn(phi, cys[2,3], cns[2,3])){
       cover.doses[2,3] <- 1
       cover.doses[3,3] <- 1
+      overTox <- curDose + c(0,1)
     }
   } else {
     cover.doses[2,3] <- NA
@@ -263,10 +267,16 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
     if (overdose.fn(phi, cys[3,2], cns[3,2])){
       cover.doses[3,2] <- 1
       cover.doses[3,3] <- 1
+      overTox <- curDose + c(1,0)
     }
   } else {
     cover.doses[3,2] <- NA
     cover.doses[3,3] <- NA
+  }
+  if (!is.na(cns[2,3])&!is.na(cns[3,2])){
+    if(overdose.fn(phi, cys[2,3], cns[2,3])&overdose.fn(phi, cys[3,2], cns[3,2])){
+      overTox <- curDose
+    }
   }
   
   
@@ -348,8 +358,7 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
   nextDose <- curDose+c(cidx.A, cidx.B)
   decision_values <- c("de-escalation", "stay", "escalation")
   decision <- decision_values[match(c(cidx.A, cidx.B), c(-1, 0, 1))]
-  out <- list(target=phi, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, curDose = curDose, nextDose = nextDose)
+  out <- list(target=phi, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, curDose = curDose, nextDose = nextDose, overTox = overTox)
   class(out) <- "cfo"
   return(out)
 }
-
