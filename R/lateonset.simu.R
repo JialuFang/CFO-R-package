@@ -64,7 +64,7 @@
 #' @examples
 #' phi <- 0.2; ncohort <- 12; cohortsize <- 3
 #' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-#' tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
+#' tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 2
 #' ## find the MTD for a single TITE-CFO trial
 # lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, accrual.dist,
 #                 design='TITE-CFO', init.level=1, add.args=list(alp.prior=phi, bet.prior=1-phi))
@@ -178,11 +178,11 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
     curP <- p.true[curDose]
     doselist[i] <- curDose
     
-    if (accrual.dist==0){
+    if (accrual.dist==1){
       delta.times <- rep(0, cohortsize)
-    }else if (accrual.dist == 1){
-      delta.times <- cumsum(c(0, runif(cohortsize-1, 0,  2*tau/accrual)))
     }else if (accrual.dist == 2){
+      delta.times <- cumsum(c(0, runif(cohortsize-1, 0,  2*tau/accrual)))
+    }else if (accrual.dist == 3){
       delta.times <- cumsum(c(0, rexp(cohortsize-1, rate=accrual/tau)))
     }
     enter.times <- c(enter.times, current.t+delta.times)
@@ -195,11 +195,11 @@ lateonset.simu <- function(phi, p.true, tau, cohortsize, ncohort, accrual, tite.
     
     # Move to next cohort 
     if (i != ncohort){
-      if (accrual.dist==0){
+      if (accrual.dist==1){
         delta.time <- tau*cohortsize/accrual
-      }else if (accrual.dist == 1){
-        delta.time <- runif(1, 0, 2*tau/accrual)
       }else if (accrual.dist == 2){
+        delta.time <- runif(1, 0, 2*tau/accrual)
+      }else if (accrual.dist == 3){
         delta.time <- rexp(1, rate=accrual/tau)
       }
     }else{

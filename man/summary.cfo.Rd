@@ -34,19 +34,19 @@ decision <- CFO.next(phi=0.2, cys=c(0,1,0), cns=c(3,6,0), curDose=3, add.args)
 summary(decision)
 
 ## summarize the object returned by CFO.simu()
-aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, 
-                    accumulation = TRUE)
+
+aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='aCFO',
+                      add.args=list(alp.prior=phi, bet.prior=1-phi))
 summary(aCFOtrial)
 
 ## summarize the object returned by lateonset.next()
-ndose<-7
 enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
 dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.6962,0)
 current.t<-8.134413
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
-decision <- lateonset.next(curDose=4, phi, tau, impute.method="frac", enter.times, 
-               dlt.times, current.t, accumulation = TRUE, doses, ndose, FALSE, add.args)
+decision <- lateonset.next(phi, p.true, curDose=4, design='fCFO', tau=3, enter.times, dlt.times,  
+                           current.t, doses, add.args)
 summary(decision)
 
 ## summarize the object returned by lateonset.simu()
