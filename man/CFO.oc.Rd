@@ -44,7 +44,7 @@ exponential distribution. 'NaN' should be assigned if the design without late-on
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:n_sim} (default is NULL).}
+\item{seeds}{A vector of random seeds for each simulation, for example, \code{seeds = 1:n_sim} (default is NULL).}
 }
 \value{
 the \code{ CFO.oc() } function returns basic setup of ($simu.setup and $p.true) and the operating
@@ -83,26 +83,26 @@ tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 2
 
 ## get the operating characteristics for 100 simulations using the CFO design
 CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
-       tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
+       tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the aCFO design
 CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
-       tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
+       tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the TITE-CFO design
 CFO.oc (nsimu, design='TITE-CFO', phi, p.true, ncohort, init.level, cohortsize,
-        tau, accrual, tite.dist, accrual.dist, add.args)
+        tau, accrual, tite.dist, accrual.dist, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the TITE-aCFO design
 CFO.oc (nsimu, design='TITE-aCFO', phi, p.true, ncohort, init.level, cohortsize,
         tau, accrual, tite.dist, accrual.dist, add.args)
 ## get the operating characteristics for 100 simulations using the fCFO design
 CFO.oc (nsimu, design='fCFO', phi, p.true, ncohort, init.level, cohortsize,
-        tau, accrual, tite.dist, accrual.dist, add.args)
+        tau, accrual, tite.dist, accrual.dist, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the f-aCFO design
 CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
-        tau, accrual, tite.dist, accrual.dist, add.args)
+        tau, accrual, tite.dist, accrual.dist, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the bCFO design
 CFO.oc (nsimu, design='bCFO', phi, p.true, ncohort, init.level, cohortsize,
-        tau, accrual, tite.dist, accrual.dist, add.args)
+        tau, accrual, tite.dist, accrual.dist, add.args, seeds = 1:nsimu)
 ## get the operating characteristics for 100 simulations using the b-aCFO design
 CFO.oc (nsimu, design='b-aCFO', phi, p.true, ncohort, init.level, cohortsize,
-        tau, accrual, tite.dist, accrual.dist, add.args)
+        tau, accrual, tite.dist, accrual.dist, add.args, seeds = 1:nsimu)
 }

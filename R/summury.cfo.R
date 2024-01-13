@@ -72,7 +72,7 @@
 #' summary(decision)
 #' 
 #' ## summarize the object returned by CFO2d.sim()
-#' CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
+#' CFO2dtrail <- CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 #' summary(CFO2dtrail)
 #' 
 #' ## summarize the object returned by CFO2d.oc()
@@ -87,7 +87,7 @@ summary.cfo<- function (object, ...)
           object$simu.setup$nsimu, "simulations. \n")
     }else{
       cat("In", object$simu.setup$nsimu, "simulations, early stopping occurred",
-          object$simu.oc$errStop, "times. \n")
+          object$simu.oc$errStop, "times \n")
       cat("Among simulations where early stopping did not occur: \n")
     }
     
@@ -185,7 +185,7 @@ summary.cfo<- function (object, ...)
       cat("The next cohort will be assigned to dose level (", object$nextDose[1],",",object$nextDose[2],")", "\n")
     } else {
       if (is.na(object$overTox)) {
-        cat("All tested doses are not overly toxic. \n\n")
+        cat("All tested doses are not overly toxic \n\n")
       } else {
         cat("Dose level", object$overTox, "and all levels above exhibit excessive toxicity", "\n")
       }

@@ -80,7 +80,7 @@ decision <- CFO2d.next(0.3, cys, cns, curDose = curDose)
 summary(decision)
 
 ## summarize the object returned by CFO2d.sim()
-CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
+CFO2dtrail <- CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 summary(CFO2dtrail)
 
 ## summarize the object returned by CFO2d.oc()
