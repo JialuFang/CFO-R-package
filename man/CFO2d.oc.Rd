@@ -55,5 +55,5 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 0.15, 0.30, 0.45, 0.50, 0.60), 
 nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:100, nsimu = 100)
+CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
 }
