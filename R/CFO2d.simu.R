@@ -1,6 +1,6 @@
 #' Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
 #'
-#' @usage CFO2d.sim(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
+#' @usage CFO2d.simu(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
 #'                  add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
 #'
 #' @param phi the target DLT rate.
@@ -14,7 +14,7 @@
 #' @param seed an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'
 #' @details 
-#' The `CFO2d.sim` function simulates the operating characteristics of the CFO designs 
+#' The `CFO2d.simu` function simulates the operating characteristics of the CFO designs 
 #' in a two-dimensional dose-finding trial. The function uses parameters such as target DLT rate, true DLT rates 
 #' under different dose levels, and cohort details, and provides detailed output for performance evaluation. 
 #' It relies on the BOIN package.
@@ -45,11 +45,11 @@
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #'
-#' CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 
 
 
-CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
   # phi: Target DIL rate
   # p.true: True DIL rates under the different dose levels
   # ncohort: The number of cohorts
@@ -67,9 +67,9 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   tover.doses <- matrix(0, ndose.A, ndose.B) # Whether each dose is overdosed or not, 1 yes
   
   # Initialize vectors to store dose combinations and number of DLTs for each cohort
-  # sim.res.dose <- vector("list", ncohort) # Change to list to store dose pairs
-  sim.res.dose <- matrix(nrow = ncohort, ncol = 2)
-  sim.res.DLT <- vector("numeric", ncohort)
+  # simu.res.dose <- vector("list", ncohort) # Change to list to store dose pairs
+  simu.res.dose <- matrix(nrow = ncohort, ncol = 2)
+  simu.res.DLT <- vector("numeric", ncohort)
   
   overdose.2d <- function(phi, obs, add.args=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
@@ -93,14 +93,13 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
   for (i in 1:ncohort){
     
     pc <- p.true[cidx.A, cidx.B] 
-    set.seed(seed+i)
     cres <- rbinom(cohortsize, 1, pc)
     tys[cidx.A, cidx.B] <- tys[cidx.A, cidx.B] + sum(cres)
     tns[cidx.A, cidx.B] <- tns[cidx.A, cidx.B] + cohortsize
     
-    # sim.res.dose[[i]] <- c(cidx.A, cidx.B) # Store as a pair
-    sim.res.dose[i, ] <- c(cidx.A, cidx.B)
-    sim.res.DLT[i] <- sum(cres)
+    # simu.res.dose[[i]] <- c(cidx.A, cidx.B) # Store as a pair
+    simu.res.dose[i, ] <- c(cidx.A, cidx.B)
+    simu.res.DLT[i] <- sum(cres)
     
     cy <- tys[cidx.A, cidx.B]
     cn <- tns[cidx.A, cidx.B]
@@ -205,9 +204,11 @@ CFO2d.sim <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
     }
   }
   ptoxic <- ptoxic/(ncohort*cohortsize)
-  # sim.res <- list(dose = sim.res.dose, DLT = sim.res.DLT)
+  # simu.res <- list(dose = simu.res.dose, DLT = simu.res.DLT)
   out<-list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, 
-            npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=sim.res.dose, DLT = sim.res.DLT)
+            npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=simu.res.dose, DLT = simu.res.DLT)
   class(out) <- "cfo"
   return(out)
 }
+
+

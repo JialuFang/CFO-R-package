@@ -73,7 +73,7 @@ applications, multiple simulations are required to ascertain the MTD, and this c
 \examples{
 phi <- 0.2; ncohort <- 12; cohortsize <- 3
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
+tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 2
 ## find the MTD for a single TITE-CFO trial
 }
 \references{
