@@ -4,7 +4,7 @@
 #'
 #' @usage CFO.oc(nsimu=5000, design, phi, p.true, ncohort, init.level, cohortsize,
 #'        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, 
-#'        add.args=list(alp.prior=phi, bet.prior=1-phi), seed = NULL)
+#'        add.args=list(alp.prior=phi, bet.prior=1-phi), seeds = NULL)
 #'
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
 #' @param design option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},

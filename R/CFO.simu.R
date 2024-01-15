@@ -147,14 +147,3 @@ CFO.simu <- function(phi, p.true, ncohort, init.level=1, cohortsize=3, design,
   class(out) <- "cfo"
   return(out)
 }
-
-
-funtry <-function(design){
-  if (design=="CFO"){
-    print("aaa")
-  } else if (design=="aCFO"){
-    print("bbb")
-  } else{
-    stop("wrong")
-  }
-}

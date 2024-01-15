@@ -34,14 +34,13 @@ nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
 phi <- 0.2; add.args=list(alp.prior=phi, bet.prior=1-phi)
 ## CFO design
-CFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args, accumulation = FALSE)
+CFOtrial <- CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='CFO',add.args)
 plot(CFOtrial)
 CFOsimu <- CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
 plot(CFOsimu)
 ## aCFO design
-aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level, cohortsize=3,add.args,
-                    accumulation = TRUE)
+aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='aCFO',add.args)
 plot(aCFOtrial)
 aCFOsimu <- CFO.oc (nsimu, design='aCFO', phi, p.true, ncohort, init.level, cohortsize,
                     tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args)
@@ -86,7 +85,7 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                  nrow = 3, ncol = 5, byrow = TRUE)
 
 ## plot the single trail returned by CFO2d.sim()
-CFO2dtrail <- CFO2d.sim(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
+CFO2dtrail <- CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 plot(CFO2dtrail)
 
 ## plot the multiple trails returned by CFO2d.oc()

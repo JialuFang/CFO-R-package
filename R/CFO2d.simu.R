@@ -45,7 +45,7 @@
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #'
-#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1))
+#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
 
 
 
