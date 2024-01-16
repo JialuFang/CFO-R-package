@@ -45,7 +45,7 @@
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #'
-#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1))
 
 
 
@@ -55,7 +55,9 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
   # ncohort: The number of cohorts
   # cohortsize: The sample size in each cohort
   # alp.prior, bet.prior: prior parameters
-  set.seed(seed)
+  if (!is.null(seed)){
+    set.seed(seed)
+  }
   earlystop <- 0
   ndose.A <- length(p.true[,1])
   ndose.B <- length(p.true[1,])
@@ -92,7 +94,9 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
   
   for (i in 1:ncohort){
     pc <- p.true[cidx.A, cidx.B] 
-    set.seed(seed+i)
+    if (!is.null(seed)){
+      set.seed(seed+i)
+    }
     cres <- rbinom(cohortsize, 1, pc)
     tys[cidx.A, cidx.B] <- tys[cidx.A, cidx.B] + sum(cres)
     tns[cidx.A, cidx.B] <- tns[cidx.A, cidx.B] + cohortsize
@@ -208,5 +212,3 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
   class(out) <- "cfo"
   return(out)
 }
-
-
