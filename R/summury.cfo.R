@@ -14,6 +14,8 @@
 #'
 #' @author Jialu Fang and Wenliang Wang
 #'
+#' @export
+#' 
 #' @examples
 #' ## settings for 1dCFO
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
