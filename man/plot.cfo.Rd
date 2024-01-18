@@ -89,7 +89,7 @@ CFO2dtrail <- CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 plot(CFO2dtrail)
 
 ## plot the multiple trails returned by CFO2d.oc()
-CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, n_sim = 100)
+CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:100, nsimu = 100)
 plot(CFO2dsim)
 
 }

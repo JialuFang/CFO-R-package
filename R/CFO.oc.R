@@ -63,6 +63,13 @@
 #' add.args=list(alp.prior=phi, bet.prior=1-phi)
 #' tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 2
 #' 
+
+execution_time <- system.time({
+  # Your R code to be measured goes here
+  result <- CFO.oc (nsimu, design='TITE-aCFO', phi, p.true, ncohort, init.level, cohortsize,
+                    tau, accrual, tite.dist, accrual.dist, add.args)
+})
+
 #' ## get the operating characteristics for 100 simulations using the CFO design
 #' CFO.oc (nsimu, design='CFO', phi, p.true, ncohort, init.level, cohortsize,
 #'        tau=NaN, accrual=NaN, tite.dist=NaN, accrual.dist=NaN, add.args, seeds = 1:nsimu)
