@@ -5,32 +5,34 @@
 \title{This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.}
 \usage{
 CFO2d.oc(
-  phi,
+  target,
   p.true,
   ncohort = 20,
   cohortsize = 3,
   init.level = c(1, 1),
-  add.args = list(alp.prior = phi, bet.prior = 1 - phi),
+  prior.para = list(alp.prior = target, bet.prior = 1 - target),
   seeds = NULL,
   nsimu = 1000
 )
 }
 \arguments{
-\item{phi}{Target dose-intensity level (DIL) rate.}
+\item{target}{the target DLT rate.}
 
-\item{p.true}{A matrix representing the true DIL rates under the different dose levels.}
+\item{p.true}{a matrix representing the true DIL rates under the different dose levels.}
 
-\item{ncohort}{Integer. The number of cohorts (default is 20).}
+\item{ncohort}{the total number of cohorts, the default value is 20.}
 
-\item{cohortsize}{Integer. The sample size in each cohort (default is 3).}
+\item{cohortsize}{the number of patients or size of each cohort. the default value is 3.}
 
-\item{init.level}{A numeric vector of length 2 representing the initial dose level (default is c(1,1)).}
+\item{init.level}{a numeric vector of length 2 representing the initial dose level (default is c(1,1)).}
 
-\item{add.args}{An optional list of additional arguments, includes 'alp.prior' (default is phi) and 'bet.prior'(default is 1-phi).}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
+and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
+any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
 \item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).}
 
-\item{nsimu}{Integer. The number of simulations to run (default is 1000).}
+\item{nsimu}{the total number of trials to be simulated. The default value is 1000.}
 }
 \value{
 A list with the averaged operating characteristics across all simulations.
@@ -55,5 +57,5 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 0.15, 0.30, 0.45, 0.50, 0.60), 
 nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
+CFO2d.oc(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
 }

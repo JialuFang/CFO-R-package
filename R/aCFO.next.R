@@ -3,15 +3,24 @@
 #' 
 #' In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage aCFO.next(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#' @usage aCFO.next(target, ays, ans, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
+#'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
 #'
-#' @param phi the target DLT rate.
-#' @param tys the current number of DLTs observed in patients for all dose levels.
-#' @param tns the current number of patients for all dose levels.
-#' @param curDose the current dose level.
-#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#' @param target the target DLT rate.
+#' @param ays the current number of DLTs observed in patients for all dose levels.
+#' @param ans the current number of patients for all dose levels.
+#' @param currdose the current dose level.
+#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
+#'                    the default value of (\code{cutoff.eli=0.95}) for general use.
+#' @param extrasafe set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+#'                   extra safety
+#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
+#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset=0.05}
+#'                generally works well.
 #'
 #' @details The aCFO design design incorporate the dose information of all positions (from the lowest to the 
 #'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
@@ -37,13 +46,15 @@
 #' @return The \code{aCFO.next()} function returns a list object comprising the following elements: 
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
-#'   \item{tys: }{the current counts of DLTs observed at all dose levels}
-#'   \item{tns: }{the current counts of patients treated at all dose levels}
+#'   \item{ays: }{the current counts of DLTs observed at all dose levels}
+#'   \item{ans: }{the current counts of patients treated at all dose levels}
 #'   \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the 
 #'   movement directions, and \code{stop} indicates stopping the experiment}
-#'   \item{curDoses: }{the current level.}
-#'   \item{nextDose: }{the recommended dose level for the next cohort.}
-#'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
+#'   \item{currdose: }{the current level.}
+#'   \item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is 
+#'   terminated due to early stopping.}
+#'   \item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by 
+#'   \code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #' }
 #'         
@@ -54,18 +65,22 @@
 #'
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
-#' tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
-#' aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=3,add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' ays <- c(0,0,1,0,0,0,0); ans <- c(3,3,6,0,0,0,0)
+#' decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=3,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' summary(decision)
 #' 
-#' tys <- c(3,0,0,0,0,0,0); tns <- c(3,0,0,0,0,0,0)
-#' aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=1,add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' ays <- c(3,0,0,0,0,0,0); ans <- c(3,0,0,0,0,0,0)
+#' decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=1,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' summary(decision)
 #' 
-#' tys <- c(0,0,0,0,0,0,3); tns <- c(3,3,3,3,3,3,3)
-#' aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=7,add.args=list(alp.prior=0.2, bet.prior=0.8))
+#' ays <- c(0,0,0,0,0,0,3); ans <- c(3,3,3,3,3,3,3)
+#' decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=7,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' summary(decision)
 #' 
 #' @import stats
 #' @export
-aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+aCFO.next <- function(target, ays, ans, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
+                      cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
   
 ###############################################################################
 ###############define the functions used for main function#####################
@@ -77,14 +92,14 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
     1 - pbeta(phi, alp, bet)
   }
   
-  overdose.fn <- function(phi, add.args=list()){
-    y <- add.args$y
-    n <- add.args$n
-    alp.prior <- add.args$alp.prior
-    bet.prior <- add.args$bet.prior
+  overdose.fn <- function(phi, threshold, prior.para=list()){
+    y <- prior.para$y
+    n <- prior.para$n
+    alp.prior <- prior.para$alp.prior
+    bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
     # print(data.frame("prob of overdose" = pp))
-    if ((pp >= 0.95) & (add.args$n>=3)){
+    if ((pp >= threshold) & (prior.para$n>=3)){
       return(TRUE)
     }else{
       return(FALSE)
@@ -128,17 +143,17 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
     return(OR)
   }
   
-  OR.union.values <- function(phi, ctns, ctys, alp.prior, bet.prior, type){
-    ndose <- length(ctys)
+  OR.union.values <- function(phi, cans, cays, alp.prior, bet.prior, type){
+    ndose <- length(cays)
     if (type=="L"){
       OR.list <- rep(0, ndose-1)
       for (i in 1:(ndose-1)){
-        OR.list[i] <- OR.values(phi, ctys[i], ctns[i], ctys[ndose], ctns[ndose], alp.prior, bet.prior, type)
+        OR.list[i] <- OR.values(phi, cays[i], cans[i], cays[ndose], cans[ndose], alp.prior, bet.prior, type)
       }
     }else if (type=="R"){
       OR.list <- rep(0, ndose-1)
       for (i in 2:ndose){
-        OR.list[i-1] <- OR.values(phi, ctys[1], ctns[1], ctys[i], ctns[i], alp.prior, bet.prior, type)
+        OR.list[i-1] <- OR.values(phi, cays[1], cans[1], cays[i], cans[i], alp.prior, bet.prior, type)
       }
     }
     return(sum(OR.list))
@@ -232,17 +247,17 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
     list(gamma=gam, min.err=min.err)
   }
   
-  optim.gamma.union.fn <- function(ctns, phi, type, alp.prior, bet.prior){
-    ndose <- length(ctns)
+  optim.gamma.union.fn <- function(cans, phi, type, alp.prior, bet.prior){
+    ndose <- length(cans)
     if (type == "L"){
       gamma.list <- rep(0, ndose-1)
       for (i in 1:(ndose-1)){
-        gamma.list[i] <- optim.gamma.fn(ctns[i], ctns[ndose], phi, type, alp.prior, bet.prior)$gamma
+        gamma.list[i] <- optim.gamma.fn(cans[i], cans[ndose], phi, type, alp.prior, bet.prior)$gamma
       }
     }else if (type == "R"){
       gamma.list <- rep(0, ndose-1)
       for (i in 2:ndose){
-        gamma.list[i-1] <- optim.gamma.fn(ctns[1], ctns[i], phi, type, alp.prior, bet.prior)$gamma
+        gamma.list[i-1] <- optim.gamma.fn(cans[1], cans[i], phi, type, alp.prior, bet.prior)$gamma
       }
     }
     return(sum(gamma.list))
@@ -251,39 +266,50 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
   ###############################################################################
   ############################MAIN DUNCTION######################################
   ###############################################################################
-  ndose <- length(tys)
+  ndose <- length(ays)
   
-  if (is.null(add.args$alp.prior)){
-    add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
+  if (is.null(prior.para$alp.prior)){
+    prior.para <- c(prior.para, list(alp.prior=target, bet.prior=1-target))
   }
-  alp.prior <- add.args$alp.prior
-  bet.prior <- add.args$bet.prior
+  alp.prior <- prior.para$alp.prior
+  bet.prior <- prior.para$bet.prior
   
   tover.doses <- rep(0, ndose)
   for (i in 1:ndose){
-    cy <- tys[i]
-    cn <- tns[i]
-    add.args <- c(list(y=cy, n=cn), add.args)
-    if (overdose.fn(phi, add.args)){
+    cy <- ays[i]
+    cn <- ans[i]
+    prior.para <- c(list(y=cy, n=cn), list(alp.prior=alp.prior, bet.prior=bet.prior))
+    if (overdose.fn(target, cutoff.eli, prior.para)){
       tover.doses[i:ndose] <- 1
       break()
     }
   }
-  position <- which(tover.doses == 1)[1]
   
+  if (extrasafe) {
+    cy <- ays[1]
+    cn <- ans[1]
+    prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
+    if (overdose.fn(target, cutoff.eli, prior.para)){
+      tover.doses[1:ndose] <- 1
+      break()
+    }
+  }
+  
+  position <- which(tover.doses == 1)[1]
+  prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior))
   if ((tover.doses[1] == 1) & (position == 1)){
     index <- NA
     decision <- "stop"
   } else {
-    if (curDose!=1){
-      cys <- tys[(curDose-1):(curDose+1)]
-      cns <- tns[(curDose-1):(curDose+1)]
-      cover.doses <- tover.doses[(curDose-1):(curDose+1)]
+    if (currdose!=1){
+      cys <- ays[(currdose-1):(currdose+1)]
+      cns <- ans[(currdose-1):(currdose+1)]
+      cover.doses <- tover.doses[(currdose-1):(currdose+1)]
       #cover.doses <- c(0, 0, 0) # No elimination rule
     }else{
-      cys <- c(NA, tys[1:(curDose+1)])
-      cns <- c(NA, tns[1:(curDose+1)])
-      cover.doses <- c(NA, tover.doses[1:(curDose+1)])
+      cys <- c(NA, ays[1:(currdose+1)])
+      cns <- c(NA, ans[1:(currdose+1)])
+      cover.doses <- c(NA, tover.doses[1:(currdose+1)])
       #cover.doses <- c(NA, 0, 0) # No elimination rule
     }
     
@@ -297,8 +323,8 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
         decision <- "stay"
       }
       else  if (is.na(cys[1]) & (!(cover.doses[3]==1))){
-        OR.v2 <- OR.union.values(phi, tns[curDose:ndose], tys[curDose:ndose], alp.prior, bet.prior, type="R")
-        gam2 <- optim.gamma.union.fn(tns[curDose:ndose], phi, "R", alp.prior, bet.prior)
+        OR.v2 <- OR.union.values(target, ans[currdose:ndose], ays[currdose:ndose], alp.prior, bet.prior, type="R")
+        gam2 <- optim.gamma.union.fn(ans[currdose:ndose], target, "R", alp.prior, bet.prior)
         if (OR.v2>gam2){
           index <- 1
           decision <- "escalation"
@@ -308,8 +334,8 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
         }
       }
       else  if (is.na(cys[3]) | (cover.doses[3]==1)){
-        gam1 <- optim.gamma.union.fn(tns[1:curDose], phi, "L", alp.prior, bet.prior)
-        OR.v1 <- OR.union.values(phi, tns[1:curDose], tys[1:curDose], alp.prior, bet.prior, type="L")
+        gam1 <- optim.gamma.union.fn(ans[1:currdose], target, "L", alp.prior, bet.prior)
+        OR.v1 <- OR.union.values(target, ans[1:currdose], ays[1:currdose], alp.prior, bet.prior, type="L")
         if (OR.v1>gam1){
           index <- -1
           decision <- "de-escalation"
@@ -319,10 +345,10 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
         }
       }
       else  if (!(is.na(cys[1]) | is.na(cys[3]) | cover.doses[3]==1)){
-        gam1 <- optim.gamma.union.fn(tns[1:curDose], phi, "L", alp.prior, bet.prior)
-        gam2 <- optim.gamma.union.fn(tns[curDose:ndose], phi, "R", alp.prior, bet.prior)
-        OR.v1 <- OR.union.values(phi, tns[1:curDose], tys[1:curDose], alp.prior, bet.prior, type="L")
-        OR.v2 <- OR.union.values(phi, tns[curDose:ndose], tys[curDose:ndose], alp.prior, bet.prior, type="R")
+        gam1 <- optim.gamma.union.fn(ans[1:currdose], target, "L", alp.prior, bet.prior)
+        gam2 <- optim.gamma.union.fn(ans[currdose:ndose], target, "R", alp.prior, bet.prior)
+        OR.v1 <- OR.union.values(target, ans[1:currdose], ays[1:currdose], alp.prior, bet.prior, type="L")
+        OR.v2 <- OR.union.values(target, ans[currdose:ndose], ays[currdose:ndose], alp.prior, bet.prior, type="R")
         v1 <- OR.v1 > gam1
         v2 <- OR.v2 > gam2
         if (v1 & !v2){
@@ -340,9 +366,14 @@ aCFO.next <- function(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.p
     
   }
   
-  nextDose <- curDose+index
-  out <- list(target=phi, tys=tys, tns=tns, decision=decision, curDose = curDose, 
-              nextDose=nextDose, overTox=position)
+  if (decision=='stop'){
+    nextdose <- 99
+  }else{
+    nextdose <- currdose+index
+  }
+  
+  out <- list(target=target, ays=ays, ans=ans, decision=decision, currdose = currdose, 
+              nextdose=nextdose, overTox=position)
   class(out) <- "cfo"
   return(out)
 }

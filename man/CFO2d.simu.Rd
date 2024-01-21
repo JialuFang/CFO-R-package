@@ -4,25 +4,25 @@
 \alias{CFO2d.simu}
 \title{Obtain the operating characteristics of the 2dCFO designs for multiple simulations.}
 \usage{
-CFO2d.simu(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
-                 add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
+CFO2d.simu(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
+                 prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL)
 }
 \arguments{
-\item{phi}{the target DLT rate.}
+\item{target}{the target DLT rate.}
 
-\item{p.true}{the true DLT rates under the different dose levels.}
+\item{p.true}{a matrix representing the true DIL rates under the different dose levels.}
 
 \item{ncohort}{the total number of cohorts, the default value is 20.}
 
-\item{cohortsize}{the sample size in each cohort, the default value is 3.}
+\item{cohortsize}{the number of patients or size of each cohort. the default value is 3.}
 
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 }
 \value{
 A list with the following components:
@@ -57,7 +57,7 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                    0.15, 0.30, 0.45, 0.50, 0.60), 
                  nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
 }
 \author{
 Wenliang Wang

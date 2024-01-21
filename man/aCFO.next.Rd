@@ -4,32 +4,46 @@
 \alias{aCFO.next}
 \title{Determination of the dose level for next cohort in aCFO design}
 \usage{
-aCFO.next(phi, tys, tns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi))
+aCFO.next(target, ays, ans, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
+       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
 }
 \arguments{
-\item{phi}{the target DLT rate.}
+\item{target}{the target DLT rate.}
 
-\item{tys}{the current number of DLTs observed in patients for all dose levels.}
+\item{ays}{the current number of DLTs observed in patients for all dose levels.}
 
-\item{tns}{the current number of patients for all dose levels.}
+\item{ans}{the current number of patients for all dose levels.}
 
-\item{curDose}{the current dose level.}
+\item{currdose}{the current dose level.}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+
+\item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
+the default value of (\code{cutoff.eli=0.95}) for general use.}
+
+\item{extrasafe}{set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+extra safety}
+
+\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
+stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset=0.05}
+generally works well.}
 }
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements:
 \itemize{
 \item{target: }{the target DLT rate.}
-\item{tys: }{the current counts of DLTs observed at all dose levels}
-\item{tns: }{the current counts of patients treated at all dose levels}
+\item{ays: }{the current counts of DLTs observed at all dose levels}
+\item{ans: }{the current counts of patients treated at all dose levels}
 \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the
 movement directions, and \code{stop} indicates stopping the experiment}
-\item{curDoses: }{the current level.}
-\item{nextDose: }{the recommended dose level for the next cohort.}
-\item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
+\item{currdose: }{the current level.}
+\item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is
+terminated due to early stopping.}
+\item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
+\code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the
 occurrence of overly toxicity did not happen.}
 }
 }
@@ -62,14 +76,17 @@ When the current dose level is the lowest or highest (i.e., at the boundary), th
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
-tys <- c(0,0,1,0,0,0,0); tns <- c(3,3,6,0,0,0,0)
-aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=3,add.args=list(alp.prior=0.2, bet.prior=0.8))
+ays <- c(0,0,1,0,0,0,0); ans <- c(3,3,6,0,0,0,0)
+decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=3,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
-tys <- c(3,0,0,0,0,0,0); tns <- c(3,0,0,0,0,0,0)
-aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=1,add.args=list(alp.prior=0.2, bet.prior=0.8))
+ays <- c(3,0,0,0,0,0,0); ans <- c(3,0,0,0,0,0,0)
+decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=1,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
-tys <- c(0,0,0,0,0,0,3); tns <- c(3,3,3,3,3,3,3)
-aCFO.next(phi=0.2, tys=tys, tns=tns, curDose=7,add.args=list(alp.prior=0.2, bet.prior=0.8))
+ays <- c(0,0,0,0,0,0,3); ans <- c(3,3,3,3,3,3,3)
+decision <- aCFO.next(target=0.2, ays=ays, ans=ans, currdose=7,prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
 }
 \references{

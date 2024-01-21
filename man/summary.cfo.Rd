@@ -26,17 +26,17 @@ set to 5000 to ensure the accuracy of the results.
 ## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-phi <- 0.2; add.args=list(alp.prior=phi, bet.prior=1-phi)
+target <- 0.2; prior.para=list(alp.prior=target, bet.prior=1-target)
 tau <- 3; accrual <- 6; tite.dist <- 2; accrual.dist <- 1
 
 ## summarize the object returned by CFO.next()
-decision <- CFO.next(phi=0.2, cys=c(0,1,0), cns=c(3,6,0), curDose=3, add.args)
+decision <- CFO.next(target=0.2, cys=c(0,1,0), cns=c(3,6,0), currdose=3, prior.para)
 summary(decision)
 
 ## summarize the object returned by CFO.simu()
 
-aCFOtrial <- CFO.simu(phi, p.true, ncohort, init.level=1, cohortsize=3, design='aCFO',
-                      add.args=list(alp.prior=phi, bet.prior=1-phi))
+aCFOtrial <- CFO.simu(target, p.true, ncohort, init.level=1, cohortsize=3, design='aCFO',
+                      prior.para=list(alp.prior=target, bet.prior=1-target))
 summary(aCFOtrial)
 
 ## summarize the object returned by lateonset.next()
@@ -45,19 +45,19 @@ enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
 dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.6962,0)
 current.t<-8.134413
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
-decision <- lateonset.next(phi, p.true, curDose=4, design='fCFO', tau=3, enter.times, dlt.times,  
-                           current.t, doses, add.args)
+decision <- lateonset.next(target, p.true, currdose=4, design='fCFO', tau=3, enter.times, dlt.times,  
+                           current.t, doses, prior.para)
 summary(decision)
 
 ## summarize the object returned by lateonset.simu()
-faCFOtrial <- lateonset.simu (phi, p.true, tau, cohortsize, ncohort, accrual, tite.dist, 
-                accrual.dist, design='f-aCFO', init.level, add.args)
+faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, accrual, tite.dist, 
+                accrual.dist, design='f-aCFO', init.level, prior.para)
 summary(faCFOtrial)
 
 ## summarize the object returned by CFO.oc()
-faCFOsimu <- CFO.oc (nsimu, design='f-aCFO', phi, p.true, ncohort, init.level, cohortsize,
-                      tau, accrual, tite.dist, accrual.dist, add.args)
-summary(faCFOsimu)
+faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, ncohort, init.level, cohortsize,
+                      tau, accrual, tite.dist, accrual.dist, prior.para)
+summary(faCFOoc)
 
 ## settings for 2dCFO
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -73,19 +73,19 @@ cys <- matrix(c(0, 1, 0,
                 0, 2, 0,
                 0, 0, 0), 
               nrow = 3, ncol = 3, byrow = TRUE)
-curDose <- c(2,3)
+currdose <- c(2,3)
 
 ## summarize the object returned by CFO2d.next()
-decision <- CFO2d.next(0.3, cys, cns, curDose = curDose)
+decision <- CFO2d.next(0.3, cys, cns, currdose = currdose)
 summary(decision)
 
-## summarize the object returned by CFO2d.sim()
-CFO2dtrail <- CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
+## summarize the object returned by CFO2d.simu()
+CFO2dtrail <- CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3)
 summary(CFO2dtrail)
 
 ## summarize the object returned by CFO2d.oc()
-CFO2dsim <- CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, nsimu = 100)
-summary(CFO2dsim)
+CFO2doc <- CFO2d.oc(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, nsimu = 100)
+summary(CFO2doc)
 
 }
 \author{

@@ -3,14 +3,14 @@
 #'
 #' This function is used to determine the next dose level in a 2dCFO design.
 #'
-#' @param phi The target DLT rate.
+#' @param target The target DLT rate.
 #' @param cys A matrix of the number of DLTs observed for each dose combination.
 #' @param cns A matrix of the number of patients allocated for each dose combination.
-#' @param curDose A vector of the current dose indices in the horizontal and vertical direction.
-#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#' @param currdose A vector of the current dose indices in the horizontal and vertical direction.
+#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
-#' @param seed an integer to set as the seed of the random number generator for reproducible results.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results.
 #' 
 #' @return A list with the following components:
 #' \itemize{
@@ -20,8 +20,8 @@
 #'   \item{index}{A vector of length 2 representing the decision index for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
 #'   \item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions. }
 #'   \item{target}{The target DLT rate.}
-#'   \item{curDoses}{The current dose combination.}
-#'   \item{nextDose}{The recommended dose combination for the next cohort.}
+#'   \item{currdose}{The current dose combination.}
+#'   \item{nextdose}{The recommended dose combination for the next cohort.}
 #'   \item{overTox}{The dose levels that are considered overly toxic.}
 #' }
 #' 
@@ -37,15 +37,15 @@
 #'                 0, 2, 0,
 #'                 0, 0, 0), 
 #'               nrow = 3, ncol = 3, byrow = TRUE)
-#' curDose <- c(2,3)
-#' CFO2d.next(phi = 0.3, cys, cns, curDose = curDose, seed = 1)
+#' currdose <- c(2,3)
+#' CFO2d.next(target = 0.3, cys, cns, currdose = currdose, seed = 1)
 #' 
 
-CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
+CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL){
   cidx.A <- 0
   cidx.B <- 0
-  alp.prior <- add.args$alp.prior
-  bet.prior <- add.args$bet.prior
+  alp.prior <- prior.para$alp.prior
+  bet.prior <- prior.para$bet.prior
   set.seed(seed)
   cover.doses=matrix(0,3,3)
   overTox <- NA
@@ -77,9 +77,9 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
     list(p1=p1, p2=p2)
   }
   
-  overdose.fn <- function(phi, y, n, add.args=list(alp.prior=phi, bet.prior=1-phi)){
-    alp.prior <- add.args$alp.prior
-    bet.prior <- add.args$bet.prior
+  overdose.fn <- function(phi, y, n, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
+    alp.prior <- prior.para$alp.prior
+    bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
     if ((pp >= 0.95) & (n>=3)){
       return(TRUE)
@@ -249,47 +249,47 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
     }
   }
   
-  if (overdose.fn(phi, cys[2,2], cns[2,2])){
+  if (overdose.fn(target, cys[2,2], cns[2,2])){
     cover.doses[2,2] <- 1
-    overTox <- curDose
+    overTox <- currdose
   }
   if (!is.na(cns[2,3])){
-    if (overdose.fn(phi, cys[2,3], cns[2,3])){
+    if (overdose.fn(target, cys[2,3], cns[2,3])){
       cover.doses[2,3] <- 1
       cover.doses[3,3] <- 1
-      overTox <- curDose + c(0,1)
+      overTox <- currdose + c(0,1)
     }
   } else {
     cover.doses[2,3] <- NA
     cover.doses[3,3] <- NA
   }
   if (!is.na(cns[3,2])){
-    if (overdose.fn(phi, cys[3,2], cns[3,2])){
+    if (overdose.fn(target, cys[3,2], cns[3,2])){
       cover.doses[3,2] <- 1
       cover.doses[3,3] <- 1
-      overTox <- curDose + c(1,0)
+      overTox <- currdose + c(1,0)
     }
   } else {
     cover.doses[3,2] <- NA
     cover.doses[3,3] <- NA
   }
   if (!is.na(cns[2,3])&!is.na(cns[3,2])){
-    if(overdose.fn(phi, cys[2,3], cns[2,3])&overdose.fn(phi, cys[3,2], cns[3,2])){
-      overTox <- curDose
+    if(overdose.fn(target, cys[2,3], cns[2,3])&overdose.fn(target, cys[3,2], cns[3,2])){
+      overTox <- currdose
     }
   }
   
   
   # horizontal direction
-  idx.chg.A <- make.decision.1dCFO.fn(phi, cys[2,], cns[2,], alp.prior, bet.prior, cover.doses[2,]) - 2
+  idx.chg.A <- make.decision.1dCFO.fn(target, cys[2,], cns[2,], alp.prior, bet.prior, cover.doses[2,]) - 2
   # vertical direction
-  idx.chg.B <- make.decision.1dCFO.fn(phi, cys[,2], cns[,2], alp.prior, bet.prior, cover.doses[,2]) - 2
+  idx.chg.B <- make.decision.1dCFO.fn(target, cys[,2], cns[,2], alp.prior, bet.prior, cover.doses[,2]) - 2
   
   if (idx.chg.A == 1 & idx.chg.B == 1){
     ### horizontal and vertical only
     
-    OR.R <- OR.values(phi, cys[2,2], cns[2,2], cys[2,3], cns[2,3], alp.prior, bet.prior, type="R")
-    OR.U <- OR.values(phi, cys[2,2], cns[2,2], cys[3,2], cns[3,2], alp.prior, bet.prior, type="R")
+    OR.R <- OR.values(target, cys[2,2], cns[2,2], cys[2,3], cns[2,3], alp.prior, bet.prior, type="R")
+    OR.U <- OR.values(target, cys[2,2], cns[2,2], cys[3,2], cns[3,2], alp.prior, bet.prior, type="R")
     
     if (OR.R == OR.U){
       rand <- rbinom(1,1,0.5)
@@ -313,8 +313,8 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
     } else if (is.na(cys[1,2])){
       cidx.B <- -1
     } else {
-      OR.L <- OR.values(phi, cys[2,2], cns[2,2], cys[2,1], cns[2,1], alp.prior, bet.prior, type="L")
-      OR.D <- OR.values(phi, cys[2,2], cns[2,2], cys[1,2], cns[1,2], alp.prior, bet.prior, type="L")
+      OR.L <- OR.values(target, cys[2,2], cns[2,2], cys[2,1], cns[2,1], alp.prior, bet.prior, type="L")
+      OR.D <- OR.values(target, cys[2,2], cns[2,2], cys[1,2], cns[1,2], alp.prior, bet.prior, type="L")
       
       if (OR.L == OR.D){
         rand <- rbinom(1,1,0.5)
@@ -330,7 +330,7 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
       }
     }
   } else if (idx.chg.A == 1 & idx.chg.B == -1){
-    DCR <- make.decision.1dCFO.fn(phi, c(cys[1,2],cys[2,2],cys[2,3]), c(cns[1,2],cns[2,2],cns[2,3]), alp.prior, 
+    DCR <- make.decision.1dCFO.fn(target, c(cys[1,2],cys[2,2],cys[2,3]), c(cns[1,2],cns[2,2],cns[2,3]), alp.prior, 
                                   bet.prior, c(cover.doses[1,2],cover.doses[2,2],cover.doses[2,3])) - 2
     if (DCR == 1){
       cidx.B <- 1
@@ -338,7 +338,7 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
       cidx.A <- -1
     }
   } else if (idx.chg.A == -1 & idx.chg.B == 1){
-    LCU <- make.decision.1dCFO.fn(phi, c(cys[2,1],cys[2,2],cys[3,2]), c(cns[2,1],cns[2,2],cns[3,2]), alp.prior, 
+    LCU <- make.decision.1dCFO.fn(target, c(cys[2,1],cys[2,2],cys[3,2]), c(cns[2,1],cns[2,2],cns[3,2]), alp.prior, 
                                   bet.prior, c(cover.doses[2,1],cover.doses[2,2],cover.doses[3,2])) - 2
     if (LCU == 1){
       cidx.A <- 1
@@ -355,10 +355,10 @@ CFO2d.next <- function(phi, cys, cns, curDose, add.args=list(alp.prior=phi, bet.
     cidx.A <- -1
   }
   
-  nextDose <- curDose+c(cidx.A, cidx.B)
+  nextdose <- currdose+c(cidx.A, cidx.B)
   decision_values <- c("de-escalation", "stay", "escalation")
   decision <- decision_values[match(c(cidx.A, cidx.B), c(-1, 0, 1))]
-  out <- list(target=phi, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, curDose = curDose, nextDose = nextDose, overTox = overTox)
+  out <- list(target=target, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, currdose = currdose, nextdose = nextdose, overTox = overTox)
   class(out) <- "cfo"
   return(out)
 }

@@ -5,28 +5,28 @@
 \title{CFO2d.next function}
 \usage{
 CFO2d.next(
-  phi,
+  target,
   cys,
   cns,
-  curDose,
-  add.args = list(alp.prior = phi, bet.prior = 1 - phi),
+  currdose,
+  prior.para = list(alp.prior = target, bet.prior = 1 - target),
   seed = NULL
 )
 }
 \arguments{
-\item{phi}{The target DLT rate.}
+\item{target}{The target DLT rate.}
 
 \item{cys}{A matrix of the number of DLTs observed for each dose combination.}
 
 \item{cns}{A matrix of the number of patients allocated for each dose combination.}
 
-\item{curDose}{A vector of the current dose indices in the horizontal and vertical direction.}
+\item{currdose}{A vector of the current dose indices in the horizontal and vertical direction.}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results.}
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results.}
 }
 \value{
 A list with the following components:
@@ -37,8 +37,8 @@ A list with the following components:
 \item{index}{A vector of length 2 representing the decision index for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
 \item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions. }
 \item{target}{The target DLT rate.}
-\item{curDoses}{The current dose combination.}
-\item{nextDose}{The recommended dose combination for the next cohort.}
+\item{currdose}{The current dose combination.}
+\item{nextdose}{The recommended dose combination for the next cohort.}
 \item{overTox}{The dose levels that are considered overly toxic.}
 }
 }
@@ -55,8 +55,8 @@ cys <- matrix(c(0, 1, 0,
                 0, 2, 0,
                 0, 0, 0), 
               nrow = 3, ncol = 3, byrow = TRUE)
-curDose <- c(2,3)
-CFO2d.next(phi = 0.3, cys, cns, curDose = curDose, seed = 1)
+currdose <- c(2,3)
+CFO2d.next(target = 0.3, cys, cns, currdose = currdose, seed = 1)
 
 }
 \author{

@@ -4,20 +4,33 @@
 \alias{CFO.next}
 \title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(phi, cys, cns, curDose, add.args=list(alp.prior=phi,bet.prior=1-phi))
+CFO.next(target, cys, cns, currdose, prior.para=list(alp.prior=target,bet.prior=1-target),
+       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
 }
 \arguments{
-\item{phi}{the target DLT rate}
+\item{target}{the target DLT rate.}
 
 \item{cys}{the current number of DLTs observed at the left, current, and right dose levels.}
 
 \item{cns}{the current number of patients treated at the left, current, and right dose levels.}
 
-\item{curDose}{the current dose level.}
+\item{currdose}{the current dose level.}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target)
+by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
+the true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior},
+\code{beta.prior}).}
+
+\item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
+the default value of (\code{cutoff.eli=0.95}) for general use.}
+
+\item{extrasafe}{set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+extra safety}
+
+\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
+stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset=0.05}
+generally works well.}
 }
 \value{
 The \code{CFO.next()} function returns a list object comprising the following elements:
@@ -27,9 +40,11 @@ The \code{CFO.next()} function returns a list object comprising the following el
 \item{cns: }{the current counts of patients treated at the left, current, and right dose levels}
 \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the
 movement directions, and \code{stop} indicates stopping the experiment}
-\item{curDoses: }{the current level.}
-\item{nextDose: }{the recommended dose level for the next cohort.}
-\item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
+\item{currdose: }{the current level.}
+\item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is
+terminated due to early stopping.}
+\item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
+\code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the
 occurrence of overly toxicity did not happen.}
 }
 }
@@ -44,29 +59,31 @@ The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalati
 quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to
 minimize the probability of making incorrect decisions.The decision process is summarized in Table 1
 of Jin and Yin (2022).
-An overdose control rule is implemented to ensure patient safety. If the data suggest excessive
-toxicity at the current dose level, we exclude that level and those higher levels. Two scenarios
-lead to a decision on one side only: when the current dose is at the boundary (the first or last dose level)
-or when higher dose levels have been eliminated.
+An early stopping and dose elimination rule is implemented to ensure patient safety. If the data suggest excessive
+toxicity at the current dose level, we exclude that level and those higher levels. If the lowest dose level is overly toxic,
+the trial will be terminated according to the early stopping rule.
 }
 \note{
 When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
-\code{cns} where there is no data are filled with NA.
+\code{cns} where there is no data are filled with \code{NA}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     The position indicated by \code{overTox} experience overly toxicity. In the complete single trial, the dose 
-     level and all the dose levels above will be eliminated.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     The dose level indicated by \code{overTox} and all the dose levels above experience overly toxicity. In the 
+     complete single trial, the dose level and all the dose levels above will be eliminated.
 }\if{html}{\out{</div>}}
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0,1,0); cns <- c(3,6,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, curDose=3, add.args=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
 cys <- c(NA,3,0); cns <- c(NA,3,0)
-CFO.next(phi=0.2, cys=cys, cns=cns, curDose=1, add.args=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
 cys <- c(0,3,NA); cns <- c(3,3,NA)
-CFO.next(phi=0.2, cys=cys, cns=cns, curDose=7, add.args=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+summary(decision)
 
 }
 \references{

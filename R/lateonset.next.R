@@ -1,25 +1,26 @@
-#' Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities
+#' Determination of the dose level for next cohort in the CFO-type designs with late-onset toxicities
 #' 
-#' Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including 
+#' Propose the next dose level in the CFO-type designs with late-onset toxicities, specifically, including 
 #' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO 
 #' design and benchmark aCFO design.
 #' 
-#' @usage lateonset.next(phi, p.true, curDose, design, tau, enter.times, 
-#'        dlt.times, current.t, doses, add.args=list(alp.prior=phi, bet.prior=1-phi))
+#' @usage lateonset.next(target, p.true, currdose, design, tau, enter.times, 
+#'        dlt.times, current.t, doses, prior.para=list(alp.prior=target, bet.prior=1-target),
+#'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
 #'
-#' @param phi the target DLT rate.
+#' @param target the target DLT rate.
 #' @param p.true The true DLT rates under the different dose levels.
-#' @param curDose the current dose level.
+#' @param currdose the current dose level.
 #' @param design option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'}, 
 #'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
 #'               to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.
 #' @param tau maximal assessment window size
-#' @param enter.times the time at which each subject existing in the trial enters the trial.
-#' @param dlt.times the time to DLT for each subject existing in the trial.  If no DLT occurs for a certain subject, 
+#' @param enter.times the time that each participant enters the trial.
+#' @param dlt.times the time to DLT for each subject in the trial. If no DLT occurs for a subject, 
 #'                  \code{dlt.times} is set to 0.
 #' @param current.t the current time.
-#' @param doses the dose level for each subject existing in the trial.
-#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#' @param doses the dose level for each subject in the trial.
+#' @param prior.para  the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #'
@@ -40,8 +41,8 @@
 #'   \item{target: }{the target DLT rate.}
 #'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
 #'   movement directions, and \code{stop} indicates stopping the experiment}
-#'   \item{curDoses: }{the current level.}
-#'   \item{nextDose: }{the recommended dose level for the next cohort.}
+#'   \item{currdose: }{the current dose level.}
+#'   \item{nextdose: }{the recommended dose level for the next cohort.}
 #'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #'   \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
@@ -68,34 +69,35 @@
 #' ## 3) the arrival times of patients are distributed uniformly.
 #' ## 4) the time to DLT events is simulated using a Weibull distribution, with 50% of these events 
 #' ##    occurring in the first half of the assessment window.
-#' phi<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-#' add.args=list(alp.prior=phi, bet.prior=1-phi)
+#' target<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
+#' prior.para=list(alp.prior=target, bet.prior=1-target)
 #' enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
 #'                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
 #' dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.7,0)
 #' current.t<-8.13
 #' doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 #' ## determine the dose level for the next cohort using the TITE-CFO design
-#' lateonset.next(phi, p.true, curDose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the TITE-aCFO design
-#' lateonset.next(phi, p.true, curDose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the f-CFO design
-#' lateonset.next(phi, p.true, curDose=4, design='fCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='fCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the f-aCFO design
-#' lateonset.next(phi, p.true, curDose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the benchmark CFO design
-#' lateonset.next(phi, p.true, curDose=4, design='bCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='bCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the benchmark aCFO design
-#' lateonset.next(phi, p.true, curDose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, add.args)
+#' lateonset.next(target, p.true, currdose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
+#'                current.t, doses, prior.para)
 #' 
-lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.times, 
-                           current.t, doses, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, dlt.times, 
+                           current.t, doses, prior.para=list(alp.prior=target, bet.prior=1-target),
+                           cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -202,14 +204,14 @@ lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.t
     1 - pbeta(phi, alp, bet)
   }
   
-  overdose.fn <- function(phi, add.args=list()){
-    y <- add.args$y
-    n <- add.args$n
-    alp.prior <- add.args$alp.prior
-    bet.prior <- add.args$bet.prior
+  overdose.fn <- function(phi, prior.para=list()){
+    y <- prior.para$y
+    n <- prior.para$n
+    alp.prior <- prior.para$alp.prior
+    bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
     # print(data.frame("prob of overdose" = pp))
-    if ((pp >= 0.95) & (add.args$n>=3)){
+    if ((pp >= 0.95) & (prior.para$n>=3)){
       return(TRUE)
     }else{
       return(FALSE)
@@ -227,11 +229,14 @@ lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.t
   }else if (design == 'b-aCFO'){accumulation = TRUE; impute.method = "No"}
   
   ndose <- length(p.true)
-  if (is.null(add.args$alp.prior)){
-    add.args <- c(add.args, list(alp.prior=phi, bet.prior=1-phi))
+  if (is.null(prior.para$alp.prior)){
+    prior.para <- c(prior.para, list(alp.prior=target, bet.prior=1-target))
   }
-  tys = NULL
-  tns = NULL
+  alp.prior <- prior.para$alp.prior
+  bet.prior <- prior.para$bet.prior
+  
+  ays = NULL
+  ans = NULL
   ## Obtain effective results
   if (impute.method == "frac"){
     impute.res <- fracImpute(enter.times, dlt.times, current.t, tau)
@@ -239,40 +244,41 @@ lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.t
     y.impute <- impute.res$y.impute
     if (impute.res$No.impute){
       for (i in 1:ndose){
-        tys <- c(tys, sum(y.raw[doses==i]))
-        tns <- c(tns, sum(doses==i))
+        ays <- c(ays, sum(y.raw[doses==i]))
+        ans <- c(ans, sum(doses==i))
       } 
     }
     else{
       for (i in 1:ndose){
-        tys <- c(tys, sum(y.impute[doses==i]))
-        tns <- c(tns, sum(doses==i))
+        ays <- c(ays, sum(y.impute[doses==i]))
+        ans <- c(ans, sum(doses==i))
       }
     }
   }else if(impute.method == "TITE"){
-    impute.res <-  TITEImpute(enter.times, dlt.times, current.t, tau, doses, ndose, c(phi/2, 1-phi/2))
+    impute.res <-  TITEImpute(enter.times, dlt.times, current.t, tau, doses, ndose, c(target/2, 1-target/2))
     y.raw <- impute.res$y.raw
     y.impute <- impute.res$y.impute
     for (i in 1:ndose){
-      tys <- c(tys, sum(y.impute[doses==i]))
-      tns <- c(tns, sum(doses==i))
+      ays <- c(ays, sum(y.impute[doses==i]))
+      ans <- c(ans, sum(doses==i))
     }
   }else if(impute.method == "No"){
     assesstime = enter.times+tau;	
     dlt.times[dlt.times==0]= tau+1;
     y.impute <- (dlt.times<=tau)*(assesstime<=current.t)
     for (i in 1:ndose){
-      tys <- c(tys, sum(y.impute[doses==i]))
-      tns <- c(tns, sum(doses==i))
+      ays <- c(ays, sum(y.impute[doses==i]))
+      ans <- c(ans, sum(doses==i))
     }
   }
   
   tover.doses <- rep(0, ndose)
+  
   for (i in 1:ndose){
-    cy <- tys[i]
-    cn <- tns[i]
-    add.args <- c(list(y=cy, n=cn), add.args)
-    if (overdose.fn(phi, add.args)){
+    cy <- ays[i]
+    cn <- ans[i]
+    prior.para <- c(list(y=cy, n=cn), prior.para)
+    if (overdose.fn(target, prior.para)){
       tover.doses[i:ndose] <- 1
       break()
     }
@@ -280,26 +286,26 @@ lateonset.next <- function(phi, p.true, curDose, design, tau, enter.times, dlt.t
   position <- which(tover.doses == 1)[1]
   
   if (accumulation == FALSE){
-    if (curDose==1){
-      cys <- c(NA, tys[1:(curDose+1)])
-      cns <- c(NA, tns[1:(curDose+1)])
-    }else if (curDose==ndose){
-      cys <- c(tys[(curDose-1):ndose], NA)
-      cns <- c(tns[(curDose-1):ndose], NA)
+    if (currdose==1){
+      cys <- c(NA, ays[1:(currdose+1)])
+      cns <- c(NA, ans[1:(currdose+1)])
+    }else if (currdose==ndose){
+      cys <- c(ays[(currdose-1):ndose], NA)
+      cns <- c(ans[(currdose-1):ndose], NA)
     }else {
-      cys <- tys[(curDose-1):(curDose+1)]
-      cns <- tns[(curDose-1):(curDose+1)]
+      cys <- ays[(currdose-1):(currdose+1)]
+      cns <- ans[(currdose-1):(currdose+1)]
     }
-    res <- CFO.next(phi, cys, cns, curDose, add.args)
+    res <- CFO.next(target, cys, cns, currdose, prior.para)
   }else{
-    res <- aCFO.next (phi, tys, tns, curDose, add.args)
+    res <- aCFO.next (target, ays, ans, currdose, prior.para)
   }
-  nextDose <- res$nextDose
+  nextdose <- res$nextdose
   decision <- res$decision
   overTox <- res$overTox
 
-  out <- list(target=phi, decision=decision, curDose = curDose, 
-              nextDose=nextDose, overTox=overTox, tover.doses=tover.doses)
+  out <- list(target=target, decision=decision, currdose = currdose, 
+              nextdose=nextdose, overTox=overTox, tover.doses=tover.doses)
   class(out) <- "cfo"
   return(out)
 }

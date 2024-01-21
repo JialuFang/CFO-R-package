@@ -1,17 +1,17 @@
 #' Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
 #'
-#' @usage CFO2d.simu(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
-#'                  add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL)
+#' @usage CFO2d.simu(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
+#'                  prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL)
 #'
-#' @param phi the target DLT rate.
-#' @param p.true the true DLT rates under the different dose levels.
+#' @param target the target DLT rate.
+#' @param p.true a matrix representing the true DIL rates under the different dose levels.
 #' @param ncohort the total number of cohorts, the default value is 20.
-#' @param cohortsize the sample size in each cohort, the default value is 3. 
+#' @param cohortsize the number of patients or size of each cohort. the default value is 3. 
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).
-#' @param add.args additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior} 
+#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
-#' @param seed an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'
 #' @details 
 #' The `CFO2d.simu` function simulates the operating characteristics of the CFO designs 
@@ -45,12 +45,12 @@
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #'
-#' CFO2d.simu(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
 
 
 
-CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), add.args=list(alp.prior=phi, bet.prior=1-phi), seed=NULL){
-  # phi: Target DIL rate
+CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL){
+  # target: Target DIL rate
   # p.true: True DIL rates under the different dose levels
   # ncohort: The number of cohorts
   # cohortsize: The sample size in each cohort
@@ -73,11 +73,11 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
   simu.res.dose <- matrix(nrow = ncohort, ncol = 2)
   simu.res.DLT <- vector("numeric", ncohort)
   
-  overdose.2d <- function(phi, obs, add.args=list(alp.prior=phi, bet.prior=1-phi)){
+  overdose.2d <- function(phi, obs, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
     n <- obs$n
-    alp.prior <- add.args$alp.prior
-    bet.prior <- add.args$bet.prior
+    alp.prior <- prior.para$alp.prior
+    bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
     if ((pp >= 0.95) & (obs$n>=3)){
       return(TRUE)
@@ -168,12 +168,12 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
       message('no such case')
     }
     
-    idx.chg <- CFO2d.next(phi, cys, cns, c(cidx.A, cidx.B), add.args, seed=seed)$index
+    idx.chg <- CFO2d.next(target, cys, cns, c(cidx.A, cidx.B), prior.para, seed=seed)$index
     cidx.A <- cidx.A + idx.chg[1]
     cidx.B <- cidx.B + idx.chg[2]
   }
   if (earlystop==0){
-    MTD <- select.mtd.comb(phi, tns, tys)$MTD
+    MTD <- select.mtd.comb(target, tns, tys)$MTD
   }else{
     MTD <- c(99,99)
   }
@@ -183,14 +183,14 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
     correct <- 0
   } else if (length(MTD)!=2){
     correct <- 0
-  }else if (p.true[MTD[1],MTD[2]]==phi){
+  }else if (p.true[MTD[1],MTD[2]]==target){
     correct <- 1
   }
   
   npercent <- 0
   for (j in 1:ndose.A) {
     for (k in 1:ndose.B) {
-      if (p.true[j,k]==phi){
+      if (p.true[j,k]==target){
         npercent <- npercent + tns[j,k]
       }
     }
@@ -200,14 +200,14 @@ CFO2d.simu <- function(phi, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
   ptoxic <- 0
   for (j in 1:ndose.A) {
     for (k in 1:ndose.B) {
-      if (p.true[j,k]>phi){
+      if (p.true[j,k]>target){
         ptoxic <- ptoxic + tns[j,k]
       }
     }
   }
   ptoxic <- ptoxic/(ncohort*cohortsize)
   # simu.res <- list(dose = simu.res.dose, DLT = simu.res.DLT)
-  out<-list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=phi, over.doses=tover.doses, correct=correct, 
+  out<-list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=target, over.doses=tover.doses, correct=correct, 
             npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=simu.res.dose, DLT = simu.res.DLT)
   class(out) <- "cfo"
   return(out)

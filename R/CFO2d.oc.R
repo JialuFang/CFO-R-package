@@ -1,12 +1,14 @@
 #' This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.
 #'
-#' @param phi Target dose-intensity level (DIL) rate.
-#' @param p.true A matrix representing the true DIL rates under the different dose levels.
-#' @param ncohort Integer. The number of cohorts (default is 20).
-#' @param cohortsize Integer. The sample size in each cohort (default is 3).
-#' @param init.level A numeric vector of length 2 representing the initial dose level (default is c(1,1)).
-#' @param add.args An optional list of additional arguments, includes 'alp.prior' (default is phi) and 'bet.prior'(default is 1-phi).
-#' @param nsimu Integer. The number of simulations to run (default is 1000).
+#' @param target the target DLT rate.
+#' @param p.true a matrix representing the true DIL rates under the different dose levels.
+#' @param ncohort the total number of cohorts, the default value is 20.
+#' @param cohortsize the number of patients or size of each cohort. the default value is 3. 
+#' @param init.level a numeric vector of length 2 representing the initial dose level (default is c(1,1)).
+#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
+#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#' @param nsimu the total number of trials to be simulated. The default value is 1000.
 #' @param seeds A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).
 #'
 #' @return A list with the averaged operating characteristics across all simulations.
@@ -28,14 +30,14 @@
 #' 0.15, 0.30, 0.45, 0.50, 0.60), 
 #' nrow = 3, ncol = 5, byrow = TRUE)
 #' 
-#' CFO2d.oc(phi=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
+#' CFO2d.oc(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
 
-CFO2d.oc <- function(phi, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), add.args = list(alp.prior = phi, bet.prior = 1 - phi), 
+CFO2d.oc <- function(target, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), prior.para = list(alp.prior = target, bet.prior = 1 - target), 
                      seeds = NULL, nsimu = 1000) {
   
   # Run the CFO2d.simu function nsimu times using lapply
   results <- lapply(1:nsimu, function(i) {
-    CFO2d.simu(phi, p.true, ncohort, cohortsize, init.level, add.args, seed = seeds[i])
+    CFO2d.simu(target, p.true, ncohort, cohortsize, init.level, prior.para, seed = seeds[i])
   })
   
   selPercent <- matrix(0, dim(p.true)[1], dim(p.true)[2])

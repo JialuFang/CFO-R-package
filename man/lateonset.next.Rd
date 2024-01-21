@@ -2,17 +2,18 @@
 % Please edit documentation in R/lateonset.next.R
 \name{lateonset.next}
 \alias{lateonset.next}
-\title{Determination of the dose level for next cohort in the CFO-type and aCFO-type designs with late-onset toxicities}
+\title{Determination of the dose level for next cohort in the CFO-type designs with late-onset toxicities}
 \usage{
-lateonset.next(phi, p.true, curDose, design, tau, enter.times, 
-       dlt.times, current.t, doses, add.args=list(alp.prior=phi, bet.prior=1-phi))
+lateonset.next(target, p.true, currdose, design, tau, enter.times, 
+       dlt.times, current.t, doses, prior.para=list(alp.prior=target, bet.prior=1-target),
+       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
 }
 \arguments{
-\item{phi}{the target DLT rate.}
+\item{target}{the target DLT rate.}
 
 \item{p.true}{The true DLT rates under the different dose levels.}
 
-\item{curDose}{the current dose level.}
+\item{currdose}{the current dose level.}
 
 \item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
 \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
@@ -20,16 +21,16 @@ to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{tau}{maximal assessment window size}
 
-\item{enter.times}{the time at which each subject existing in the trial enters the trial.}
+\item{enter.times}{the time that each participant enters the trial.}
 
-\item{dlt.times}{the time to DLT for each subject existing in the trial.  If no DLT occurs for a certain subject,
+\item{dlt.times}{the time to DLT for each subject in the trial. If no DLT occurs for a subject,
 \code{dlt.times} is set to 0.}
 
 \item{current.t}{the current time.}
 
-\item{doses}{the dose level for each subject existing in the trial.}
+\item{doses}{the dose level for each subject in the trial.}
 
-\item{add.args}{additional parameters, usually set as list(alp.prior=phi, bet.prior=1-phi) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 }
@@ -39,8 +40,8 @@ The \code{lateonset.next()} function returns
 \item{target: }{the target DLT rate.}
 \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the
 movement directions, and \code{stop} indicates stopping the experiment}
-\item{curDoses: }{the current level.}
-\item{nextDose: }{the recommended dose level for the next cohort.}
+\item{currdose: }{the current dose level.}
+\item{nextdose: }{the recommended dose level for the next cohort.}
 \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
 occurrence of overly toxicity did not happen.}
 \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
@@ -48,7 +49,7 @@ or not. It will be returned only if \code{simu=TRUE}.}
 }
 }
 \description{
-Propose the next dose level in the CFO-type and aCFO-type designs with late-onset toxicities, specifically, including
+Propose the next dose level in the CFO-type designs with late-onset toxicities, specifically, including
 Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO
 design and benchmark aCFO design.
 }
@@ -73,31 +74,31 @@ expense of a prolonged trial duration.
 ## 3) the arrival times of patients are distributed uniformly.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
-phi<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-add.args=list(alp.prior=phi, bet.prior=1-phi)
+target<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
+prior.para=list(alp.prior=target, bet.prior=1-target)
 enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
 dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.7,0)
 current.t<-8.13
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 ## determine the dose level for the next cohort using the TITE-CFO design
-lateonset.next(phi, p.true, curDose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the TITE-aCFO design
-lateonset.next(phi, p.true, curDose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the f-CFO design
-lateonset.next(phi, p.true, curDose=4, design='fCFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='fCFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the f-aCFO design
-lateonset.next(phi, p.true, curDose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the benchmark CFO design
-lateonset.next(phi, p.true, curDose=4, design='bCFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='bCFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the benchmark aCFO design
-lateonset.next(phi, p.true, curDose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
-               current.t, doses, add.args)
+lateonset.next(target, p.true, currdose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
+               current.t, doses, prior.para)
 
 }
 \references{
