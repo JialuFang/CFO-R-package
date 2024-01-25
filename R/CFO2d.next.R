@@ -38,8 +38,9 @@
 #'                 0, 0, 0), 
 #'               nrow = 3, ncol = 3, byrow = TRUE)
 #' currdose <- c(2,3)
-#' CFO2d.next(target = 0.3, cys, cns, currdose = currdose, seed = 1)
-#' 
+#' decision <- CFO2d.next(target = 0.3, cys, cns, currdose = currdose, seed = 1)
+#' summary(decision)
+
 
 CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL){
   cidx.A <- 0

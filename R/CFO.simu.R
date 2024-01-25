@@ -40,12 +40,13 @@
 #'         \itemize{
 #'         \item{target: }{the target DLT rate.}
 #'         \item{MTD: }{the selected MTD. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
-#'         \item{dose.ns: }{the total number of patients for all dose levels}
-#'         \item{DLT.ns: }{the total number of DLTs for all dose levels.}
-#'         \item{p.true: }{the actual DLT rates under different dose levels.}
-#'         \item{tover.doses: }{the over-toxicity status for all dose levels (1 for yes).}
-#'         \item{dose.list: }{the list that includes the dose level assigned to each cohort.}
-#'         \item{DLT.list: }{The DLT outcome observed at each subject.}
+#'         \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
+#'         \item{npatients: }{the total number of patients allocated for all dose levels}
+#'         \item{ntox: }{the total number of DLTs observed for all dose levels.}
+#'         \item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
+#'         \item{over.doses: }{a vector indicating whether each dose is overdosed or not (1 for yes).}
+#'         \item{cohortdose: }{a vector including the dose level assigned for each cohort.}
+#'         \item{patientDLT: }{a vector including the DLT outcome observed for each patient.}
 #'         }
 #' 
 #' @author Jialu Fang
@@ -161,9 +162,9 @@ CFO.simu <- function(target, p.true, ncohort, init.level=1, cohortsize=3, design
         cys <- c(NA, ays[1:(currdose+1)])
         cns <- c(NA, ans[1:(currdose+1)])
       }
-      currdose <- CFO.next(target, cys, cns, currdose, prior.para)$nextdose
+      currdose <- CFO.next(target, cys, cns, currdose, prior.para, cutoff.eli, extrasafe, offset)$nextdose
     }else if (design == 'aCFO'){
-      currdose <- aCFO.next(target, ays, ans, currdose, prior.para)$nextdose
+      currdose <- aCFO.next(target, ays, ans, currdose, prior.para, cutoff.eli, extrasafe, offset)$nextdose
     }else{
       stop("The input design is invalid; it can only be set as 'CFO' or 'aCFO'.")
     }
@@ -174,8 +175,16 @@ CFO.simu <- function(target, p.true, ncohort, init.level=1, cohortsize=3, design
   }else{
     MTD <- 99
   }
-  out<-list(target=target, MTD=MTD, dose.ns=ans, DLT.ns=ays, p.true=p.true, tover.doses=tover.doses, 
-            dose.list=doselist, DLT.list=DLTlist)
+  
+  correct <- 0
+  if (MTD == target){
+    correct <- 1
+  }
+  
+  npercent <- ans[which(p.true == target)]/(ncohort*cohortsize)
+  
+  out<-list(target=target, MTD=MTD, correct=correct, npatients=ans, ntox=ays, npercent=npercent, 
+            over.doses=tover.doses, cohortdose=doselist, patientDLT=DLTlist)
   class(out) <- "cfo"
   return(out)
 }

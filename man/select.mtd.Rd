@@ -67,25 +67,21 @@ the MTD after the completion of the trial using the CFO-type design.
 n <- c(3,3,9,12,9,0,0)
 y <- c(0,0,1,1,3,0,0)
 selmtd <- select.mtd(target=0.2, npts=n, ntox=y)
-#summary(selmtd)
-#plot(selmtd)
+summary(selmtd)
+plot(selmtd)
 
 }
 \references{
 Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
-\emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{       Liu S. and Yuan, Y. (2015). Bayesian Optimal Interval Designs for
-       Phase I Clinical Trials, \\emph\{Journal of the Royal Statistical Society:
-       Series C\}, 64, 507-523.
-
-       Yan, F., Zhang, L., Zhou, Y., Pan, H., Liu, S. and Yuan, Y. (2020).BOIN: An R Package
-       for Designing Single-Agent and Drug-Combination Dose-Finding Trials Using Bayesian Optimal
-       Interval Designs. \\emph\{Journal of Statistical Software\}, 94(13),1-32.<doi:10.18637/jss.v094.i13>.
-
-       Yuan Y., Hess K.R., Hilsenbeck S.G. and Gilbert M.R. (2016). Bayesian Optimal Interval Design: A
-       Simple and Well-performing Design for Phase I Oncology Trials, \\emph\{Clinical Cancer Research\}, 22, 4291-4301.
-}\if{html}{\out{</div>}}
+\emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+Liu S. and Yuan, Y. (2015). Bayesian Optimal Interval Designs for
+Phase I Clinical Trials, \emph{Journal of the Royal Statistical Society:
+Series C}, 64, 507-523. \cr
+Yan, F., Zhang, L., Zhou, Y., Pan, H., Liu, S. and Yuan, Y. (2020).BOIN: An R Package
+for Designing Single-Agent and Drug-Combination Dose-Finding Trials Using Bayesian Optimal
+Interval Designs. \emph{Journal of Statistical Software}, 94(13), 1-32. \cr
+Yuan Y., Hess K.R., Hilsenbeck S.G. and Gilbert M.R. (2016). Bayesian Optimal Interval Design: A
+Simple and Well-performing Design for Phase I Oncology Trials, \emph{Clinical Cancer Research}, 22, 4291-4301. \cr
 }
 \author{
 Jialu Fang

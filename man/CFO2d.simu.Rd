@@ -27,18 +27,15 @@ any dose level. This prior distribution is specified as Beta( \code{alpha.prior}
 \value{
 A list with the following components:
 \itemize{
-\item{MTD: }{A vector of length 2 representing the recommended dose level.}
-\item{dose.ns: }{A matrix of the number of patients allocated for different doses.}
-\item{DLT.ns: }{A matrix of the number of DLT observed for different doses.}
-\item{p.true: }{The matrix of the true DLT rates under the different dose levels.}
-\item{target: }{The target DLT rate.}
-\item{over.doses: }{A matrix indicating whether each dose is overdosed or not (1 for yes).}
-\item{correct: }{A binary indicator of whether the recommended dose level matches the target DLT rate.}
-\item{npercent: }{The percentage of subjects assigned to the target DLT rate.}
-\item{ptoxic: }{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
-\item{ntox: }{The total number of DLTs observed.}
-\item{dose: }{The dose combination assigned for each cohort.}
-\item{DLT: }{The DLT observed at each cohort.}
+\item{target: }{the target DLT rate.}
+\item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
+\item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
+\item{npatients: }{a matrix of the number of patients allocated for different doses.}
+\item{ntox: }{a matrix of the number of DLT observed for different doses.}
+\item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
+\item{over.doses: }{a matrix indicating whether each dose is overdosed or not (1 for yes).}
+\item{cohortdose: }{the dose combination assigned for each cohort.}
+\item{patientDLT: }{the DLT observed at each cohort.}
 }
 }
 \description{
@@ -57,7 +54,9 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                    0.15, 0.30, 0.45, 0.50, 0.60), 
                  nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+CFO2dtrial <- CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+summary(CFO2dtrial)
+plot(CFO2dtrial)
 }
 \author{
 Wenliang Wang

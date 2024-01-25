@@ -46,7 +46,7 @@
 #'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #'   \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
-#'   or not. It will be returned only if \code{simu=TRUE}.}
+#'   or not. }
 #' }
 #' 
 #' @author Jialu Fang 
@@ -77,7 +77,7 @@
 #' current.t<-8.13
 #' doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 #' ## determine the dose level for the next cohort using the TITE-CFO design
-#' lateonset.next(target, p.true, currdose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
+#' lateonset.next(target, p.true, currdose=1, design='TITE-CFO', tau=3, enter.times, dlt.times,  
 #'                current.t, doses, prior.para)
 #' ## determine the dose level for the next cohort using the TITE-aCFO design
 #' lateonset.next(target, p.true, currdose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
@@ -204,14 +204,14 @@ lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, d
     1 - pbeta(phi, alp, bet)
   }
   
-  overdose.fn <- function(phi, prior.para=list()){
+  overdose.fn <- function(phi, threshold, prior.para=list()){
     y <- prior.para$y
     n <- prior.para$n
     alp.prior <- prior.para$alp.prior
     bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
     # print(data.frame("prob of overdose" = pp))
-    if ((pp >= 0.95) & (prior.para$n>=3)){
+    if ((pp >= threshold) & (prior.para$n>=3)){
       return(TRUE)
     }else{
       return(FALSE)
@@ -274,17 +274,29 @@ lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, d
   
   tover.doses <- rep(0, ndose)
   
+  
   for (i in 1:ndose){
     cy <- ays[i]
     cn <- ans[i]
-    prior.para <- c(list(y=cy, n=cn), prior.para)
-    if (overdose.fn(target, prior.para)){
+    prior.para <- c(list(y=cy, n=cn), list(alp.prior=alp.prior, bet.prior=bet.prior))
+    if (overdose.fn(target, cutoff.eli, prior.para)){
       tover.doses[i:ndose] <- 1
       break()
     }
   }
-  position <- which(tover.doses == 1)[1]
+
+  if (extrasafe) {
+    cy <- ays[1]
+    cn <- ans[1]
+    prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
+    if (overdose.fn(target, cutoff.eli, prior.para)){
+      tover.doses[1:ndose] <- 1
+      break()
+    }
+  }
   
+  position <- which(tover.doses == 1)[1]
+  prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior))
   if (accumulation == FALSE){
     if (currdose==1){
       cys <- c(NA, ays[1:(currdose+1)])
@@ -296,17 +308,18 @@ lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, d
       cys <- ays[(currdose-1):(currdose+1)]
       cns <- ans[(currdose-1):(currdose+1)]
     }
-    res <- CFO.next(target, cys, cns, currdose, prior.para)
+    res <- CFO.next(target, cys, cns, currdose, prior.para, cutoff.eli, extrasafe, offset)
   }else{
-    res <- aCFO.next (target, ays, ans, currdose, prior.para)
+    res <- aCFO.next (target, ays, ans, currdose, prior.para, cutoff.eli, extrasafe, offset)
   }
   nextdose <- res$nextdose
   decision <- res$decision
   overTox <- res$overTox
 
-  out <- list(target=target, decision=decision, currdose = currdose, 
+  out <- list(target=target, ays=ays, ans=ans, decision=decision, currdose = currdose, 
               nextdose=nextdose, overTox=overTox, tover.doses=tover.doses)
   class(out) <- "cfo"
   return(out)
 }
+
 

@@ -35,15 +35,15 @@ generally works well.}
 The \code{aCFO.next()} function returns a list object comprising the following elements:
 \itemize{
 \item{target: }{the target DLT rate.}
-\item{ays: }{the current counts of DLTs observed at all dose levels}
-\item{ans: }{the current counts of patients treated at all dose levels}
+\item{ays: }{the current counts of DLTs observed at all dose levels.}
+\item{ans: }{the current counts of patients treated at all dose levels.}
 \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the
-movement directions, and \code{stop} indicates stopping the experiment}
+movement directions, and \code{stop} indicates stopping the experiment.}
 \item{currdose: }{the current level.}
 \item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is
 terminated due to early stopping.}
-\item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
-\code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the
+\item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox=NA} signifies that the
 occurrence of overly toxicity did not happen.}
 }
 }
@@ -70,7 +70,7 @@ incorporating more dose information.
 When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
 \code{cns} where there is no data are filled with NA.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     The positions indicated by \code{overTox} experience overly toxicity. In the complete single trial, the dose 
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     The positions indicated by \code{overtox} experience overly toxicity. In the complete single trial, the dose 
      level and all the dose levels above will be eliminated.
 }\if{html}{\out{</div>}}
 }

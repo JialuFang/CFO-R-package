@@ -50,8 +50,8 @@
 #'   \item{currdose: }{the current level.}
 #'   \item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is 
 #'   terminated due to early stopping.}
-#'   \item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by 
-#'   \code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the 
+#'   \item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by 
+#'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox=NA} signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #' }
 #'         
@@ -272,7 +272,7 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
   cover.doses <- ifelse(is.na(cys), NA, cover.doses)
   
   position <- which(cover.doses == 1)[1]
-  overTox <- c(-1, 0, 1)[position] + currdose
+  overtox <- c(-1, 0, 1)[position] + currdose
   prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior))
   if ((cover.doses[2] == 1)&(currdose == 1)){
     index <- NA
@@ -337,7 +337,7 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
   }
   
   out <- list(target=target, cys=cys, cns=cns, decision=decision, currdose = currdose, 
-              nextdose=nextdose, overTox=overTox)
+              nextdose=nextdose, overtox=overtox)
   class(out) <- "cfo"
   return(out)
 }

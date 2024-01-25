@@ -22,18 +22,15 @@
 #' 
 #' @return A list with the following components:
 #' \itemize{
-#'   \item{MTD: }{A vector of length 2 representing the recommended dose level.}
-#'   \item{dose.ns: }{A matrix of the number of patients allocated for different doses.}
-#'   \item{DLT.ns: }{A matrix of the number of DLT observed for different doses.}
-#'   \item{p.true: }{The matrix of the true DLT rates under the different dose levels.}
-#'   \item{target: }{The target DLT rate.}
-#'   \item{over.doses: }{A matrix indicating whether each dose is overdosed or not (1 for yes).}
-#'   \item{correct: }{A binary indicator of whether the recommended dose level matches the target DLT rate.}
-#'   \item{npercent: }{The percentage of subjects assigned to the target DLT rate.}
-#'   \item{ptoxic: }{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
-#'   \item{ntox: }{The total number of DLTs observed.}
-#'   \item{dose: }{The dose combination assigned for each cohort.}
-#'   \item{DLT: }{The DLT observed at each cohort.}
+#'   \item{target: }{the target DLT rate.}
+#'   \item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
+#'   \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
+#'   \item{npatients: }{a matrix of the number of patients allocated for different doses.}
+#'   \item{ntox: }{a matrix of the number of DLT observed for different doses.}
+#'   \item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
+#'   \item{over.doses: }{a matrix indicating whether each dose is overdosed or not (1 for yes).}
+#'   \item{cohortdose: }{the dose combination assigned for each cohort.}
+#'   \item{patientDLT: }{the DLT observed at each cohort.}
 #' }
 #' @import BOIN
 #' @export
@@ -45,7 +42,9 @@
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
 #'
-#' CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' CFO2dtrial <- CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' summary(CFO2dtrial)
+#' plot(CFO2dtrial)
 
 
 
@@ -64,8 +63,8 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   cidx.A <- init.level[1]
   cidx.B <- init.level[2]
   obs <- list()
-  tys <- matrix(0, ndose.A, ndose.B) # number of responses for different doses.
-  tns <- matrix(0, ndose.A, ndose.B) # number of subject for different doses.
+  ays <- matrix(0, ndose.A, ndose.B) # number of responses for different doses.
+  ans <- matrix(0, ndose.A, ndose.B) # number of subject for different doses.
   tover.doses <- matrix(0, ndose.A, ndose.B) # Whether each dose is overdosed or not, 1 yes
   
   # Initialize vectors to store dose combinations and number of DLTs for each cohort
@@ -98,17 +97,17 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
       set.seed(seed+i)
     }
     cres <- rbinom(cohortsize, 1, pc)
-    tys[cidx.A, cidx.B] <- tys[cidx.A, cidx.B] + sum(cres)
-    tns[cidx.A, cidx.B] <- tns[cidx.A, cidx.B] + cohortsize
+    ays[cidx.A, cidx.B] <- ays[cidx.A, cidx.B] + sum(cres)
+    ans[cidx.A, cidx.B] <- ans[cidx.A, cidx.B] + cohortsize
     
     # simu.res.dose[[i]] <- c(cidx.A, cidx.B) # Store as a pair
     simu.res.dose[i, ] <- c(cidx.A, cidx.B)
     simu.res.DLT[i] <- sum(cres)
     
-    cy <- tys[cidx.A, cidx.B]
-    cn <- tns[cidx.A, cidx.B]
+    cy <- ays[cidx.A, cidx.B]
+    cn <- ans[cidx.A, cidx.B]
     
-    obs <- c(list(y=cy, n=cn, tys=tys, tns=tns, cidx.A=cidx.A, cidx.B=cidx.B), obs)
+    obs <- c(list(y=cy, n=cn, ays=ays, ans=ans, cidx.A=cidx.A, cidx.B=cidx.B), obs)
     
     # if (overdose.2d(phi, obs)){
     #   tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
@@ -121,48 +120,48 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     
     if (cidx.A!=1 & cidx.B!=1 & cidx.A!=ndose.A & cidx.B!=ndose.B){
       # no boundary
-      cys <- tys[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
-      cns <- tns[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
+      cys <- ays[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
+      cns <- ans[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
       cover.doses <- tover.doses[(cidx.A-1):(cidx.A+1), (cidx.B-1):(cidx.B+1)]
     } else if (cidx.A==1 & cidx.B==1){
       # (1, 1)
-      cys <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tys[1:2,1:2]))
-      cns <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tns[1:2,1:2]))
+      cys <- rbind(c(NA,NA,NA),cbind(c(NA,NA),ays[1:2,1:2]))
+      cns <- rbind(c(NA,NA,NA),cbind(c(NA,NA),ans[1:2,1:2]))
       cover.doses <- rbind(c(NA,NA,NA),cbind(c(NA,NA),tover.doses[1:2,1:2]))
     } else if (cidx.A==ndose.A & cidx.B==ndose.B){
       # (nA, nB)
-      cys <- rbind(cbind(tys[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
-      cns <- rbind(cbind(tns[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
+      cys <- rbind(cbind(ays[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
+      cns <- rbind(cbind(ans[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
       cover.doses <- rbind(cbind(tover.doses[(cidx.A-1):cidx.A,(cidx.B-1):cidx.B],c(NA,NA)), c(NA,NA,NA))
     } else if (cidx.A==1 & cidx.B==ndose.B){
       # (1, nB) 
-      cys <- rbind(c(NA,NA,NA),cbind(tys[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
-      cns <- rbind(c(NA,NA,NA),cbind(tns[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
+      cys <- rbind(c(NA,NA,NA),cbind(ays[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
+      cns <- rbind(c(NA,NA,NA),cbind(ans[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
       cover.doses <- rbind(c(NA,NA,NA),cbind(tover.doses[1:2,(cidx.B-1):cidx.B],c(NA,NA)))
     } else if (cidx.A==ndose.A & cidx.B==1){
       # (nA, 1) 
-      cys <- rbind(cbind(c(NA,NA), tys[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
-      cns <- rbind(cbind(c(NA,NA), tns[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
+      cys <- rbind(cbind(c(NA,NA), ays[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
+      cns <- rbind(cbind(c(NA,NA), ans[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
       cover.doses <- rbind(cbind(c(NA,NA), tover.doses[(cidx.A-1):cidx.A,1:2]),c(NA,NA,NA))
     } else if (cidx.A==1 & cidx.B!=1){
       # (1, 2:(nB-1))
-      cys <- rbind(c(NA,NA,NA), tys[1:2, (cidx.B-1):(cidx.B+1)])
-      cns <- rbind(c(NA,NA,NA), tns[1:2, (cidx.B-1):(cidx.B+1)])
+      cys <- rbind(c(NA,NA,NA), ays[1:2, (cidx.B-1):(cidx.B+1)])
+      cns <- rbind(c(NA,NA,NA), ans[1:2, (cidx.B-1):(cidx.B+1)])
       cover.doses <- rbind(c(NA,NA,NA), tover.doses[1:2, (cidx.B-1):(cidx.B+1)])
     } else if (cidx.A!=1 & cidx.B==1){
       # (2:(nA-1), 1)
-      cys <- cbind(c(NA,NA,NA), tys[(cidx.A-1):(cidx.A+1), 1:2])
-      cns <- cbind(c(NA,NA,NA), tns[(cidx.A-1):(cidx.A+1), 1:2])
+      cys <- cbind(c(NA,NA,NA), ays[(cidx.A-1):(cidx.A+1), 1:2])
+      cns <- cbind(c(NA,NA,NA), ans[(cidx.A-1):(cidx.A+1), 1:2])
       cover.doses <- cbind(c(NA,NA,NA), tover.doses[(cidx.A-1):(cidx.A+1), 1:2])
     } else if (cidx.A==ndose.A & cidx.B!=ndose.B){
       # (nA, 2:(nB-1))
-      cys <- rbind(tys[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
-      cns <- rbind(tns[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
+      cys <- rbind(ays[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
+      cns <- rbind(ans[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
       cover.doses <- rbind(tover.doses[(ndose.A-1):ndose.A, (cidx.B-1):(cidx.B+1)], c(NA,NA,NA))
     } else if (cidx.A!=ndose.A & cidx.B==ndose.B){
       # (2:(nA-1), nB)
-      cys <- cbind(tys[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
-      cns <- cbind(tns[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
+      cys <- cbind(ays[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
+      cns <- cbind(ans[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
       cover.doses <- cbind(tover.doses[(cidx.A-1):(cidx.A+1), (cidx.B-1):cidx.B], c(NA,NA,NA))
     } else {
       message('no such case')
@@ -173,7 +172,7 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     cidx.B <- cidx.B + idx.chg[2]
   }
   if (earlystop==0){
-    MTD <- select.mtd.comb(target, tns, tys)$MTD
+    MTD <- select.mtd.comb(target, ans, ays)$MTD
   }else{
     MTD <- c(99,99)
   }
@@ -191,7 +190,7 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   for (j in 1:ndose.A) {
     for (k in 1:ndose.B) {
       if (p.true[j,k]==target){
-        npercent <- npercent + tns[j,k]
+        npercent <- npercent + ans[j,k]
       }
     }
   }
@@ -201,14 +200,15 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   for (j in 1:ndose.A) {
     for (k in 1:ndose.B) {
       if (p.true[j,k]>target){
-        ptoxic <- ptoxic + tns[j,k]
+        ptoxic <- ptoxic + ans[j,k]
       }
     }
   }
   ptoxic <- ptoxic/(ncohort*cohortsize)
   # simu.res <- list(dose = simu.res.dose, DLT = simu.res.DLT)
-  out<-list(MTD=MTD, dose.ns=tns, DLT.ns=tys, p.true=p.true, target=target, over.doses=tover.doses, correct=correct, 
-            npercent=npercent, ptoxic=ptoxic, ntox=sum(tys), dose=simu.res.dose, DLT = simu.res.DLT)
+  out<-list(target=target, MTD=MTD, correct=correct, npatients=ans, ntox=ays, 
+            npercent=npercent, over.doses=tover.doses, cohortdose=simu.res.dose, 
+            patientDLT = simu.res.DLT)
   class(out) <- "cfo"
   return(out)
 }

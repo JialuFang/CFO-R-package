@@ -45,7 +45,7 @@ movement directions, and \code{stop} indicates stopping the experiment}
 \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
 occurrence of overly toxicity did not happen.}
 \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
-or not. It will be returned only if \code{simu=TRUE}.}
+or not. }
 }
 }
 \description{
@@ -82,7 +82,7 @@ dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.7,0)
 current.t<-8.13
 doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
 ## determine the dose level for the next cohort using the TITE-CFO design
-lateonset.next(target, p.true, currdose=4, design='TITE-CFO', tau=3, enter.times, dlt.times,  
+lateonset.next(target, p.true, currdose=1, design='TITE-CFO', tau=3, enter.times, dlt.times,  
                current.t, doses, prior.para)
 ## determine the dose level for the next cohort using the TITE-aCFO design
 lateonset.next(target, p.true, currdose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  

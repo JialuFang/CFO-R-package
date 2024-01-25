@@ -43,8 +43,8 @@ movement directions, and \code{stop} indicates stopping the experiment}
 \item{currdose: }{the current level.}
 \item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose=99} indicates that this trial is
 terminated due to early stopping.}
-\item{overTox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
-\code{overTox} and all the dose levels above experience overly toxicity. \code{overTox=NA} signifies that the
+\item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox=NA} signifies that the
 occurrence of overly toxicity did not happen.}
 }
 }
