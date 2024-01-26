@@ -27,7 +27,7 @@
 #' @examples
 #' ############design without late-onset outcomes################
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
-#' p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 #' target <- 0.2; prior.para = list(alp.prior = target, bet.prior = 1 - target)
 #' ## CFO design
 #' CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
@@ -305,7 +305,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     }
     
     ###############################################################################
-    #########################plot for select.mtd()###################################
+    #########################plot for CFO.selectmtd()###################################
     ###############################################################################
     if (!is.null(objectPlot$p_est)){
       

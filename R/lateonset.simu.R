@@ -72,7 +72,7 @@
 #'
 #' @examples
 #' target <- 0.2; ncohort <- 12; cohortsize <- 3
-#' p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 #' tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' ## find the MTD for a single TITE-CFO trial
 #' TITECFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
@@ -236,7 +236,7 @@ lateonset.simu <- function(target, p.true, tau, cohortsize, ncohort, tte.para, a
     ays <- c(ays, sum(y.raw[doses==j]))
   }
   if (earlystop==0){
-    MTD <- select.mtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
+    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
   }else{
     MTD <- 99
   }

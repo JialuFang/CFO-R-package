@@ -85,7 +85,7 @@ expense of a prolonged trial duration.
 ## 3) the arrival times of patients are distributed uniformly.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
-target <- 0.2; p.true <- c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
+target <- 0.2; p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 prior.para = list(alp.prior = target, bet.prior = 1 - target)
 enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
                6.54, 6.66, 6.93, 7.32, 7.65, 8.14, 8.74)

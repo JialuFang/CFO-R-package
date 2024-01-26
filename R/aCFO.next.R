@@ -293,7 +293,7 @@ aCFO.next <- function(target, ays, ans, currdose, prior.para=list(alp.prior=targ
     cy <- ays[1]
     cn <- ans[1]
     prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
-    if (overdose.fn(target, cutoff.eli, prior.para)){
+    if (overdose.fn(target, cutoff.eli-offset, prior.para)){
       tover.doses[1:ndose] <- 1
     }
   }

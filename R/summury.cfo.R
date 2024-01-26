@@ -19,7 +19,7 @@
 #' @examples
 #' ## settings for 1dCFO
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
-#' p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 #' target <- 0.2; prior.para=list(alp.prior=target, bet.prior=1-target)
 #' tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
@@ -222,11 +222,11 @@ summary.cfo<- function (object, ...)
   }
   
   ###############################################################################
-  #########################summary for select.mtd()##############################
+  #########################summary for CFO.selectmtd()##############################
   ###############################################################################
   
-  if (!is.null(object$p_est)){ ##summary for select.mtd()
-    if (length(object$MTD) == 1) { ##summary for one dim select.mtd()
+  if (!is.null(object$p_est)){ ##summary for CFO.selectmtd()
+    if (length(object$MTD) == 1) { ##summary for one dim CFO.selectmtd()
       if (object$MTD == 99) {
         cat("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }

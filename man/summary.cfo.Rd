@@ -25,7 +25,7 @@ set to 5000 to ensure the accuracy of the results.
 \examples{
 ## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
-p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 target <- 0.2; prior.para=list(alp.prior=target, bet.prior=1-target)
 tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 

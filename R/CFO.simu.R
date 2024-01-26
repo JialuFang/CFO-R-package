@@ -56,7 +56,7 @@
 #'
 #' @examples
 #' target <- 0.2; ncohort <- 12; cohortsize <- 3
-#' p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 #' ## find the MTD for a single CFO trial
 #' CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
 #'             prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
@@ -140,7 +140,7 @@ CFO.simu <- function(target, p.true, ncohort, init.level=1, cohortsize=3, design
         cy <- ays[1]
         cn <- ans[1]
         prior.para <- c(list(y=cy, n=cn), list(alp.prior=alp.prior, bet.prior=bet.prior))
-        if (overdose.fn(target, cutoff.eli, prior.para)){
+        if (overdose.fn(target, cutoff.eli-offset, prior.para)){
           tover.doses[1:ndose] <- 1
         }
       }
@@ -171,7 +171,7 @@ CFO.simu <- function(target, p.true, ncohort, init.level=1, cohortsize=3, design
   }
   
   if (earlystop==0){
-    MTD <- select.mtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
+    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
   }else{
     MTD <- 99
   }

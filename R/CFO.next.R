@@ -266,7 +266,7 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
       cover.doses[i] <- NA
     }else{
       prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
-      if (overdose.fn(target, cutoff.eli, prior.para)){
+      if (overdose.fn(target, cutoff.eli-offset, prior.para)){
         cover.doses[1:3] <- 1
       }
     }

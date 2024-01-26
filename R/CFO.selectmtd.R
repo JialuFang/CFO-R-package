@@ -3,7 +3,7 @@
 #'
 #' Select the maximum tolerated dose (MTD) when the real single-drug trial is completed
 #'
-#' @usage select.mtd(target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), 
+#' @usage CFO.selectmtd(target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), 
 #'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, verbose=TRUE)
 #'
 #' @param target the target DLT rate
@@ -23,8 +23,8 @@
 #'                generally works well.
 #' @param verbose set \code{verbose=TRUE} to return more details of the results
 #'
-#' @details \code{select.mtd()} selects the MTD based on isotonic estimates of toxicity
-#'          probabilities. \code{select.mtd()} selects as the MTD dose \eqn{j^*}, for which the
+#' @details \code{CFO.selectmtd()} selects the MTD based on isotonic estimates of toxicity
+#'          probabilities. \code{CFO.selectmtd()} selects as the MTD dose \eqn{j^*}, for which the
 #'          isotonic estimate of the DLT rate is closest to the target. If there
 #'          are ties, we select from the ties the highest dose level when the estimate
 #'          of the DLT rate is smaller than the target, or the lowest dose level
@@ -34,7 +34,7 @@
 #'          
 #'          
 #'
-#' @return  \code{select.mtd()} returns 
+#' @return  \code{CFO.selectmtd()} returns 
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
 #'   \item{MTD: }{the selected MTD.}
@@ -67,14 +67,14 @@
 #' @examples
 #'
 #' ### select the MTD for BOIN single agent trial
-#' n <- c(3,3,3,21,6,0,0)
-#' y <- c(0,0,0,3,3,0,0)
-#' selmtd <- select.mtd(target=0.2, npts=n, ntox=y)
+#' n <- c(3,3,21,9,0,0,0)
+#' y <- c(0,0,2,3,0,0,0)
+#' selmtd <- CFO.selectmtd(target=0.2, npts=n, ntox=y)
 #' summary(selmtd)
 #' plot(selmtd)
 #'
 #' @export
-select.mtd <- function (target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), 
+CFO.selectmtd <- function (target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), 
                         cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, verbose = TRUE)
 {
   pava <- function(x, wt = rep(1, length(x))) {
