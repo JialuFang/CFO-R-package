@@ -3,8 +3,9 @@
 #' 
 #' Use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
-#' @usage CFO.next(target, cys, cns, currdose, prior.para=list(alp.prior=target,bet.prior=1-target),
-#'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
+#' @usage CFO.next(target, cys, cns, currdose, 
+#'        prior.para = list(alp.prior = target, bet.prior = 1 - target),
+#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 #'
 #' @param target the target DLT rate.
 #' @param cys the current number of DLTs observed at the left, current, and right dose levels.
@@ -15,12 +16,12 @@
 #'                  \code{beta.prior}).
 #' @param currdose the current dose level.
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
-#'                    the default value of (\code{cutoff.eli=0.95}) for general use.
-#' @param extrasafe set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset=0.05}
+#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
 #'
 #' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
@@ -37,7 +38,7 @@
 #' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and 
 #'          \code{cns} where there is no data are filled with \code{NA}.
 #' 
-#'          The dose level indicated by \code{overTox} and all the dose levels above experience overly toxicity. In the 
+#'          The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the 
 #'          complete single trial, the dose level and all the dose levels above will be eliminated.
 #'          
 #' @return The \code{CFO.next()} function returns a list object comprising the following elements:
@@ -62,16 +63,19 @@
 #' 
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
-#' cys <- c(0,1,0); cns <- c(3,6,0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' cys <- c(0, 1, 0); cns <- c(3, 6, 0)
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, 
+#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
 #' summary(decision)
 #' 
-#' cys <- c(NA,3,0); cns <- c(NA,3,0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' cys <- c(NA, 3, 0); cns <- c(NA, 3, 0)
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, 
+#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
 #' summary(decision)
 #' 
-#' cys <- c(0,3,NA); cns <- c(3,3,NA)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' cys <- c(0, 3, NA); cns <- c(3, 3, NA)
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, 
+#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
 #' summary(decision)
 #' 
 #' @import stats
@@ -264,7 +268,6 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
       prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
       if (overdose.fn(target, cutoff.eli, prior.para)){
         cover.doses[1:3] <- 1
-        break()
       }
     }
   }

@@ -4,10 +4,10 @@
 \alias{CFO.oc}
 \title{Generate operating characteristics for multiple simulations}
 \usage{
-CFO.oc(nsimu=5000, design, target, p.true, ncohort, init.level, cohortsize,
-       tau=NA, tte.para=NA, accrual=NA, accrual.dist=NA, 
-       prior.para=list(alp.prior=target, bet.prior=1-target), seeds = NULL,
-       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
+CFO.oc(nsimu = 5000, design, target, p.true, ncohort, init.level, cohortsize,
+       tau = NA, tte.para = NA, accrual = NA, accrual.dist = NA, 
+       prior.para = list(alp.prior = target, bet.prior = 1 - target), seeds = NULL,
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 }
 \arguments{
 \item{nsimu}{the total number of trials to be simulated. The default value is 5000.}
@@ -29,19 +29,19 @@ and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO, an
 
 \item{tau}{maximal assessment window size. 'NA' should be assigned if the design without late-oneset outcomes.}
 
-\item{accrual}{the accrual rate, i.e., the number of patients accrued in tau time. 'NA' should be assigned
-if the design without late-oneset outcomes.}
-
 \item{tte.para}{the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull
 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the
 assessment window \code{tau}. 'NA' should be assigned if the design without late-oneset outcomes.}
 
-\item{accrual.dist}{the distribution of the arrival times of patients. When \code{accrual.dist='fix'}, it corresponds to all
-patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist='unif'},
-it corresponds to a uniform distribution, and when \code{accrual.dist='exp'}, it corresponds to an
+\item{accrual}{the accrual rate, i.e., the number of patients accrued in tau time. 'NA' should be assigned
+if the design without late-oneset outcomes.}
+
+\item{accrual.dist}{the distribution of the arrival times of patients. When \code{accrual.dist = 'fix'}, it corresponds to all
+patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist = 'unif'},
+it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an
 exponential distribution. 'NA' should be assigned if the design without late-oneset outcomes.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
@@ -90,8 +90,8 @@ is typically set to 5000 to ensure the accuracy of the results.
 \examples{
 ## setting
 nsimu <- 100; target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
-p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-prior.para=list(alp.prior=target, bet.prior=1-target)
+p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+prior.para = list(alp.prior = target, bet.prior = 1 - target)
 tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 
 ## get the operating characteristics for 100 simulations using the CFO design

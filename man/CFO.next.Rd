@@ -4,8 +4,9 @@
 \alias{CFO.next}
 \title{Determination of the dose level for next cohort}
 \usage{
-CFO.next(target, cys, cns, currdose, prior.para=list(alp.prior=target,bet.prior=1-target),
-       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
+CFO.next(target, cys, cns, currdose, 
+       prior.para = list(alp.prior = target, bet.prior = 1 - target),
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 }
 \arguments{
 \item{target}{the target DLT rate.}
@@ -22,14 +23,14 @@ the true DLT rate at any dose level. This prior distribution is specified as Bet
 \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli=0.95}) for general use.}
+the default value of (\code{cutoff.eli = 0.95}) for general use.}
 
-\item{extrasafe}{set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 extra safety}
 
 \item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset=0.05}
+stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 }
 \value{
@@ -67,22 +68,25 @@ the trial will be terminated according to the early stopping rule.
 When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
 \code{cns} where there is no data are filled with \code{NA}.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     The dose level indicated by \code{overTox} and all the dose levels above experience overly toxicity. In the 
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the 
      complete single trial, the dose level and all the dose levels above will be eliminated.
 }\if{html}{\out{</div>}}
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
-cys <- c(0,1,0); cns <- c(3,6,0)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+cys <- c(0, 1, 0); cns <- c(3, 6, 0)
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, 
+            prior.para=list(alp.prior=0.2, bet.prior=0.8))
 summary(decision)
 
-cys <- c(NA,3,0); cns <- c(NA,3,0)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+cys <- c(NA, 3, 0); cns <- c(NA, 3, 0)
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, 
+            prior.para=list(alp.prior=0.2, bet.prior=0.8))
 summary(decision)
 
-cys <- c(0,3,NA); cns <- c(3,3,NA)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, prior.para=list(alp.prior=0.2, bet.prior=0.8))
+cys <- c(0, 3, NA); cns <- c(3, 3, NA)
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, 
+            prior.para=list(alp.prior=0.2, bet.prior=0.8))
 summary(decision)
 
 }

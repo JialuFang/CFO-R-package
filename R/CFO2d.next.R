@@ -22,7 +22,7 @@
 #'   \item{target}{The target DLT rate.}
 #'   \item{currdose}{The current dose combination.}
 #'   \item{nextdose}{The recommended dose combination for the next cohort.}
-#'   \item{overTox}{The dose levels that are considered overly toxic.}
+#'   \item{overtox}{The dose levels that are considered overly toxic.}
 #' }
 #' 
 #' @author Wenliang Wang
@@ -49,7 +49,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
   bet.prior <- prior.para$bet.prior
   set.seed(seed)
   cover.doses=matrix(0,3,3)
-  overTox <- NA
+  overtox <- NA
   
   # posterior probability of pj >= phi given data
   post.prob.fn <- function(phi, y, n, alp.prior=0.1, bet.prior=0.9){
@@ -252,13 +252,13 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
   
   if (overdose.fn(target, cys[2,2], cns[2,2])){
     cover.doses[2,2] <- 1
-    overTox <- currdose
+    overtox <- currdose
   }
   if (!is.na(cns[2,3])){
     if (overdose.fn(target, cys[2,3], cns[2,3])){
       cover.doses[2,3] <- 1
       cover.doses[3,3] <- 1
-      overTox <- currdose + c(0,1)
+      overtox <- currdose + c(0,1)
     }
   } else {
     cover.doses[2,3] <- NA
@@ -268,7 +268,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     if (overdose.fn(target, cys[3,2], cns[3,2])){
       cover.doses[3,2] <- 1
       cover.doses[3,3] <- 1
-      overTox <- currdose + c(1,0)
+      overtox <- currdose + c(1,0)
     }
   } else {
     cover.doses[3,2] <- NA
@@ -276,7 +276,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
   }
   if (!is.na(cns[2,3])&!is.na(cns[3,2])){
     if(overdose.fn(target, cys[2,3], cns[2,3])&overdose.fn(target, cys[3,2], cns[3,2])){
-      overTox <- currdose
+      overtox <- currdose
     }
   }
   
@@ -359,7 +359,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
   nextdose <- currdose+c(cidx.A, cidx.B)
   decision_values <- c("de-escalation", "stay", "escalation")
   decision <- decision_values[match(c(cidx.A, cidx.B), c(-1, 0, 1))]
-  out <- list(target=target, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, currdose = currdose, nextdose = nextdose, overTox = overTox)
+  out <- list(target=target, cys=cys, cns=cns, index=c(cidx.A, cidx.B), decision=decision, currdose = currdose, nextdose = nextdose, overtox = overtox)
   class(out) <- "cfo"
   return(out)
 }

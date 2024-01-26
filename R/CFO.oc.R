@@ -2,10 +2,10 @@
 #' 
 #' Obtain the operating characteristics of the CFO-type designs for multiple simulations.
 #'
-#' @usage CFO.oc(nsimu=5000, design, target, p.true, ncohort, init.level, cohortsize,
-#'        tau=NA, tte.para=NA, accrual=NA, accrual.dist=NA, 
-#'        prior.para=list(alp.prior=target, bet.prior=1-target), seeds = NULL,
-#'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
+#' @usage CFO.oc(nsimu = 5000, design, target, p.true, ncohort, init.level, cohortsize,
+#'        tau = NA, tte.para = NA, accrual = NA, accrual.dist = NA, 
+#'        prior.para = list(alp.prior = target, bet.prior = 1 - target), seeds = NULL,
+#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 #'
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
 #' @param design option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},
@@ -23,11 +23,11 @@
 #'                 assessment window \code{tau}. 'NA' should be assigned if the design without late-oneset outcomes.
 #' @param accrual the accrual rate, i.e., the number of patients accrued in tau time. 'NA' should be assigned 
 #'                if the design without late-oneset outcomes.
-#' @param accrual.dist the distribution of the arrival times of patients. When \code{accrual.dist='fix'}, it corresponds to all 
-#'                     patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist='unif'}, 
-#'                     it corresponds to a uniform distribution, and when \code{accrual.dist='exp'}, it corresponds to an 
+#' @param accrual.dist the distribution of the arrival times of patients. When \code{accrual.dist = 'fix'}, it corresponds to all 
+#'                     patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist = 'unif'}, 
+#'                     it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an 
 #'                     exponential distribution. 'NA' should be assigned if the design without late-oneset outcomes.
-#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
+#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
@@ -69,8 +69,8 @@
 #' @examples
 #' ## setting
 #' nsimu <- 100; target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
-#' p.true <-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-#' prior.para=list(alp.prior=target, bet.prior=1-target)
+#' p.true <- c(0.01, 0.02, 0.05, 0.20, 0.30, 0.50, 0.70)
+#' prior.para = list(alp.prior = target, bet.prior = 1 - target)
 #' tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
 #' ## get the operating characteristics for 100 simulations using the CFO design
@@ -114,7 +114,7 @@
 #' summary(baCFOoc)
 #' plot(baCFOoc)
 CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, cohortsize,
-                   tau=NA, accrual=NA, tte.para=NA, accrual.dist=NA, 
+                   tau=NA, tte.para=NA, accrual=NA, accrual.dist=NA, 
                    prior.para=list(alp.prior=target, bet.prior=1-target), seeds = NULL,
                    cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
   ###############################################################################
@@ -199,8 +199,6 @@ CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, coho
   overallo <- overallo/sumPatients
   averDLT <- sumTox/sumPatients
   errStop <- nsimu-nonErrStops
-  
-  sy <- post.process(results)
   
   if (design == 'CFO' || design == 'aCFO'){
     out <- list(selpercent=selpercent, npatients=nPatients/nsimu, ntox=nTox/nsimu, 

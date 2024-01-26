@@ -67,8 +67,8 @@
 #' @examples
 #'
 #' ### select the MTD for BOIN single agent trial
-#' n <- c(3,3,9,12,9,0,0)
-#' y <- c(0,0,1,1,3,0,0)
+#' n <- c(3,3,3,21,6,0,0)
+#' y <- c(0,0,0,3,3,0,0)
 #' selmtd <- select.mtd(target=0.2, npts=n, ntox=y)
 #' summary(selmtd)
 #' plot(selmtd)

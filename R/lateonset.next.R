@@ -4,9 +4,9 @@
 #' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO 
 #' design and benchmark aCFO design.
 #' 
-#' @usage lateonset.next(target, p.true, currdose, design, tau, enter.times, 
-#'        dlt.times, current.t, doses, prior.para=list(alp.prior=target, bet.prior=1-target),
-#'        cutoff.eli=0.95, extrasafe=FALSE, offset=0.05)
+#' @usage lateonset.next(target, p.true, currdose, design, tau, enter.times, dlt.times, 
+#'        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
+#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 #'
 #' @param target the target DLT rate.
 #' @param p.true The true DLT rates under the different dose levels.
@@ -23,6 +23,14 @@
 #' @param prior.para  the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
+#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+#'                   extra safety.
+#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
+#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#'                generally works well.
 #'
 #' @details Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. As a 
 #'          result, the TITE framework and fractional framework serve as two imputation methods to handle pending data 
@@ -43,7 +51,7 @@
 #'   movement directions, and \code{stop} indicates stopping the experiment}
 #'   \item{currdose: }{the current dose level.}
 #'   \item{nextdose: }{the recommended dose level for the next cohort.}
-#'   \item{overTox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
+#'   \item{overtox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #'   \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
 #'   or not. }
@@ -69,31 +77,37 @@
 #' ## 3) the arrival times of patients are distributed uniformly.
 #' ## 4) the time to DLT events is simulated using a Weibull distribution, with 50% of these events 
 #' ##    occurring in the first half of the assessment window.
-#' target<-0.2; p.true<-c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
-#' prior.para=list(alp.prior=target, bet.prior=1-target)
-#' enter.times<-c(0,0.082,0.343,0.554,1.18,1.88,2.15,2.68,2.74,3.30,3.99,
-#'                4.52,5.51,5.93,6.18,6.68,7.05,7.92)
-#' dlt.times<-c(0,0,0,0,0,0,0,0,0,0.934,0,0,0,0,0,1.5,0.7,0)
-#' current.t<-8.13
-#' doses<-c(1,1,1,2,2,2,3,3,3,4,4,4,3,3,3,4,4,4)
+#' target <- 0.2; p.true <- c(0.01, 0.05, 0.10, 0.14, 0.20, 0.26, 0.34)
+#' prior.para = list(alp.prior = target, bet.prior = 1 - target)
+#' enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
+#'                6.54, 6.66, 6.93, 7.32, 7.65, 8.14, 8.74)
+#' dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.995, 0, 0, 0, 0, 0, 0, 0, 2.58)
+#' current.t<- 9.41
+#' doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
 #' ## determine the dose level for the next cohort using the TITE-CFO design
-#' lateonset.next(target, p.true, currdose=1, design='TITE-CFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose = 4, design = 'TITE-CFO', tau = 3, enter.times,   
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' ## determine the dose level for the next cohort using the TITE-aCFO design
-#' lateonset.next(target, p.true, currdose=4, design='TITE-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose = 4, design = 'TITE-aCFO', tau = 3, enter.times,   
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' ## determine the dose level for the next cohort using the f-CFO design
-#' lateonset.next(target, p.true, currdose=4, design='fCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose = 4, design = 'fCFO', tau = 3, enter.times,  
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' ## determine the dose level for the next cohort using the f-aCFO design
-#' lateonset.next(target, p.true, currdose=4, design='f-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose = 4, design = 'f-aCFO', tau = 3, enter.times,   
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' ## determine the dose level for the next cohort using the benchmark CFO design
-#' lateonset.next(target, p.true, currdose=4, design='bCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose = 4, design = 'bCFO', tau = 3, enter.times,   
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' ## determine the dose level for the next cohort using the benchmark aCFO design
-#' lateonset.next(target, p.true, currdose=4, design='b-aCFO', tau=3, enter.times, dlt.times,  
-#'                current.t, doses, prior.para)
+#' decision <- lateonset.next(target, p.true, currdose=4, design='b-aCFO', tau=3, enter.times,   
+#'                dlt.times, current.t, doses, prior.para)
+#' summary(decision)
 #' 
 lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, dlt.times, 
                            current.t, doses, prior.para=list(alp.prior=target, bet.prior=1-target),
@@ -291,7 +305,6 @@ lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, d
     prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
     if (overdose.fn(target, cutoff.eli, prior.para)){
       tover.doses[1:ndose] <- 1
-      break()
     }
   }
   
@@ -314,10 +327,10 @@ lateonset.next <- function(target, p.true, currdose, design, tau, enter.times, d
   }
   nextdose <- res$nextdose
   decision <- res$decision
-  overTox <- res$overTox
+  overtox <- res$overtox
 
   out <- list(target=target, ays=ays, ans=ans, decision=decision, currdose = currdose, 
-              nextdose=nextdose, overTox=overTox, tover.doses=tover.doses)
+              nextdose=nextdose, overtox=overtox, tover.doses=tover.doses)
   class(out) <- "cfo"
   return(out)
 }
