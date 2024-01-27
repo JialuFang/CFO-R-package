@@ -69,7 +69,7 @@
 #' @examples
 #' ## setting
 #' nsimu <- 100; target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
-#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
+#' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 #' prior.para = list(alp.prior = target, bet.prior = 1 - target)
 #' tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
@@ -139,7 +139,7 @@ CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, coho
       res <- CFO.simu(target, p.true, ncohort, init.level, cohortsize, design, prior.para, seed = seeds[i],
                       cutoff.eli, extrasafe, offset)
     }else{
-      res <- lateonset.simu(target, p.true, tau, cohortsize, ncohort, accrual, tte.para, accrual.dist, 
+      res <- lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual, accrual.dist, 
                             design, init.level, prior.para=list(alp.prior=target, bet.prior=1-target), seed = seeds[i],
                             cutoff.eli, extrasafe, offset)
     }

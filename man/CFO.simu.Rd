@@ -69,7 +69,7 @@ level is overly toxicity, the experiment is concluded, and the MTD is determined
 }
 \examples{
 target <- 0.2; ncohort <- 12; cohortsize <- 3
-p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
+p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 ## find the MTD for a single CFO trial
 CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
             prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
