@@ -21,7 +21,7 @@
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
 #' target <- 0.2; prior.para=list(alp.prior=target, bet.prior=1-target)
-#' tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+#' tau <- 3; acrrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
 #' ## summarize the object returned by CFO.next()
 #' decision <- CFO.next(target = 0.2, cys = c(0, 1, 0), cns = c(3, 6, 0), currdose = 3, prior.para)
@@ -44,13 +44,13 @@
 #' summary(decision)
 #' 
 #' ## summarize the object returned by lateonset.simu()
-#' faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual,
+#' faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, acrrual.rate,
 #'                 accrual.dist, design = 'f-aCFO', init.level, prior.para)
 #' summary(faCFOtrial)
 #' 
 #' ## summarize the object returned by CFO.oc()
 #' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'                       tau, tte.para, accrual, accrual.dist, prior.para)
+#'                       tau, tte.para, acrrual.rate, accrual.dist, prior.para)
 #' summary(faCFOoc)
 #' 
 #' ## settings for 2dCFO

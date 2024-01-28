@@ -57,5 +57,7 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 0.15, 0.30, 0.45, 0.50, 0.60), 
 nrow = 3, ncol = 5, byrow = TRUE)
 
-CFO2d.oc(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
+CFO2doc <- CFO2d.oc(target=0.3, p.true=p.true, ncohort = 25, cohortsize = 3, seeds = 1:10, nsimu = 10)
+summary(CFO2doc)
+plot(CFO2doc)
 }

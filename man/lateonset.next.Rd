@@ -85,11 +85,11 @@ expense of a prolonged trial duration.
 ## 3) the arrival times of patients are distributed uniformly.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
-target <- 0.2; p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
+target <- 0.2; p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 prior.para = list(alp.prior = target, bet.prior = 1 - target)
 enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
-               6.54, 6.66, 6.93, 7.32, 7.65, 8.14, 8.74)
-dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.995, 0, 0, 0, 0, 0, 0, 0, 2.58)
+               6.54, 6.66, 6.93, 7.32, 7.66, 8.14, 8.74)
+dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.610, 0, 2.98, 0, 0, 1.95, 0, 0, 1.48)
 current.t<- 9.41
 doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
 ## determine the dose level for the next cohort using the TITE-CFO design

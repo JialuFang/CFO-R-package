@@ -4,7 +4,7 @@
 \alias{lateonset.simu}
 \title{Find the maximum tolerated dose (MTD) for a single trial using the CFO-type designs with late-onset toxicities.}
 \usage{
-lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
        accrual.dist, design, init.level = 1, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
        seed = NULL, cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
@@ -24,7 +24,7 @@ lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual,
 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the
 assessment window \code{tau}.}
 
-\item{accrual}{the accrual rate, i.e., the number of patients accrued in per unit time.}
+\item{accrual.rate}{the accrual.rate rate, i.e., the number of patients accrued in per unit time.}
 
 \item{accrual.dist}{the distribution of the arrival times of patients. When \code{accrual.dist = 'fix'}, it corresponds to all
 patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist = 'unif'},
@@ -85,39 +85,39 @@ applications, multiple simulations are required to ascertain the MTD, and this c
 \examples{
 target <- 0.2; ncohort <- 12; cohortsize <- 3
 p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
-tau <- 3; accrual <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 ## find the MTD for a single TITE-CFO trial
-TITECFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+TITECFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'TITE-CFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(TITECFOtrial)
 plot(TITECFOtrial)
 ## find the MTD for a single TITE-aCFO trial
-TITEaCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+TITEaCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'TITE-aCFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(TITEaCFOtrial)
 plot(TITEaCFOtrial)
 ## find the MTD for a single fCFO trial
-fCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+fCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'fCFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(fCFOtrial)
 plot(fCFOtrial)
 ## find the MTD for a single f-aCFO trial
-faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'f-aCFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(faCFOtrial)
 plot(faCFOtrial)
 ## find the MTD for a single benchmark CFO trial
-bCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+bCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'bCFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(bCFOtrial)
 plot(bCFOtrial)
 ## find the MTD for a single benchmark aCFO trial
-baCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual, 
+baCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
                 accrual.dist, design = 'b-aCFO', init.level = 1, 
                 prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
 summary(baCFOtrial)

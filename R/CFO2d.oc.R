@@ -30,7 +30,9 @@
 #' 0.15, 0.30, 0.45, 0.50, 0.60), 
 #' nrow = 3, ncol = 5, byrow = TRUE)
 #' 
-#' CFO2d.oc(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seeds = 1:1000, nsimu = 1000)
+#' CFO2doc <- CFO2d.oc(target=0.3, p.true=p.true, ncohort = 25, cohortsize = 3, seeds = 1:10, nsimu = 10)
+#' summary(CFO2doc)
+#' plot(CFO2doc)
 
 CFO2d.oc <- function(target, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), prior.para = list(alp.prior = target, bet.prior = 1 - target), 
                      seeds = NULL, nsimu = 1000) {
