@@ -93,8 +93,9 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   
   for (i in 1:ncohort){
     pc <- p.true[cidx.A, cidx.B] 
-    if (!is.null(seed)){
-      set.seed(seed+i)
+    if (!is.null(seed)) {
+      iter_seed <- (seed * 100) + i
+      set.seed(iter_seed)
     }
     cres <- rbinom(cohortsize, 1, pc)
     ays[cidx.A, cidx.B] <- ays[cidx.A, cidx.B] + sum(cres)

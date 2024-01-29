@@ -180,3 +180,4 @@ CFO.selectmtd <- function (target, npts, ntox, prior.para=list(alp.prior=target,
   class(out)<-"cfo"
   return(out)
 }
+

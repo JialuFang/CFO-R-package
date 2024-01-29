@@ -244,6 +244,34 @@ summary.cfo<- function (object, ...)
       }
       cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n")
     }
+    if (length(object$MTD) >= 2) {
+      if (length(object$MTD) == 2) {
+        if (object$MTD[1, 1] == 99 && object$MTD[1, 2] ==
+            99) {
+          cat("All tested doses are overly toxic. No MTD is selected! \n")
+        }
+        else cat("The MTD is dose combination (", object$MTD[1,
+                                                             1], ", ", object$MTD[1, 2], ") \n\n")
+      }
+      else {
+        if (length(object$MTD) == 0) {
+          cat("All tested doses are overly toxic. No MTD is selected! \n")
+        }
+        else {
+          cat("The MTD contour includes dose combinations ",
+              paste("(", object$MTD[, 1], ", ", object$MTD[,
+                                                           2], ")", sep = ""), "\n\n")
+        }
+      }
+      cat("Isotonic estimates of toxicity probabilities and 95% confidence intervals for combinations are \n")
+      # for (i in 1:dim(object$p_est_CI)[1]) {
+      #   cat(formatC(object$p_est_CI[i, ], digits = 2, format = "f",
+      #               width = 5), sep = "  ", "\n")
+      # }
+      print(noquote(object$p_est_CI))
+      cat("\n")
+      cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n\n")
+    }
   }
 }
 
