@@ -10,7 +10,15 @@
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).
 #' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior})
+#' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
+#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+#'                   extra safety.
+#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
+#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#'                generally works well.
 #' @param seed an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.
 #'
 #' @details 
@@ -48,7 +56,7 @@
 
 
 
-CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL){
+CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL, cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
   # target: Target DIL rate
   # p.true: True DIL rates under the different dose levels
   # ncohort: The number of cohorts
@@ -72,13 +80,13 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   simu.res.dose <- matrix(nrow = ncohort, ncol = 2)
   simu.res.DLT <- vector("numeric", ncohort)
   
-  overdose.2d <- function(phi, obs, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
+  overdose.2d <- function(phi, threshold, obs, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
     n <- obs$n
     alp.prior <- prior.para$alp.prior
     bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
-    if ((pp >= 0.95) & (obs$n>=3)){
+    if ((pp >= threshold) & (obs$n>=3)){
       return(TRUE)
     }else{
       return(FALSE)
@@ -101,7 +109,6 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     ays[cidx.A, cidx.B] <- ays[cidx.A, cidx.B] + sum(cres)
     ans[cidx.A, cidx.B] <- ans[cidx.A, cidx.B] + cohortsize
     
-    # simu.res.dose[[i]] <- c(cidx.A, cidx.B) # Store as a pair
     simu.res.dose[i, ] <- c(cidx.A, cidx.B)
     simu.res.DLT[i] <- sum(cres)
     
@@ -110,10 +117,16 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     
     obs <- c(list(y=cy, n=cn, ays=ays, ans=ans, cidx.A=cidx.A, cidx.B=cidx.B), obs)
     
-    # if (overdose.2d(phi, obs)){
-    #   tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
-    # }
-    
+    if (overdose.2d(target, cutoff.eli, obs)){
+      tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
+    }
+    if (cidx.A == 1 & cidx.B == 1) {
+      if (extrasafe) {
+        if (overdose.2d(target, cutoff.eli-offset, obs)){
+          tover.doses[1:1] <- 1
+        }
+      }
+    }
     if (tover.doses[1,1] == 1){
       earlystop <- 1
       break()
@@ -213,4 +226,3 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   class(out) <- "cfo"
   return(out)
 }
-

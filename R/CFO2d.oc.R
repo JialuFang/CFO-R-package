@@ -9,6 +9,14 @@
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
 #' @param nsimu the total number of trials to be simulated. The default value is 1000.
+#' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
+#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+#'                   extra safety.
+#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
+#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#'                generally works well.
 #' @param seeds A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).
 #'
 #' @return A list with the averaged operating characteristics across all simulations.
@@ -34,12 +42,11 @@
 #' summary(CFO2doc)
 #' plot(CFO2doc)
 
-CFO2d.oc <- function(target, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-                     seeds = NULL, nsimu = 1000) {
+CFO2d.oc <- function(target, p.true, ncohort = 20, cohortsize = 3, init.level = c(1,1), prior.para = list(alp.prior = target, bet.prior = 1 - target), cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, nsimu = 1000, seeds = NULL) {
   
   # Run the CFO2d.simu function nsimu times using lapply
   results <- lapply(1:nsimu, function(i) {
-    CFO2d.simu(target, p.true, ncohort, cohortsize, init.level, prior.para, seed = seeds[i])
+    CFO2d.simu(target, p.true, ncohort, cohortsize, init.level, prior.para, seed = seeds[i], cutoff.eli=cutoff.eli, extrasafe=extrasafe, offset=offset)
   })
   
   selPercent <- matrix(0, dim(p.true)[1], dim(p.true)[2])
