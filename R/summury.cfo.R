@@ -87,7 +87,6 @@ summary.cfo<- function (object, ...)
   ###############################################################################
   ############################summary for XXX.oc()###############################
   ###############################################################################
-  
   if (!is.null(object$simu.setup)) {
     if(is.null(dim(object$selpercent))){
       if (object$percentstop == 0){
@@ -125,22 +124,24 @@ summary.cfo<- function (object, ...)
             formatC(object$averdur, digits = 3, format = "f")," \n")
       }
     }
-    else if(length(dim(object$selPercent))==2) {
+    else if(length(dim(object$selpercent))==2) {
       # Summary for 2dCFO multiple trail simulation
       cat("Selection percentage at each dose level:\n")
-      print(object$selPercent)
+      print(object$selpercent)
       cat("Average number of patients treated at each dose level:\n")
-      print(object$dose.ns)
+      print(object$npatients)
       cat("Average number of toxicity observed at each dose level:\n")
-      print(object$DLT.ns)
+      print(object$ntox)
       cat("Percentage of correct selection of the MTD:", 
-          formatC(object$pcorrect, digits = 3, format = "f"), "\n")
+          formatC(object$MTDsel, digits = 3, format = "f"), "\n")
       cat("Percentage of patients allocated to the MTD:", 
-          formatC(object$npercent, digits = 3, format = "f"), "\n")
+          formatC(object$MTDallo, digits = 3, format = "f"), "\n")
+      cat("Percentage of selecting a dose above the MTD:",
+          formatC(object$oversel, digits = 3, format = "f")," \n")
       cat("Percentage of allocating patients at dose levels above the MTD:",
-          formatC(object$ptoxic, digits = 3, format = "f")," \n")
+          formatC(object$overallo, digits = 3, format = "f")," \n")
       cat("Percentage of the patients suffering DLT:",
-          formatC(object$ntox/sum(object$dose.ns), digits = 3, format = "f")," \n")
+          formatC(object$averDLT/sum(object$npatients), digits = 3, format = "f")," \n")
     }
   }
   
@@ -245,6 +246,7 @@ summary.cfo<- function (object, ...)
       cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n")
     }
     if (length(object$MTD) >= 2) {
+      message("here")
       if (length(object$MTD) == 2) {
         if (object$MTD[1, 1] == 99 && object$MTD[1, 2] ==
             99) {

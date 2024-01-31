@@ -22,13 +22,16 @@
 #' @return A list with the averaged operating characteristics across all simulations.
 #' \itemize{
 #'   \item{p.true}{The matrix of the true DLT rates under the different dose levels.}
-#'   \item{selPercent}{The matrix of the selection percentage of each dose level}
-#'   \item{dose.ns}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
-#'   \item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
-#'   \item{pcorrect}{The percentage of the correct selection of the MTD.}
-#'   \item{npercent}{The averaged percentage of patients assigned to the target DLT rate.}
-#'   \item{ptoxic}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
-#'   \item{ntox}{The averaged total number of DLTs observed.}
+#'   \item{selpercent}{The matrix of the selection percentage of each dose level}
+#'   \item{npatients}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
+#'   \item{ntox}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
+#'   \item{MTDsel}{The percentage of the correct selection of the MTD.}
+#'   \item{MTDallo}{The averaged percentage of patients assigned to the target DLT rate.}
+#'   \item{oversel: }{the percentage of selecting a dose above the MTD.}
+#'   \item{overallo}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
+#'   \item{averDLT}{The averaged total number of DLTs observed.}
+#'   \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
+#'   \item{simu.setup}{The parameters for the simulation set-up.}
 #' }
 #' @export
 #' @examples
@@ -49,23 +52,27 @@ CFO2d.oc <- function(target, p.true, ncohort = 20, cohortsize = 3, init.level = 
     CFO2d.simu(target, p.true, ncohort, cohortsize, init.level, prior.para, seed = seeds[i], cutoff.eli=cutoff.eli, extrasafe=extrasafe, offset=offset)
   })
   
-  selPercent <- matrix(0, dim(p.true)[1], dim(p.true)[2])
+  selpercent <- matrix(0, dim(p.true)[1], dim(p.true)[2])
   for (i in 1:nsimu) {
-    selPercent[results[[i]]$MTD] <- selPercent[results[[i]]$MTD] + 1
+    selpercent[results[[i]]$MTD] <- selpercent[results[[i]]$MTD] + 1
   }
   
   # Compute the average of the results
   avg_results <- list()
   avg_results$p.true <- p.true
-  avg_results$selPercent <- selPercent / nsimu
-  avg_results$dose.ns <- Reduce('+', lapply(results, `[[`, "dose.ns")) / nsimu
-  avg_results$DLT.ns <- Reduce('+', lapply(results, `[[`, "DLT.ns")) / nsimu
-  avg_results$pcorrect <- mean(sapply(results, `[[`, "correct"))
-  avg_results$npercent <- mean(sapply(results, `[[`, "npercent"))
-  avg_results$ptoxic <- mean(sapply(results, `[[`, "ptoxic"))
-  avg_results$ntox <- mean(sapply(results, `[[`, "ntox"))
+  avg_results$selpercent <- selpercent / nsimu
+  avg_results$npatients <- Reduce('+', lapply(results, `[[`, "npatients")) / nsimu
+  avg_results$ntox <- Reduce('+', lapply(results, `[[`, "ntox")) / nsimu
+  avg_results$MTDsel <- mean(sapply(results, `[[`, "correct"))
+  avg_results$MTDallo <- mean(sapply(results, `[[`, "npercent"))
+  avg_results$oversel <- sum(avg_results$selpercent[p.true > target])
+  avg_results$overallo <- mean(sapply(results, `[[`, "ptoxic"))
+  avg_results$averDLT <- mean(sapply(results, `[[`, "sumDLT"))
+  avg_results$percentstop <- mean(sapply(results, `[[`, "earlystop"))
+  avg_results$simu.setup <- data.frame(target = target, ncohort = ncohort, cohortsize = cohortsize, design = "2dCFO", nsimu = nsimu)
   
   class(avg_results) <- "cfo"
   
   return(avg_results)
 }
+

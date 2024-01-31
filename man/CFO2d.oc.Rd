@@ -11,8 +11,11 @@ CFO2d.oc(
   cohortsize = 3,
   init.level = c(1, 1),
   prior.para = list(alp.prior = target, bet.prior = 1 - target),
-  seeds = NULL,
-  nsimu = 1000
+  cutoff.eli = 0.95,
+  extrasafe = FALSE,
+  offset = 0.05,
+  nsimu = 1000,
+  seeds = NULL
 )
 }
 \arguments{
@@ -30,21 +33,35 @@ CFO2d.oc(
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).}
+\item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
+the default value of (\code{cutoff.eli = 0.95}) for general use.}
+
+\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+extra safety.}
+
+\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
+stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset = 0.05}
+generally works well.}
 
 \item{nsimu}{the total number of trials to be simulated. The default value is 1000.}
+
+\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).}
 }
 \value{
 A list with the averaged operating characteristics across all simulations.
 \itemize{
 \item{p.true}{The matrix of the true DLT rates under the different dose levels.}
-\item{selPercent}{The matrix of the selection percentage of each dose level}
-\item{dose.ns}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
-\item{DLT.ns}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
-\item{pcorrect}{The percentage of the correct selection of the MTD.}
-\item{npercent}{The averaged percentage of patients assigned to the target DLT rate.}
-\item{ptoxic}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
-\item{ntox}{The averaged total number of DLTs observed.}
+\item{selpercent}{The matrix of the selection percentage of each dose level}
+\item{npatients}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
+\item{ntox}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
+\item{MTDsel}{The percentage of the correct selection of the MTD.}
+\item{MTDallo}{The averaged percentage of patients assigned to the target DLT rate.}
+\item{oversel: }{the percentage of selecting a dose above the MTD.}
+\item{overallo}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
+\item{averDLT}{The averaged total number of DLTs observed.}
+\item{percentstop: }{the percentage of early stopping without selecting the MTD.}
+\item{simu.setup}{The parameters for the simulation set-up.}
 }
 }
 \description{

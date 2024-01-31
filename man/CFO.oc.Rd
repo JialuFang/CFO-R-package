@@ -73,6 +73,7 @@ The operating characteristics includes \cr
 \item{averDLT: }{the percentage of the patients suffering DLT.}
 \item{averdur: }{the average trial duration if trials with late-onset toxicities.}
 \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
+\item{simu.setup}{The parameters for the simulation set-up.}
 }
 }
 \description{

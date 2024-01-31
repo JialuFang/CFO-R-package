@@ -20,9 +20,20 @@ CFO2d.simu(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1),
 
 \item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior})}
 
 \item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.}
+
+\item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
+the default value of (\code{cutoff.eli = 0.95}) for general use.}
+
+\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+extra safety.}
+
+\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
+stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset = 0.05}
+generally works well.}
 }
 \value{
 A list with the following components:
@@ -32,10 +43,13 @@ A list with the following components:
 \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
 \item{npatients: }{a matrix of the number of patients allocated for different doses.}
 \item{ntox: }{a matrix of the number of DLT observed for different doses.}
-\item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
+\item{npercent: }{the percentage of patients assigned to the target DLT rate.}
 \item{over.doses: }{a matrix indicating whether each dose is overdosed or not (1 for yes).}
 \item{cohortdose: }{the dose combination assigned for each cohort.}
+\item{ptoxic: }{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
 \item{patientDLT: }{the DLT observed at each cohort.}
+\item{sumDLT: }{the total number of DLT observed.}
+\item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 }
 }
 \description{

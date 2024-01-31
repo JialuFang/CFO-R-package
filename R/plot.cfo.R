@@ -140,40 +140,40 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         }
         par(mfrow = c(1, 1))
       }
-      else if(length(dim(objectPlot$selPercent))==2) {
-        #   attributesToPlot <- c("selPercent", "dose.ns", "DLT.ns")
-        #   titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
-        #   ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
-        #   
-        #   par(mfrow = c(3, 1))
-        #   
-        #   # Loop through each attribute and create a plot
-        #   for (i in seq_along(attributesToPlot)) {
-        #     attr <- attributesToPlot[i]
-        #     # Check if the attribute exists in the objectPlot
-        #     if (!is.null(objectPlot[[attr]])) {
-        #       # Extract the matrix
-        #       matrixToPlot <- objectPlot[[attr]]
-        #       
-        #       # Convert the matrix to a vector by column
-        #       matrixVector <- as.vector(matrixToPlot)
-        #       
-        #       # Convert to percentages only for selPercent
-        #       if (attr == "selPercent") {
-        #         matrixVector <- matrixVector * 100
-        #       }
-        #       
-        #       # Create x-axis labels
-        #       dimMatrix <- dim(matrixToPlot)
-        #       xLabels <- expand.grid(row = 1:dimMatrix[1], col = 1:dimMatrix[2])
-        #       xLabels <- apply(xLabels, 1, function(x) paste("(", x[1], ",", x[2], ")", sep = ""))
-        #       
-        #       # Create the bar plot with horizontal x-axis labels
-        #       barplot(matrixVector, names.arg = xLabels, las = 2,
-        #               xlab = "Combined dose level", ylab = ylabels[i], main = titles[i])
-        #     }
-        #   }
-        #   par(mfrow = c(1, 1))
+      else if(length(dim(objectPlot$selpercent))==2) {
+          attributesToPlot <- c("selpercent", "npatients", "ntox")
+          titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
+          ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
+
+          par(mfrow = c(3, 1))
+
+          # Loop through each attribute and create a plot
+          for (i in seq_along(attributesToPlot)) {
+            attr <- attributesToPlot[i]
+            # Check if the attribute exists in the objectPlot
+            if (!is.null(objectPlot[[attr]])) {
+              # Extract the matrix
+              matrixToPlot <- objectPlot[[attr]]
+
+              # Convert the matrix to a vector by column
+              matrixVector <- as.vector(matrixToPlot)
+
+              # Convert to percentages only for selpercent
+              if (attr == "selpercent") {
+                matrixVector <- matrixVector * 100
+              }
+
+              # Create x-axis labels
+              dimMatrix <- dim(matrixToPlot)
+              xLabels <- expand.grid(row = 1:dimMatrix[1], col = 1:dimMatrix[2])
+              xLabels <- apply(xLabels, 1, function(x) paste("(", x[1], ",", x[2], ")", sep = ""))
+
+              # Create the bar plot with horizontal x-axis labels
+              barplot(matrixVector, names.arg = xLabels, las = 2,
+                      xlab = "Combined dose level", ylab = ylabels[i], main = titles[i])
+            }
+          }
+          par(mfrow = c(1, 1))
       }
     }
     
