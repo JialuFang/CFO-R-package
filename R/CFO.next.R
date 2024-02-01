@@ -64,18 +64,15 @@
 #' @examples
 #' ## determine the dose level for the next cohort of new patients
 #' cys <- c(0, 1, 0); cns <- c(3, 6, 0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, 
-#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3)
 #' summary(decision)
 #' 
 #' cys <- c(NA, 3, 0); cns <- c(NA, 3, 0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, 
-#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1)
 #' summary(decision)
 #' 
 #' cys <- c(0, 3, NA); cns <- c(3, 3, NA)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, 
-#'             prior.para=list(alp.prior=0.2, bet.prior=0.8))
+#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7)
 #' summary(decision)
 #' 
 #' @import stats
@@ -124,7 +121,6 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     
     list(p1=p1, p2=p2)
   }
-  
   
   OR.values <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior, type){
     ps <- prob.int(phi, y1, n1, y2, n2, alp.prior, bet.prior)
@@ -183,8 +179,7 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     margin.ys <- p.y1s.mat * p.y2s.mat
     margin.ys
   }
-  
-  
+
   # Obtain the optimal gamma for the hypothesis test
   optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
     OR.table <- All.OR.table(phi, n1, n2, type, alp.prior, bet.prior) 

@@ -4,20 +4,20 @@
 \alias{lateonset.next}
 \title{Determination of the dose level for next cohort in the CFO-type designs with late-onset toxicities}
 \usage{
-lateonset.next(target, p.true, currdose, design, tau, enter.times, dlt.times, 
+lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
 }
 \arguments{
+\item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
+\code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
+to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
+
 \item{target}{the target DLT rate.}
 
 \item{p.true}{The true DLT rates under the different dose levels.}
 
 \item{currdose}{the current dose level.}
-
-\item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
-\code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
-to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{tau}{maximal assessment window size}
 
@@ -86,35 +86,34 @@ expense of a prolonged trial duration.
 ## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
 ##    occurring in the first half of the assessment window.
 target <- 0.2; p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
-prior.para = list(alp.prior = target, bet.prior = 1 - target)
 enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
                6.54, 6.66, 6.93, 7.32, 7.66, 8.14, 8.74)
 dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.610, 0, 2.98, 0, 0, 1.95, 0, 0, 1.48)
 current.t<- 9.41
 doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
 ## determine the dose level for the next cohort using the TITE-CFO design
-decision <- lateonset.next(target, p.true, currdose = 4, design = 'TITE-CFO', tau = 3, enter.times,   
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design = 'TITE-CFO', target, p.true, currdose = 4, tau = 3,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the TITE-aCFO design
-decision <- lateonset.next(target, p.true, currdose = 4, design = 'TITE-aCFO', tau = 3, enter.times,   
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design = 'TITE-aCFO', target, p.true, currdose = 4, tau = 3,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the f-CFO design
-decision <- lateonset.next(target, p.true, currdose = 4, design = 'fCFO', tau = 3, enter.times,  
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design = 'fCFO', target, p.true, currdose = 4, tau = 3,  
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the f-aCFO design
-decision <- lateonset.next(target, p.true, currdose = 4, design = 'f-aCFO', tau = 3, enter.times,   
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, tau = 3,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the benchmark CFO design
-decision <- lateonset.next(target, p.true, currdose = 4, design = 'bCFO', tau = 3, enter.times,   
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design = 'bCFO', target, p.true, currdose = 4, tau = 3,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the benchmark aCFO design
-decision <- lateonset.next(target, p.true, currdose=4, design='b-aCFO', tau=3, enter.times,   
-               dlt.times, current.t, doses, prior.para)
+decision <- lateonset.next(design='b-aCFO', target, p.true, currdose=4, tau = 3,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 
 }

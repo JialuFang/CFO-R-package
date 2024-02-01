@@ -4,10 +4,10 @@
 \alias{CFO.oc}
 \title{Generate operating characteristics for multiple simulations}
 \usage{
-CFO.oc(nsimu = 5000, design, target, p.true, ncohort, init.level, cohortsize,
+CFO.oc(nsimu = 5000, design, target, p.true, init.level = 1, ncohort, cohortsize,
        tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, 
-       prior.para = list(alp.prior = target, bet.prior = 1 - target), seeds = NULL,
-       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+       prior.para = list(alp.prior = target, bet.prior = 1 - target),
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seeds = NULL)
 }
 \arguments{
 \item{nsimu}{the total number of trials to be simulated. The default value is 5000.}
@@ -21,11 +21,11 @@ and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO, an
 
 \item{p.true}{the true DLT rates under the different dose levels.}
 
-\item{ncohort}{the total number of cohorts.}
-
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
 
-\item{cohortsize}{the number of patients or size of each cohort. The default value \code{cohortsize} is 3.}
+\item{ncohort}{the total number of cohorts.}
+
+\item{cohortsize}{the number of patients or size of each cohort.}
 
 \item{tau}{maximal assessment window size. 'NA' should be assigned if the design without late-oneset outcomes.}
 
@@ -45,8 +45,6 @@ exponential distribution. 'NA' should be assigned if the design without late-one
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
 
-\item{seeds}{A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is NULL).}
-
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli=0.95}) for general use.}
 
@@ -57,12 +55,15 @@ extra safety}
 stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset=0.05}
 generally works well.}
+
+\item{seeds}{A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is NULL).}
 }
 \value{
-the \code{ CFO.oc() } function returns basic setup of ($simu.setup) and the operating
+the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating
 characteristics of the design. \cr
 The operating characteristics includes \cr
 \itemize{
+\item{p.true}{the true DLT rates under the different dose levels.}
 \item{selpercent: }{the selection percentage at each dose level.}
 \item{npatients: }{the averaged number of patients treated at each dose level in one simulation.}
 \item{ntox: }{the averaged number of toxicity observed at each dose level in one simulation.}
@@ -73,7 +74,7 @@ The operating characteristics includes \cr
 \item{averDLT: }{the percentage of the patients suffering DLT.}
 \item{averdur: }{the average trial duration if trials with late-onset toxicities.}
 \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-\item{simu.setup}{The parameters for the simulation set-up.}
+\item{simu.setup}{the parameters for the simulation set-up.}
 }
 }
 \description{
@@ -96,43 +97,43 @@ prior.para = list(alp.prior = target, bet.prior = 1 - target)
 tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 
 ## get the operating characteristics for 100 simulations using the CFO design
-CFOoc <- CFO.oc (nsimu, design='CFO', target, p.true, ncohort, init.level, cohortsize,
-         tau=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, prior.para, seeds = 1:nsimu)
+CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
+         tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 summary(CFOoc)
 plot(CFOoc)
 ## get the operating characteristics for 100 simulations using the aCFO design
-aCFOoc <- CFO.oc (nsimu, design='aCFO', target, p.true, ncohort, init.level, cohortsize,
-       tau=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, prior.para, seeds = 1:nsimu)
+aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
+       tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 summary(aCFOoc)
 plot(aCFOoc)
 ## get the operating characteristics for 100 simulations using the TITE-CFO design
-TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+TITECFOoc <- CFO.oc (nsimu, design = 'TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(TITECFOoc)
 plot(TITECFOoc)
 ## get the operating characteristics for 100 simulations using the TITE-aCFO design
-TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para)
+TITEaCFOoc <- CFO.oc (nsimu, design = 'TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(TITEaCFOoc)
 plot(TITEaCFOoc)
 ## get the operating characteristics for 100 simulations using the fCFO design
-fCFOoc <- CFO.oc (nsimu, design='fCFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(fCFOoc)
 plot(fCFOoc)
 ## get the operating characteristics for 100 simulations using the f-aCFO design
-faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(faCFOoc)
 plot(faCFOoc)
 ## get the operating characteristics for 100 simulations using the bCFO design
-bCFOoc <- CFO.oc (nsimu, design='bCFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+bCFOoc <- CFO.oc (nsimu, design = 'bCFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(bCFOoc)
 plot(bCFOoc)
 ## get the operating characteristics for 100 simulations using the b-aCFO design
-baCFOoc <- CFO.oc (nsimu, design='b-aCFO', target, p.true, ncohort, init.level, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+baCFOoc <- CFO.oc (nsimu, design = 'b-aCFO', target, p.true, init.level, ncohort, cohortsize,
+        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(baCFOoc)
 plot(baCFOoc)
 }

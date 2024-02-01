@@ -4,30 +4,22 @@
 \alias{CFO2d.oc}
 \title{This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.}
 \usage{
-CFO2d.oc(
-  target,
-  p.true,
-  ncohort = 20,
-  cohortsize = 3,
-  init.level = c(1, 1),
-  prior.para = list(alp.prior = target, bet.prior = 1 - target),
-  cutoff.eli = 0.95,
-  extrasafe = FALSE,
-  offset = 0.05,
-  nsimu = 1000,
-  seeds = NULL
-)
+CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
+               prior.para = list(alp.prior = target, bet.prior = 1 - target), 
+               cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seeds = NULL)
 }
 \arguments{
+\item{nsimu}{the total number of trials to be simulated. The default value is 1000.}
+
 \item{target}{the target DLT rate.}
 
 \item{p.true}{a matrix representing the true DIL rates under the different dose levels.}
 
-\item{ncohort}{the total number of cohorts, the default value is 20.}
-
-\item{cohortsize}{the number of patients or size of each cohort. the default value is 3.}
-
 \item{init.level}{a numeric vector of length 2 representing the initial dose level (default is c(1,1)).}
+
+\item{ncohort}{the total number of cohorts.}
+
+\item{cohortsize}{the number of patients or size of each cohort.}
 
 \item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
@@ -44,37 +36,36 @@ stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{nsimu}{the total number of trials to be simulated. The default value is 1000.}
-
 \item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).}
 }
 \value{
 A list with the averaged operating characteristics across all simulations.
 \itemize{
-\item{p.true}{The matrix of the true DLT rates under the different dose levels.}
-\item{selpercent}{The matrix of the selection percentage of each dose level}
-\item{npatients}{A matrix of the averaged number of patients allocated for different doses in one simulation.}
-\item{ntox}{A matrix of the averaged number of DLT observed for different doses in one simulation.}
-\item{MTDsel}{The percentage of the correct selection of the MTD.}
-\item{MTDallo}{The averaged percentage of patients assigned to the target DLT rate.}
+\item{p.true}{the matrix of the true DLT rates under the different dose levels.}
+\item{selpercent}{the matrix of the selection percentage of each dose level}
+\item{npatients}{a matrix of the averaged number of patients allocated for different doses in one simulation.}
+\item{ntox}{a matrix of the averaged number of DLT observed for different doses in one simulation.}
+\item{MTDsel}{the percentage of the correct selection of the MTD.}
+\item{MTDallo}{the averaged percentage of patients assigned to the target DLT rate.}
 \item{oversel: }{the percentage of selecting a dose above the MTD.}
-\item{overallo}{The averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
-\item{averDLT}{The averaged total number of DLTs observed.}
+\item{overallo}{the averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
+\item{averDLT}{the averaged total number of DLTs observed.}
 \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-\item{simu.setup}{The parameters for the simulation set-up.}
+\item{simu.setup}{the parameters for the simulation set-up.}
 }
 }
 \description{
 This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.
 }
 \examples{
-## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 1000 replications.
+## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 100 replications.
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 0.10, 0.15, 0.30, 0.45, 0.55,
 0.15, 0.30, 0.45, 0.50, 0.60), 
 nrow = 3, ncol = 5, byrow = TRUE)
-
-CFO2doc <- CFO2d.oc(target=0.3, p.true=p.true, ncohort = 25, cohortsize = 3, seeds = 1:10, nsimu = 10)
+target <- 0.3; ncohort <- 20; cohortsize <- 3
+CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
+                    seeds = 1:100)
 summary(CFO2doc)
 plot(CFO2doc)
 }

@@ -66,7 +66,7 @@
 #'
 #' @examples
 #'
-#' ### select the MTD for BOIN single agent trial
+#' ### select the MTD for CFO single agent trial
 #' n <- c(3,3,27,3,0,0,0)
 #' y <- c(0,0,4,2,0,0,0)
 #' selmtd <- CFO.selectmtd(target=0.2, npts=n, ntox=y)

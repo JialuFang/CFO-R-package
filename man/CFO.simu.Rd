@@ -4,28 +4,26 @@
 \alias{CFO.simu}
 \title{Conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design and find the maximum tolerated dose (MTD).}
 \usage{
-CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design,
-       prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = NULL,
-       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+CFO.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
+       prior.para = list(alp.prior = target, bet.prior = 1 - target), 
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 }
 \arguments{
+\item{design}{option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.}
+
 \item{target}{the target DLT rate.}
 
 \item{p.true}{the true DLT rates under the different dose levels.}
 
-\item{ncohort}{the total number of cohorts.}
-
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
 
-\item{cohortsize}{the number of patients or size of each cohort. The default value \code{cohortsize} is 3.}
+\item{ncohort}{the total number of cohorts.}
 
-\item{design}{option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.}
+\item{cohortsize}{the number of patients or size of each cohort.}
 
 \item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target)
 by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for the
 true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
-
-\item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to \code{NULL}.}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
@@ -37,6 +35,8 @@ extra safety.}
 stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
+
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to \code{NULL}.}
 }
 \value{
 The \code{CFO.simu} function returns a list object comprising the following components:
@@ -68,16 +68,14 @@ according to the early stopping rule. Upon the predefined maximum sample size is
 level is overly toxicity, the experiment is concluded, and the MTD is determined using isotonic regression.
 }
 \examples{
-target <- 0.2; ncohort <- 12; cohortsize <- 3
+target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 ## find the MTD for a single CFO trial
-CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
-            prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 summary(CFOtrial)
 plot(CFOtrial)
 ## find the MTD for a single aCFO trial
-aCFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'aCFO',
-             prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 summary(aCFOtrial)
 plot(aCFOtrial)
 }

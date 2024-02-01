@@ -27,57 +27,51 @@
 #' @examples
 #' ############design without late-onset outcomes################
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
-#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44)
-#' target <- 0.2; prior.para = list(alp.prior = target, bet.prior = 1 - target)
+#' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
 #' ## CFO design
-#' CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
-#'             prior.para)
+#' CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' plot(CFOtrial)
-#' CFOoc <- CFO.oc (nsimu, design='CFO', target, p.true, ncohort, init.level, cohortsize,
-#'                     tau = NaN, tte.para = NaN, acrrual.rate = NaN, accrual.dist = NaN, prior.para)
+#' 
+#' CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
+#'          tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' plot(CFOoc)
 #' ## aCFO design
-#' aCFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'aCFO', 
-#'               prior.para)
+#' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' plot(aCFOtrial)
-#' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'                     tau = NaN, tte.para = NaN, acrrual.rate = NaN, accrual.dist = NaN, prior.para)
+#' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'           tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' plot(aCFOoc)
 #' 
 #' 
 #' ##############design with late-onset outcomes################
-#' tau <- 3; acrrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+#' tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' ## TITE-CFO design
-#'  TITECFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, acrrual.rate, 
-#'                  accrual.dist, design = 'TITE-CFO', init.level = 1, 
-#'                  prior.para = list(alp.prior = target, bet.prior = 1 - target))
+#'  TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
+#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(TITECFOtrial)
-#' TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, ncohort, init.level, cohortsize,
-#'                       tau, tte.para, acrrual.rate, accrual.dist, prior.para)
+#' TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(TITECFOoc)
 #' ## TITE-aCFO design
-#' TITEaCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, acrrual.rate, 
-#'                 accrual.dist, design = 'TITE-aCFO', init.level = 1, 
-#'                 prior.para = list(alp.prior = target, bet.prior = 1 - target))
+#' TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
+#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(TITEaCFOtrial)
-#' TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'                       tau, tte.para, acrrual.rate, accrual.dist, prior.para)
+#' TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(TITEaCFOoc)
 #' ## fCFO design
-#' fCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, acrrual.rate, 
-#'                 accrual.dist, design = 'fCFO', init.level = 1, 
-#'                 prior.para = list(alp.prior = target, bet.prior = 1 - target))
+#' fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
+#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(fCFOtrial)
-#' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, ncohort, init.level, cohortsize,
-#'                       tau, tte.para, acrrual.rate, accrual.dist, prior.para)
+#' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(fCFOoc)
 #' ## f-aCFO design
-#' faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, acrrual.rate, 
-#'                 accrual.dist, design = 'f-aCFO', init.level = 1, 
-#'                 prior.para = list(alp.prior = target, bet.prior = 1 - target))
+#' faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
+#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(faCFOtrial)
-#' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'                       tau, tte.para, acrrual.rate, accrual.dist, prior.para)
+#' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(faCFOoc)
 #' 
 #' ##############two-dim design with late-onset outcomes################
@@ -85,14 +79,15 @@
 #'                    0.10, 0.15, 0.30, 0.45, 0.55,
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
+#' target <- 0.3; ncohort <- 20; cohortsize <- 3
 #' 
 #' ## plot the single trail returned by CFO2d.simu()
-#' CFO2dtrail <- CFO2d.simu(target = 0.3, p.true = p.true, ncohort = 20, cohortsize = 3)
-#' plot(CFO2dtrail)
+#' CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
+#' summary(CFO2dtrial)
 #' 
 #' ## plot the multiple trails returned by CFO2d.oc()
-#' CFO2doc <- CFO2d.oc(target = 0.3, p.true = p.true, ncohort = 20, cohortsize = 3, 
-#'             seeds = 1:100, nsimu = 100)
+#' CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
+#'                     seeds = 1:100)
 #' plot(CFO2doc)
  
 plot.cfo<- function (x,..., name = deparse(substitute(x)))
@@ -201,8 +196,8 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           # Generate DLT_observed for each patient
           DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
           
-          new_seq <- ifelse(objectPlot$DLTtimes!=0, sequences+objectPlot$DLTtimes, NaN)
-          new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels+0.3, NaN)
+          new_seq <- ifelse(objectPlot$DLTtimes!=0, sequences+objectPlot$DLTtimes, NA)
+          new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels+0.3, NA)
           
           df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
           dfnew <- data.frame(sequence = sequences, dose_levels = dose_levels, new_seq = new_seq, new_y = new_y)
@@ -284,7 +279,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
         
         # Generate DLT_observed for each patient
-        DLT_observed <- unlist(mapply(function(dlt, size) c(rep(1, dlt), rep(0, size - dlt)), DLT, rep(cohortsize, ncohort)))
+        DLT_observed <- t(DLT)
         
         df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
         

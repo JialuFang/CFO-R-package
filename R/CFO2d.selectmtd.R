@@ -63,9 +63,7 @@
 #'            Yuan Y., Hess K.R., Hilsenbeck S.G. and Gilbert M.R. (2016). Bayesian Optimal Interval Design: A
 #'            Simple and Well-performing Design for Phase I Oncology Trials, \emph{Clinical Cancer Research}, 22, 4291-4301. \cr
 #'
-#'
 #' @examples
-#'
 #' cns <- matrix(c(3, 3, 0,
 #'                 0, 6, 0,
 #'                 0, 0, 0), 
@@ -78,6 +76,9 @@
 #' selmtd <- CFO2d.selectmtd(target=0.3, npts=cns, ntox=cys)
 #' summary(selmtd)
 #' plot(selmtd)
+#'
+#' @import Iso 
+#' @export
 
 CFO2d.selectmtd <- function (target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), cutoff.eli = 0.95, extrasafe = FALSE,
                              offset = 0.05, verbose = TRUE)

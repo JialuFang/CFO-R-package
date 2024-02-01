@@ -1,13 +1,14 @@
 #' Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
 #'
-#' @usage CFO2d.simu(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
-#'                  prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL)
+#' @usage CFO2d.simu(target, p.true, init.level=c(1,1), ncohort, cohortsize, 
+#'                  prior.para=list(alp.prior=target, bet.prior=1-target),
+#'                  cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL)
 #'
 #' @param target the target DLT rate.
 #' @param p.true a matrix representing the true DIL rates under the different dose levels.
-#' @param ncohort the total number of cohorts, the default value is 20.
-#' @param cohortsize the number of patients or size of each cohort. the default value is 3. 
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).
+#' @param ncohort the total number of cohorts.
+#' @param cohortsize the number of patients or size of each cohort. 
 #' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior})
@@ -25,7 +26,6 @@
 #' The `CFO2d.simu` function simulates the operating characteristics of the CFO designs 
 #' in a two-dimensional dose-finding trial. The function uses parameters such as target DLT rate, true DLT rates 
 #' under different dose levels, and cohort details, and provides detailed output for performance evaluation. 
-#' It relies on the BOIN package.
 #' @author Wenliang Wang
 #' 
 #' @return A list with the following components:
@@ -43,7 +43,6 @@
 #'   \item{sumDLT: }{the total number of DLT observed.}
 #'   \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 #' }
-#' @import BOIN
 #' @export
 #'
 #' @examples
@@ -52,14 +51,16 @@
 #'                    0.10, 0.15, 0.30, 0.45, 0.55,
 #'                    0.15, 0.30, 0.45, 0.50, 0.60), 
 #'                  nrow = 3, ncol = 5, byrow = TRUE)
-#'
-#' CFO2dtrial <- CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+#' target <- 0.3; ncohort <- 20; cohortsize <- 3
+#' CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
 #' summary(CFO2dtrial)
 #' plot(CFO2dtrial)
 
 
 
-CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL, cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
+CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,  
+                       prior.para=list(alp.prior=target, bet.prior=1-target), 
+                       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
   # target: Target DIL rate
   # p.true: True DIL rates under the different dose levels
   # ncohort: The number of cohorts
@@ -81,7 +82,7 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
   # Initialize vectors to store dose combinations and number of DLTs for each cohort
   # simu.res.dose <- vector("list", ncohort) # Change to list to store dose pairs
   simu.res.dose <- matrix(nrow = ncohort, ncol = 2)
-  simu.res.DLT <- vector("numeric", ncohort)
+  simu.res.DLT <- matrix(nrow = ncohort, ncol = cohortsize)
   
   overdose.2d <- function(phi, threshold, obs, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
     y <- obs$y
@@ -113,7 +114,7 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     ans[cidx.A, cidx.B] <- ans[cidx.A, cidx.B] + cohortsize
     
     simu.res.dose[i, ] <- c(cidx.A, cidx.B)
-    simu.res.DLT[i] <- sum(cres)
+    simu.res.DLT[i,] <- cres
     
     cy <- ays[cidx.A, cidx.B]
     cn <- ans[cidx.A, cidx.B]
@@ -189,7 +190,7 @@ CFO2d.simu <- function(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,
     cidx.B <- cidx.B + idx.chg[2]
   }
   if (earlystop==0){
-    MTD <- select.mtd.comb(target, ans, ays)$MTD
+    MTD <- CFO2d.selectmtd(target, ans, ays)$MTD
   }else{
     MTD <- c(99,99)
   }

@@ -58,7 +58,6 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     1 - pbeta(phi, alp, bet)
   }
   
-  
   prob.int <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior){
     alp1 <- alp.prior + y1
     alp2 <- alp.prior + y2
@@ -204,7 +203,6 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
         minidx <- which.min(errs)
         gam <- sort.OR.table[minidx]
       }
-      
     }
     list(gamma=gam, min.err=min.err)
   }

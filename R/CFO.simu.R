@@ -2,16 +2,16 @@
 #' 
 #' Use this function to conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design and find the maximum tolerated dose (MTD).
 #'
-#' @usage CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design,
-#'        prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = NULL,
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+#' @usage CFO.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
+#'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
+#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 #'
+#' @param design option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
-#' @param cohortsize the number of patients or size of each cohort. The default value \code{cohortsize} is 3.
-#' @param design option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.
+#' @param cohortsize the number of patients or size of each cohort.
 #' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target)
 #'                  by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for the 
 #'                  true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
@@ -55,22 +55,20 @@
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 #'
 #' @examples
-#' target <- 0.2; ncohort <- 12; cohortsize <- 3
+#' target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 #' ## find the MTD for a single CFO trial
-#' CFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'CFO',
-#'             prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+#' CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(CFOtrial)
 #' plot(CFOtrial)
 #' ## find the MTD for a single aCFO trial
-#' aCFOtrial <- CFO.simu(target, p.true, ncohort, init.level = 1, cohortsize = 3, design = 'aCFO',
-#'              prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+#' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(aCFOtrial)
 #' plot(aCFOtrial)
 #' @export
-CFO.simu <- function(target, p.true, ncohort, init.level=1, cohortsize=3, design,
-                     prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL,
-                     cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
+CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
+                     prior.para=list(alp.prior=target, bet.prior=1-target),
+                     cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################

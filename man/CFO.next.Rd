@@ -75,18 +75,15 @@ When the current dose level is the lowest or highest (i.e., at the boundary), th
 \examples{
 ## determine the dose level for the next cohort of new patients
 cys <- c(0, 1, 0); cns <- c(3, 6, 0)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3, 
-            prior.para=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3)
 summary(decision)
 
 cys <- c(NA, 3, 0); cns <- c(NA, 3, 0)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1, 
-            prior.para=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1)
 summary(decision)
 
 cys <- c(0, 3, NA); cns <- c(3, 3, NA)
-decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7, 
-            prior.para=list(alp.prior=0.2, bet.prior=0.8))
+decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7)
 summary(decision)
 
 }

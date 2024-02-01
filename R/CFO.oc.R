@@ -2,10 +2,10 @@
 #' 
 #' Obtain the operating characteristics of the CFO-type designs for multiple simulations.
 #'
-#' @usage CFO.oc(nsimu = 5000, design, target, p.true, ncohort, init.level, cohortsize,
+#' @usage CFO.oc(nsimu = 5000, design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, 
-#'        prior.para = list(alp.prior = target, bet.prior = 1 - target), seeds = NULL,
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+#'        prior.para = list(alp.prior = target, bet.prior = 1 - target),
+#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seeds = NULL)
 #'
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
 #' @param design option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},
@@ -14,9 +14,9 @@
 #'               \code{'b-aCFO'} denotes the benchmark aCFO.
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
-#' @param ncohort the total number of cohorts.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
-#' @param cohortsize the number of patients or size of each cohort. The default value \code{cohortsize} is 3. 
+#' @param ncohort the total number of cohorts.
+#' @param cohortsize the number of patients or size of each cohort. 
 #' @param tau maximal assessment window size. 'NA' should be assigned if the design without late-oneset outcomes.
 #' @param tte.para the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull 
 #'                 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the 
@@ -48,10 +48,11 @@
 #'          Additionally, in the example, we set \code{nsimu=100} for testing time considerations. In reality, \code{nsimu} 
 #'          is typically set to 5000 to ensure the accuracy of the results.
 #'
-#' @return the \code{ CFO.oc() } function returns basic setup of ($simu.setup) and the operating 
+#' @return the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
 #'         characteristics of the design. \cr
 #'         The operating characteristics includes \cr
 #'         \itemize{
+#' \item{p.true}{the true DLT rates under the different dose levels.}
 #' \item{selpercent: }{the selection percentage at each dose level.}
 #' \item{npatients: }{the averaged number of patients treated at each dose level in one simulation.}
 #' \item{ntox: }{the averaged number of toxicity observed at each dose level in one simulation.}
@@ -62,7 +63,7 @@
 #' \item{averDLT: }{the percentage of the patients suffering DLT.}
 #' \item{averdur: }{the average trial duration if trials with late-onset toxicities.}
 #' \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-#' \item{simu.setup}{The parameters for the simulation set-up.}
+#' \item{simu.setup}{the parameters for the simulation set-up.}
 #' }
 #' @importFrom dplyr transmute
 #' @export
@@ -75,49 +76,49 @@
 #' tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
 #' ## get the operating characteristics for 100 simulations using the CFO design
-#' CFOoc <- CFO.oc (nsimu, design='CFO', target, p.true, ncohort, init.level, cohortsize,
-#'          tau=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, prior.para, seeds = 1:nsimu)
+#' CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
+#'          tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' summary(CFOoc)
 #' plot(CFOoc)
 #' ## get the operating characteristics for 100 simulations using the aCFO design
-#' aCFOoc <- CFO.oc (nsimu, design='aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'        tau=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, prior.para, seeds = 1:nsimu)
+#' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'        tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' summary(aCFOoc)
 #' plot(aCFOoc)
 #' ## get the operating characteristics for 100 simulations using the TITE-CFO design
-#' TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+#' TITECFOoc <- CFO.oc (nsimu, design = 'TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(TITECFOoc)
 #' plot(TITECFOoc)
 #' ## get the operating characteristics for 100 simulations using the TITE-aCFO design
-#' TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para)
+#' TITEaCFOoc <- CFO.oc (nsimu, design = 'TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(TITEaCFOoc)
 #' plot(TITEaCFOoc)
 #' ## get the operating characteristics for 100 simulations using the fCFO design
-#' fCFOoc <- CFO.oc (nsimu, design='fCFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+#' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(fCFOoc)
 #' plot(fCFOoc)
 #' ## get the operating characteristics for 100 simulations using the f-aCFO design
-#' faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+#' faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(faCFOoc)
 #' plot(faCFOoc)
 #' ## get the operating characteristics for 100 simulations using the bCFO design
-#' bCFOoc <- CFO.oc (nsimu, design='bCFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+#' bCFOoc <- CFO.oc (nsimu, design = 'bCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(bCFOoc)
 #' plot(bCFOoc)
 #' ## get the operating characteristics for 100 simulations using the b-aCFO design
-#' baCFOoc <- CFO.oc (nsimu, design='b-aCFO', target, p.true, ncohort, init.level, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, prior.para, seeds = 1:nsimu)
+#' baCFOoc <- CFO.oc (nsimu, design = 'b-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(baCFOoc)
 #' plot(baCFOoc)
-CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, cohortsize,
+CFO.oc <- function(nsimu=5000, design, target, p.true, init.level=1, ncohort, cohortsize,
                    tau=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, 
-                   prior.para=list(alp.prior=target, bet.prior=1-target), seeds = NULL,
-                   cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
+                   prior.para=list(alp.prior=target, bet.prior=1-target), 
+                   cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seeds = NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -137,12 +138,13 @@ CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, coho
   
   run.fn <- function(i){
     if (design == 'CFO' || design == 'aCFO'){
-      res <- CFO.simu(target, p.true, ncohort, init.level, cohortsize, design, prior.para, seed = seeds[i],
-                      cutoff.eli, extrasafe, offset)
+      res <- CFO.simu(design, target, p.true, init.level, ncohort, cohortsize, prior.para, 
+                      cutoff.eli, extrasafe, offset, seed = seeds[i])
     }else{
-      res <- lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, accrual.dist, 
-                            design, init.level, prior.para=list(alp.prior=target, bet.prior=1-target), seed = seeds[i],
-                            cutoff.eli, extrasafe, offset)
+      res <- lateonset.simu(design, target, p.true, init.level, ncohort, cohortsize, 
+                            tau, tte.para, accrual.rate, accrual.dist, prior.para = prior.para, 
+                            cutoff.eli = cutoff.eli, extrasafe = extrasafe, offset = offset, seed = seeds[i])
+      
     }
     ress <- list(
       res=res,
@@ -202,13 +204,13 @@ CFO.oc <- function(nsimu=5000, design, target, p.true, ncohort, init.level, coho
   errStop <- nsimu-nonErrStops
   
   if (design == 'CFO' || design == 'aCFO'){
-    out <- list(selpercent=selpercent, npatients=nPatients/nsimu, ntox=nTox/nsimu, 
+    out <- list(p.true=p.true, selpercent=selpercent, npatients=nPatients/nsimu, ntox=nTox/nsimu, 
                 MTDsel=MTDsel, MTDallo=MTDallo, oversel=oversel, 
                 overallo=overallo, averDLT=averDLT, percentstop=errStop/nsimu,
                 simu.setup = data.frame(target = target,ncohort = ncohort, 
                                         cohortsize = cohortsize, design = design, nsimu = nsimu))
   }else{
-    out <- list(selpercent=selpercent, npatients=nPatients/nsimu, ntox=nTox/nsimu, 
+    out <- list(p.true=p.true, selpercent=selpercent, npatients=nPatients/nsimu, ntox=nTox/nsimu, 
                 MTDsel=MTDsel, MTDallo=MTDallo, oversel=oversel,
                 overallo=overallo, averDLT=averDLT, averdur = totaltime/nsimu, percentstop=errStop/nsimu,
                 simu.setup = data.frame(target = target, ncohort = ncohort, 

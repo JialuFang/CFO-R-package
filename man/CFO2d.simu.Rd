@@ -4,25 +4,24 @@
 \alias{CFO2d.simu}
 \title{Obtain the operating characteristics of the 2dCFO designs for multiple simulations.}
 \usage{
-CFO2d.simu(target, p.true, ncohort=20, cohortsize=3, init.level=c(1,1), 
-                 prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL)
+CFO2d.simu(target, p.true, init.level=c(1,1), ncohort, cohortsize, 
+                 prior.para=list(alp.prior=target, bet.prior=1-target),
+                 cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL)
 }
 \arguments{
 \item{target}{the target DLT rate.}
 
 \item{p.true}{a matrix representing the true DIL rates under the different dose levels.}
 
-\item{ncohort}{the total number of cohorts, the default value is 20.}
-
-\item{cohortsize}{the number of patients or size of each cohort. the default value is 3.}
-
 \item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).}
+
+\item{ncohort}{the total number of cohorts.}
+
+\item{cohortsize}{the number of patients or size of each cohort.}
 
 \item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior})}
-
-\item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
@@ -34,6 +33,8 @@ extra safety.}
 stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
+
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 }
 \value{
 A list with the following components:
@@ -59,7 +60,6 @@ Obtain the operating characteristics of the 2dCFO designs for multiple simulatio
 The \code{CFO2d.simu} function simulates the operating characteristics of the CFO designs
 in a two-dimensional dose-finding trial. The function uses parameters such as target DLT rate, true DLT rates
 under different dose levels, and cohort details, and provides detailed output for performance evaluation.
-It relies on the BOIN package.
 }
 \examples{
 ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3.
@@ -67,8 +67,8 @@ p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                    0.10, 0.15, 0.30, 0.45, 0.55,
                    0.15, 0.30, 0.45, 0.50, 0.60), 
                  nrow = 3, ncol = 5, byrow = TRUE)
-
-CFO2dtrial <- CFO2d.simu(target=0.3, p.true=p.true, ncohort = 20, cohortsize = 3, seed = 1)
+target <- 0.3; ncohort <- 20; cohortsize <- 3
+CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
 summary(CFO2dtrial)
 plot(CFO2dtrial)
 }

@@ -4,21 +4,27 @@
 \alias{lateonset.simu}
 \title{Find the maximum tolerated dose (MTD) for a single trial using the CFO-type designs with late-onset toxicities.}
 \usage{
-lateonset.simu(target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-       accrual.dist, design, init.level = 1, 
+lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
+       tau, tte.para, accrual.rate, accrual.dist,  
        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-       seed = NULL, cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 }
 \arguments{
+\item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
+\code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
+to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
+
 \item{target}{the target DLT rate.}
 
 \item{p.true}{the true DLT rates under the different dose levels.}
 
-\item{tau}{maximal assessment window size.}
-
-\item{cohortsize}{the number of patients or size of each cohort. The default value \code{cohortsize} is 3.}
+\item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
 
 \item{ncohort}{the total number of cohorts.}
+
+\item{cohortsize}{the number of patients or size of each cohort.}
+
+\item{tau}{maximal assessment window size.}
 
 \item{tte.para}{the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull
 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the
@@ -31,17 +37,9 @@ patients in each cohort arriving simultaneously at a given accrual rate. When \c
 it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an
 exponential distribution.}
 
-\item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
-\code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
-to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
-
-\item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
-
 \item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target) by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
-
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
@@ -53,6 +51,8 @@ extra safety.}
 stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
+
+\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
 }
 \value{
 The \code{lateonset.simu()} function returns a list object comprising the following components:
@@ -83,43 +83,37 @@ applications, multiple simulations are required to ascertain the MTD, and this c
 \code{CFO.oc()} function.
 }
 \examples{
-target <- 0.2; ncohort <- 12; cohortsize <- 3
+target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 ## find the MTD for a single TITE-CFO trial
-TITECFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'TITE-CFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(TITECFOtrial)
 plot(TITECFOtrial)
 ## find the MTD for a single TITE-aCFO trial
-TITEaCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'TITE-aCFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(TITEaCFOtrial)
 plot(TITEaCFOtrial)
 ## find the MTD for a single fCFO trial
-fCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'fCFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(fCFOtrial)
 plot(fCFOtrial)
 ## find the MTD for a single f-aCFO trial
-faCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'f-aCFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(faCFOtrial)
 plot(faCFOtrial)
 ## find the MTD for a single benchmark CFO trial
-bCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'bCFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+bCFOtrial <- lateonset.simu (design = 'bCFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(bCFOtrial)
 plot(bCFOtrial)
 ## find the MTD for a single benchmark aCFO trial
-baCFOtrial <- lateonset.simu (target, p.true, tau, cohortsize, ncohort, tte.para, accrual.rate, 
-                accrual.dist, design = 'b-aCFO', init.level = 1, 
-                prior.para = list(alp.prior = target, bet.prior = 1 - target), seed = 1)
+baCFOtrial <- lateonset.simu (design = 'b-aCFO', target, p.true, init.level,  
+                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(baCFOtrial)
 plot(baCFOtrial)
 }

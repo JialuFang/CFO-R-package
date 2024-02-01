@@ -62,7 +62,6 @@ When appropriate, another dose selection procedure (e.g., based on a fitted logi
 the MTD after the completion of the trial using the CFO-type design.
 }
 \examples{
-
 cns <- matrix(c(3, 3, 0,
                 0, 6, 0,
                 0, 0, 0), 
@@ -75,6 +74,7 @@ cys <- matrix(c(0, 1, 0,
 selmtd <- CFO2d.selectmtd(target=0.3, npts=cns, ntox=cys)
 summary(selmtd)
 plot(selmtd)
+
 }
 \references{
 Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
