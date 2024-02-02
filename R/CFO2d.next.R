@@ -10,6 +10,14 @@
 #' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
+#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
+#'                   extra safety
+#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
+#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#'                generally works well.
 #' @param seed an integer to be set as the seed of the random number generator for reproducible results.
 #' 
 #' @return A list with the following components:
@@ -42,7 +50,7 @@
 #' summary(decision)
 
 
-CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), seed=NULL){
+CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
   cidx.A <- 0
   cidx.B <- 0
   alp.prior <- prior.para$alp.prior
@@ -77,7 +85,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     list(p1=p1, p2=p2)
   }
   
-  overdose.fn <- function(phi, y, n, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
+  overdose.fn <- function(phi, threshold, y, n, prior.para=list(alp.prior=phi, bet.prior=1-phi)){
     alp.prior <- prior.para$alp.prior
     bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
@@ -248,12 +256,12 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     }
   }
   
-  if (overdose.fn(target, cys[2,2], cns[2,2])){
+  if (overdose.fn(target, cutoff.eli, cys[2,2], cns[2,2], prior.para)){
     cover.doses[2,2] <- 1
     overtox <- currdose
   }
   if (!is.na(cns[2,3])){
-    if (overdose.fn(target, cys[2,3], cns[2,3])){
+    if (overdose.fn(target, cutoff.eli, cys[2,3], cns[2,3], prior.para)){
       cover.doses[2,3] <- 1
       cover.doses[3,3] <- 1
       overtox <- currdose + c(0,1)
@@ -263,7 +271,7 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     cover.doses[3,3] <- NA
   }
   if (!is.na(cns[3,2])){
-    if (overdose.fn(target, cys[3,2], cns[3,2])){
+    if (overdose.fn(target, cutoff.eli, cys[3,2], cns[3,2], prior.para)){
       cover.doses[3,2] <- 1
       cover.doses[3,3] <- 1
       overtox <- currdose + c(1,0)
@@ -273,8 +281,17 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     cover.doses[3,3] <- NA
   }
   if (!is.na(cns[2,3])&!is.na(cns[3,2])){
-    if(overdose.fn(target, cys[2,3], cns[2,3])&overdose.fn(target, cys[3,2], cns[3,2])){
+    if(overdose.fn(target, cutoff.eli, cys[2,3], cns[2,3], prior.para)&overdose.fn(target, cutoff.eli, cys[3,2], cns[3,2], prior.para)){
       overtox <- currdose
+    }
+  }
+  
+  if (extrasafe) {
+    if (currdose==c(1,1) & overdose.fn(target, cutoff.eli-offset, cys[1,1], cns[1,1], prior.para)){
+      cover.doses[1,1] <- 1
+      out <- list(target=target, cys=cys, cns=cns, index=c(99, 99), decision="early stop", currdose = currdose, nextdose = c(99,99), overtox = c(1,1))
+      class(out) <- "cfo"
+      return(out)
     }
   }
   
