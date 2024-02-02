@@ -62,15 +62,15 @@ When appropriate, another dose selection procedure (e.g., based on a fitted logi
 the MTD after the completion of the trial using the CFO-type design.
 }
 \examples{
-cns <- matrix(c(3, 3, 0,
-                0, 6, 0,
-                0, 0, 0), 
-              nrow = 3, ncol = 3, byrow = TRUE)
+cys <- matrix(c(0, 0, 2, 0, 0,
+                0, 2, 7, 0, 0,
+                0, 2, 0, 0, 0), 
+              nrow = 3, ncol = 5, byrow = TRUE)
 
-cys <- matrix(c(0, 1, 0,
-                0, 2, 0,
-                0, 0, 0), 
-              nrow = 3, ncol = 3, byrow = TRUE)
+cns <- matrix(c(3,  0, 12, 0, 0,
+                3, 12, 24, 0, 0,
+                3,  3,  0, 0, 0), 
+              nrow = 3, ncol = 5, byrow = TRUE)
 selmtd <- CFO2d.selectmtd(target=0.3, npts=cns, ntox=cys)
 summary(selmtd)
 plot(selmtd)

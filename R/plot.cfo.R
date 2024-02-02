@@ -225,7 +225,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           }
           print(p)
         }
-        else{  #plot for lateonset.simu()
+        else{ #plot for lateonset.simu()
           dose <- objectPlot$cohortdose
           DLT <- objectPlot$patientDLT
           ncohort <- length(objectPlot$cohortdose)
@@ -303,13 +303,11 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     #########################plot for CFO.selectmtd()###################################
     ###############################################################################
     if (!is.null(objectPlot$p_est)){
-      
       if (objectPlot$MTD[1] == 99) {
         warning("All tested doses are overly toxic. No MTD is selected!\n")
       }
       else {
         if (!is.null(objectPlot$p_est)) {
-          
           par(mfrow = c(1, 1), mar = c(5, 5, 4, 2))
           if (length(objectPlot$MTD) >= 2) {
             p_est.comb=objectPlot$p_est

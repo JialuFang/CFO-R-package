@@ -10,11 +10,11 @@
 #' @param target the target DLT rate.
 #' @param cys the current number of DLTs observed at the left, current, and right dose levels.
 #' @param cns the current number of patients treated at the left, current, and right dose levels.
+#' @param currdose the current dose level.
 #' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) 
 #'                  by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
 #'                  the true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, 
 #'                  \code{beta.prior}).
-#' @param currdose the current dose level.
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
