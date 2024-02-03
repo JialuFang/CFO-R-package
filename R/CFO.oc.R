@@ -1,6 +1,6 @@
-#' Generate operating characteristics for multiple simulations
+#' Generate operating characteristics of sigle-drug trials in multiple simulations
 #' 
-#' Obtain the operating characteristics of the CFO-type designs for multiple simulations.
+#' This function is used to conduct multiple simulations and obtain the operating characteristics of sigle-drug trials.
 #'
 #' @usage CFO.oc(nsimu = 5000, design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, 
@@ -10,47 +10,46 @@
 #' @param nsimu the total number of trials to be simulated. The default value is 5000.
 #' @param design option for selecting different designs, which can be set as \code{'CFO'}, \code{'aCFO'},
 #'               \code{'TITE-CFO'}, \code{'TITE-aCFO'}, \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, 
-#'               and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO, and 
-#'               \code{'b-aCFO'} denotes the benchmark aCFO.
+#'               and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers to the benchmark CFO design, and 
+#'               \code{'b-aCFO'} denotes the benchmark aCFO design.
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param ncohort the total number of cohorts.
 #' @param cohortsize the number of patients or size of each cohort. 
-#' @param tau maximal assessment window size. 'NA' should be assigned if the design without late-oneset outcomes.
+#' @param tau maximal assessment window size. \code{NA} should be assigned if the design without late-oneset outcomes.
 #' @param tte.para the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull 
 #'                 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the 
-#'                 assessment window \code{tau}. 'NA' should be assigned if the design without late-oneset outcomes.
-#' @param accrual.rate the accrual rate, i.e., the number of patients accrued in tau time. 'NA' should be assigned 
+#'                 assessment window \code{tau}. \code{NA} should be assigned if the design without late-oneset outcomes.
+#' @param accrual.rate the accrual rate, i.e., the number of patients accrued in tau time. \code{NA} should be assigned 
 #'                if the design without late-oneset outcomes.
 #' @param accrual.dist the distribution of the arrival times of patients. When \code{accrual.dist = 'fix'}, it corresponds to all 
 #'                     patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist = 'unif'}, 
 #'                     it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an 
-#'                     exponential distribution. 'NA' should be assigned if the design without late-oneset outcomes.
-#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target) by default. \code{alp.prior} 
+#'                     exponential distribution. \code{NA} should be assigned if the design without late-oneset outcomes.
+#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
-#'                    the default value of (\code{cutoff.eli=0.95}) for general use.
-#' @param extrasafe set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+#'                    the default value of \code{cutoff.eli = 0.95} for general use.
+#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset=0.05}
+#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
+#'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
 #' @param seeds A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is NULL).
 #'
-#' @details The operating characteristics of CFO-type and aCFO-type designs are generated by simulating trials under the 
+#' @note The operating characteristics are generated by simulating multiple single-drug trials under the 
 #'          pre-specified true toxicity probabilities of the investigational doses. The choice of which design to execute 
-#'          is determined by setting the \code{design} parameter. Some parameters (\code{tau}, \code{accrual.rate}, 
-#'          \code{tte.para}, and \code{accrual.dist}) need to be set only when running a design that can handle late-onset 
-#'          toxicities; otherwise, they default to NA.\cr
-#'          Additionally, in the example, we set \code{nsimu=100} for testing time considerations. In reality, \code{nsimu} 
+#'          is determined by setting the \code{design} argument. Some time-related arguments (\code{tau}, \code{accrual.rate}, 
+#'          \code{tte.para}, and \code{accrual.dist}) need to be set as values only when running a design that can handle late-onset 
+#'          toxicities; otherwise, they default to \code{NA}.\cr
+#'          Additionally, in the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
 #'          is typically set to 5000 to ensure the accuracy of the results.
 #'
 #' @return the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
-#'         characteristics of the design. \cr
-#'         The operating characteristics includes \cr
+#'         characteristics of the design: \cr
 #'         \itemize{
 #' \item{p.true}{the true DLT rates under the different dose levels.}
 #' \item{selpercent: }{the selection percentage at each dose level.}
@@ -65,6 +64,16 @@
 #' \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
 #' \item{simu.setup}{the parameters for the simulation set-up.}
 #' }
+#' 
+#' @author Jialu Fang
+#' 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+#'             Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
+#'             phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. 22(5), 773–783.\cr
+#'             Yin G, Zheng S, Xu J (2013). Fractional dose-finding methods with late-onset toxicity in 
+#'             phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
+#' 
 #' @importFrom dplyr transmute
 #' @export
 #'

@@ -6,11 +6,11 @@
 #' @param ... ignored arguments
 #'
 #'
-#' @details \code{summary()} prints the objects returned by other functions. Additionally, in the example, 
-#'          we set \code{nsimu=100} for testing time considerations. In reality, \code{nsimu} is typically 
-#'          set to 5000 to ensure the accuracy of the results.
-#'
 #' @return \code{summary()} prints the objects returned by other functions.
+#'
+#' @details \code{summary()} prints the objects returned by other functions. Additionally, in the example, 
+#'          we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} is typically 
+#'          set to 5000 to ensure the accuracy of the results.
 #'
 #' @author Jialu Fang and Wenliang Wang
 #'
@@ -26,10 +26,6 @@
 #' decision <- CFO.next(target = 0.2, cys = c(0, 1, 0), cns = c(3, 6, 0), currdose = 3)
 #' summary(decision)
 #' 
-#' ## summarize the object returned by CFO.simu()
-#' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
-#' summary(aCFOtrial)
-#' 
 #' ## summarize the object returned by lateonset.next()
 #' enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
 #'                6.54, 6.66, 6.93, 7.32, 7.65, 8.14, 8.74)
@@ -40,6 +36,14 @@
 #'                dlt.times, current.t, doses)
 #' summary(decision)
 #' 
+#' ## summarize the object returned by CFO.selectmtd()
+#' selmtd <- CFO.selectmtd(target=0.2, npts=c(3,3,27,3,0,0,0), ntox=c(0,0,4,2,0,0,0))
+#' summary(selmtd)
+#' 
+#' ## summarize the object returned by CFO.simu()
+#' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
+#' summary(aCFOtrial)
+#' 
 #' ## summarize the object returned by lateonset.simu()
 #' faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
 #'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
@@ -49,6 +53,8 @@
 #' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
 #'                       tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(faCFOoc)
+#' 
+#' 
 #' 
 #' ## settings for 2dCFO
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
@@ -70,6 +76,12 @@
 #' decision <- CFO2d.next(target, cys, cns, currdose = currdose, seed = 1)
 #' summary(decision)
 #' 
+#' ## summarize the object returned by CFO2d.selectmtd()
+#' ntox <- matrix(c(0, 0, 2, 0, 0, 0, 2, 7, 0, 0, 0, 2, 0, 0, 0), nrow = 3, ncol = 5, byrow = TRUE)
+#' npts <- matrix(c(3, 0, 12, 0, 0, 3, 12, 24, 0, 0, 3, 3, 0, 0, 0), nrow = 3, ncol = 5, byrow = TRUE)
+#' selmtd <- CFO2d.selectmtd(target=0.3, npts=npts, ntox=ntox)
+#' summary(selmtd)
+#' 
 #' ## summarize the object returned by CFO2d.simu()
 #' CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
 #' summary(CFO2dtrial)
@@ -78,6 +90,7 @@
 #' CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
 #'                     seeds = 1:100)
 #' summary(CFO2doc)
+#' 
 #' 
 summary.cfo<- function (object, ...)
 {

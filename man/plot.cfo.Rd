@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.cfo.R
 \name{plot.cfo}
 \alias{plot.cfo}
-\title{Plot the simulation results for CFO-type and aCFO-type designs}
+\title{Plot the results by other functions}
 \usage{
 \method{plot}{cfo}(x, ..., name = deparse(substitute(x)))
 }
@@ -19,16 +19,20 @@ User doesn't need to input this parameter.}
 }
 \description{
 Plot the objects returned by other functions, including (1) dose allocation of a single trial;
-(2) operating characteristics of multiple simulations, including MTD selesction percentage,
+(2) the estimate of toxicity probability for each dose and corresponding 95\% credible interval;
+(3) operating characteristics of multiple simulations, including MTD selesction percentage,
 the averaged number of patients allocated for different doses in one simulation and the averaged
 number of DLT observed for different doses in one simulation.
 }
 \details{
 \code{plot()} returns a figure or a series of figures depending on the object entered.
-Additionally, in the example, we set \code{nsimu=100} for testing time considerations.
+Additionally, in the example, we set \code{nsimu = 100} for testing time considerations.
 In reality, \code{nsimu} is typically set to 5000 to ensure the accuracy of the results.
 }
 \examples{
+
+###### single-drug trial ######
+
 ############design without late-onset outcomes################
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
@@ -78,21 +82,33 @@ faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort
         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(faCFOoc)
 
-##############two-dim design with late-onset outcomes################
+## select the MTD based on the trial data
+selmtd <- CFO.selectmtd(target=0.2, npts=c(3,3,27,3,0,0,0), ntox=c(0,0,4,2,0,0,0))
+plot(selmtd)
+
+
+
+###### drug-combination trial ######
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                    0.10, 0.15, 0.30, 0.45, 0.55,
                    0.15, 0.30, 0.45, 0.50, 0.60), 
                  nrow = 3, ncol = 5, byrow = TRUE)
 target <- 0.3; ncohort <- 20; cohortsize <- 3
 
-## plot the single trail returned by CFO2d.simu()
+## plot the single simulation returned by CFO2d.simu()
 CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
-summary(CFO2dtrial)
+plot(CFO2dtrial)
 
-## plot the multiple trails returned by CFO2d.oc()
+## plot the multiple simulation returned by CFO2d.oc()
 CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
                     seeds = 1:100)
 plot(CFO2doc)
+
+## select a MTD based on the trial data
+ntox <- matrix(c(0, 0, 2, 0, 0, 0, 2, 7, 0, 0, 0, 2, 0, 0, 0), nrow = 3, ncol = 5, byrow = TRUE)
+npts <- matrix(c(3, 0, 12, 0, 0, 3, 12, 24, 0, 0, 3, 3, 0, 0, 0), nrow = 3, ncol = 5, byrow = TRUE)
+selmtd <- CFO2d.selectmtd(target=0.3, npts=npts, ntox=ntox)
+plot(selmtd)
 }
 \author{
 Jialu Fang and Wenliang Wang

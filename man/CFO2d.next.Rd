@@ -2,19 +2,11 @@
 % Please edit documentation in R/CFO2d.next.R
 \name{CFO2d.next}
 \alias{CFO2d.next}
-\title{CFO2d.next function}
+\title{Determinate the dose level for the next cohort in the two-dimensional calibration-free odds (2dCFO) design.}
 \usage{
-CFO2d.next(
-  target,
-  cys,
-  cns,
-  currdose,
-  prior.para = list(alp.prior = target, bet.prior = 1 - target),
-  cutoff.eli = 0.95,
-  extrasafe = FALSE,
-  offset = 0.05,
-  seed = NULL
-)
+CFO2d.next(target, cys, cns, currdose, 
+       prior.para = list(alp.prior = target, bet.prior = 1 - target), 
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 }
 \arguments{
 \item{target}{The target DLT rate.}
@@ -25,12 +17,12 @@ CFO2d.next(
 
 \item{currdose}{A vector of the current dose indices in the horizontal and vertical direction.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli = 0.95}) for general use.}
+the default value of \code{cutoff.eli = 0.95} for general use.}
 
 \item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 extra safety}
@@ -40,24 +32,36 @@ stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{seed}{an integer to be set as the seed of the random number generator for reproducible results.}
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.}
 }
 \value{
 A list with the following components:
 \itemize{
-\item{target}{The target DLT rate.}
-\item{cys}{A 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.}
-\item{cns}{A 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.}
-\item{index}{A vector of length 2 representing the decision index for vertical and horizontal directions, where -1, 0, 1 represent de-escalation, stay and escalation respectively. }
-\item{decision}{A vector of length 2 representing the recommended decisions for vertical and horizontal directions. }
-\item{target}{The target DLT rate.}
-\item{currdose}{The current dose combination.}
-\item{nextdose}{The recommended dose combination for the next cohort.}
-\item{overtox}{The dose levels that are considered overly toxic.}
+\item{target: }{the target DLT rate.}
+\item{cys: }{a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.}
+\item{cns: }{a 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.}
+\item{decision: }{a vector of length 2 representing the recommended decisions for vertical and horizontal
+directions, and \code{stop} indicates stopping the experiment}
+\item{currdose: }{the current dose combination.}
+\item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that this trial is
+terminated due to early stopping.}
+\item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
+occurrence of overly toxicity did not happen.}
 }
 }
 \description{
-This function is used to determine the next dose level in a 2dCFO design.
+This function is used to determine the next dose level for the next cohort in a 2dCFO design.
+}
+\details{
+In 2dCFO design, decision-making within the two-dimensional toxicity probability space is conducted by performing two independent one-dimensional
+CFO analyses along both the horizontal and vertical axes (Wang et al. 2023).
+}
+\note{
+When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
+\code{cns} where there is no data are filled with \code{NA}. \cr
+The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the
+complete trial, the dose level and all the dose levels above will be eliminated.
 }
 \examples{
 cns <- matrix(c(3, 3, 0,
@@ -72,6 +76,12 @@ cys <- matrix(c(0, 1, 0,
 currdose <- c(2,3)
 decision <- CFO2d.next(target = 0.3, cys, cns, currdose = currdose, seed = 1)
 summary(decision)
+}
+\references{
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+\emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
+Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
 }
 \author{
 Wenliang Wang

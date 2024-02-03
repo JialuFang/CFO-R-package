@@ -2,7 +2,7 @@
 % Please edit documentation in R/aCFO.next.R
 \name{aCFO.next}
 \alias{aCFO.next}
-\title{Determination of the dose level for next cohort in aCFO design}
+\title{Determination of the dose level for next cohort in the accumulative Calibration-Free Odds (aCFO) design}
 \usage{
 aCFO.next(target, ays, ans, currdose, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target),
@@ -17,15 +17,15 @@ aCFO.next(target, ays, ans, currdose,
 
 \item{currdose}{the current dose level.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli = 0.95}) for general use.}
+the default value of \code{cutoff.eli = 0.95} for general use.}
 
 \item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety}
+extra safety.}
 
 \item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
 stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
@@ -49,31 +49,27 @@ occurrence of overly toxicity did not happen.}
 }
 }
 \description{
-In aCFO design, use the function to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
+In aCFO design, the function is used to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 }
 \details{
-The aCFO design design incorporate the dose information of all positions (from the lowest to the
+The aCFO design design incorporates the dose information of all positions (from the lowest to the
 highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient
 cohorts, aCFO compares the evidence from the current dose level with all doses to its left and right.
 This design is rooted in the odds ratio, specifically \eqn{O_C / \overline{O}_{J}} and
 \eqn{\overline{O}_C / O_R} from the CFO design. By aggregating odds ratios from the left and right sides,
 it forms two collective statistics: \eqn{ {\rm OR}_L =\sum_{i=1}^{J} O_C/ \overline{O}_{L_i} } for dose
 de-escalation (movement to the left) and \eqn{ {\rm OR}_R = \sum_{i=1}^{H} \overline{O}_C / O_{R_i} }
-for dose escalation (movement to the right), where J and H represent the counts of doses on the left and
+for dose escalation (movement to the right), where \eqn{J} and \eqn{H} represent the counts of doses on the left and
 right sides of the current dose, respectively. For the new statistic \eqn{ {\rm OR}_L } and \eqn{ {\rm OR}_R },
 their corresponding thresholds are derived by summing up its individual thresholds \eqn{\gamma_{L_i}} and
 \eqn{\gamma_{R_i}}, i.e., \eqn{\sum_{i=1}^{J}\gamma_{L_i}} and \eqn{\sum_{i=1}^{H}\gamma_{R_i}}. \cr
-Besides，The aCFO design retains the same early stopping criteria as the CFO design. Overall，while preserving
+Besides，The aCFO design retains the same early stopping and dose elimination criteria as the CFO design. While preserving
 the nature of the CFO design (model-free and calibration-free), the aCFO designs enhance the efﬁciency by
 incorporating more dose information.
 }
 \note{
-When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
-\code{cns} where there is no data are filled with NA.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{     The positions indicated by \code{overtox} experience overly toxicity. In the complete single trial, the dose 
-     level and all the dose levels above will be eliminated.
-}\if{html}{\out{</div>}}
+The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the complete trial, the dose
+level and all the dose levels above will be eliminated.
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
@@ -94,7 +90,7 @@ summary(decision)
 
 }
 \references{
-Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 }
 \author{

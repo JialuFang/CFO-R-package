@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO2d.oc.R
 \name{CFO2d.oc}
 \alias{CFO2d.oc}
-\title{This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.}
+\title{Generate operating characteristics of drug-combination trials in multiple simulations}
 \usage{
 CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
                prior.para = list(alp.prior = target, bet.prior = 1 - target), 
@@ -15,15 +15,15 @@ CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
 
 \item{p.true}{a matrix representing the true DIL rates under the different dose levels.}
 
-\item{init.level}{a numeric vector of length 2 representing the initial dose level (default is c(1,1)).}
+\item{init.level}{a numeric vector of length 2 representing the initial dose level (default is \code{c(1,1)}).}
 
 \item{ncohort}{the total number of cohorts.}
 
 \item{cohortsize}{the number of patients or size of each cohort.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
@@ -36,10 +36,11 @@ stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).}
+\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).}
 }
 \value{
-A list with the averaged operating characteristics across all simulations.
+the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating
+characteristics of the design: \cr
 \itemize{
 \item{p.true}{the matrix of the true DLT rates under the different dose levels.}
 \item{selpercent}{the matrix of the selection percentage of each dose level}
@@ -55,7 +56,11 @@ A list with the averaged operating characteristics across all simulations.
 }
 }
 \description{
-This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.
+This function is used to conduct multiple simulations and obtain the operating characteristics of the 2dCFO design.
+}
+\note{
+In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu}
+is typically set to 1000 or 5000 to ensure the accuracy of the results.
 }
 \examples{
 ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 100 replications.
@@ -68,4 +73,13 @@ CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, c
                     seeds = 1:100)
 summary(CFO2doc)
 plot(CFO2doc)
+}
+\references{
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+\emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
+Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+}
+\author{
+Wenliang Wang
 }

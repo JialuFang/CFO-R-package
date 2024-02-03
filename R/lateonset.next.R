@@ -1,8 +1,9 @@
-#' Determination of the dose level for next cohort in the CFO-type designs with late-onset toxicities
+#' Determination of the dose level for next cohort in the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities
 #' 
-#' Propose the next dose level in the CFO-type designs with late-onset toxicities, specifically, including 
-#' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO 
-#' design and benchmark aCFO design.
+#' The function is used to determine the next dose level in the CFO-type designs with late-onset toxicities, specifically, including 
+#' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
+#' Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design 
+#' and benchmark aCFO design.
 #' 
 #' @usage lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
 #'        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
@@ -10,21 +11,22 @@
 #'
 #' @param design option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'}, 
 #'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
-#'               to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.
+#'               to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO design.
 #' @param target the target DLT rate.
 #' @param p.true The true DLT rates under the different dose levels.
 #' @param currdose the current dose level.
-#' @param tau maximal assessment window size
+#' @param tau the maximal assessment window size.
 #' @param enter.times the time that each participant enters the trial.
 #' @param dlt.times the time to DLT for each subject in the trial. If no DLT occurs for a subject, 
 #'                  \code{dlt.times} is set to 0.
 #' @param current.t the current time.
 #' @param doses the dose level for each subject in the trial.
-#' @param prior.para  the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
-#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#' @param prior.para  the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, 
+#'                    bet.prior = 1 - target)} by default. \code{alp.prior} and \code{bet.prior} represent the 
+#'                    parameters of the prior distribution for the true DLT rate at any dose level. This prior 
+#'                    distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
-#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#'                    the default value of \code{cutoff.eli = 0.95} for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
@@ -32,15 +34,15 @@
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
 #'
-#' @details Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. As a 
-#'          result, the TITE framework and fractional framework serve as two imputation methods to handle pending data 
-#'          related to late-onset outcomes. This approach extends the original designs to integrate time information 
+#' @details Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. The TITE
+#'          framework and fractional framework serve as two imputation methods to handle pending data 
+#'          related to late-onset outcomes. This approach extends the CFO and aCFO designs to integrate time information 
 #'          for delayed outcomes, leading to the development of TITE-CFO, fCFO, TITE-aCFO, and f-aCFO designs. \cr
 #'          In the TITE framework context, an assumption about the distribution of time to DLT must be pre-specified, 
 #'          whereas the fractional framework does not require justification for a specific distribution of the time to 
 #'          DLT. Consequently, fCFO and f-aCFO adapt to a more diverse range of scenarios.\cr
 #'          The function \code{lateonset.next()} also provides the option to execute 
-#'          the benchmark CFO and aCFO design. These two methods await complete observation of toxicity outcomes for 
+#'          the benchmark CFO and benchmark aCFO design. These two methods await complete observation of toxicity outcomes for 
 #'          the previous cohorts before determining the next dose assignment. This enhances precision but comes at the 
 #'          expense of a prolonged trial duration.
 #' 
@@ -48,35 +50,29 @@
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
 #'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
-#'   movement directions, and \code{stop} indicates stopping the experiment}
+#'   movement directions, and \code{stop} indicates stopping the experiment.}
 #'   \item{currdose: }{the current dose level.}
 #'   \item{nextdose: }{the recommended dose level for the next cohort.}
-#'   \item{overtox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the 
+#'   \item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by 
+#'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the 
 #'   occurrence of overly toxicity did not happen.}
-#'   \item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
-#'   or not. }
+#'   \item{over.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
+#'   or not (1 for yes).}
 #' }
 #' 
 #' @author Jialu Fang 
 #' 
-#' @references Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-#'             Jin, H., & Yin, G. (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
-#'             phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. \cr
-#'             Yin, G., Zheng, S., & Xu, J. (2013). Fractional dose-finding methods with late-onset toxicity in 
+#'             Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
+#'             phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}, 22(5), 773–783.\cr
+#'             Yin G, Zheng S, Xu J (2013). Fractional dose-finding methods with late-onset toxicity in 
 #'             phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
 #' @import survival
 #' @importFrom utils tail
 #' @export
 #'
 #' @examples
-#' ## Given the parameters for the function, the unit for time-related parameters is in months. 
-#' ## The parameter generation follows the following guidelines: 
-#' ## 1) the assessment window ([0, $tau]) covers three months
-#' ## 2) the accrual rate is set at two patients per month. 
-#' ## 3) the arrival times of patients are distributed uniformly.
-#' ## 4) the time to DLT events is simulated using a Weibull distribution, with 50% of these events 
-#' ##    occurring in the first half of the assessment window.
 #' target <- 0.2; p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 #' enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
 #'                6.54, 6.66, 6.93, 7.32, 7.66, 8.14, 8.74)
@@ -104,7 +100,7 @@
 #'                enter.times, dlt.times, current.t, doses)
 #' summary(decision)
 #' ## determine the dose level for the next cohort using the benchmark aCFO design
-#' decision <- lateonset.next(design='b-aCFO', target, p.true, currdose=4, tau = 3,   
+#' decision <- lateonset.next(design='b-aCFO', target, p.true, currdose = 4, tau = 3,   
 #'                enter.times, dlt.times, current.t, doses)
 #' summary(decision)
 #' 
@@ -285,7 +281,7 @@ lateonset.next <- function(design, target, p.true, currdose, tau, enter.times, d
     }
   }
   
-  tover.doses <- rep(0, ndose)
+  over.doses <- rep(0, ndose)
   
   
   for (i in 1:ndose){
@@ -293,7 +289,7 @@ lateonset.next <- function(design, target, p.true, currdose, tau, enter.times, d
     cn <- ans[i]
     prior.para <- c(list(y=cy, n=cn), list(alp.prior=alp.prior, bet.prior=bet.prior))
     if (overdose.fn(target, cutoff.eli, prior.para)){
-      tover.doses[i:ndose] <- 1
+      over.doses[i:ndose] <- 1
       break()
     }
   }
@@ -303,11 +299,11 @@ lateonset.next <- function(design, target, p.true, currdose, tau, enter.times, d
     cn <- ans[1]
     prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
     if (overdose.fn(target, cutoff.eli-offset, prior.para)){
-      tover.doses[1:ndose] <- 1
+      over.doses[1:ndose] <- 1
     }
   }
   
-  position <- which(tover.doses == 1)[1]
+  position <- which(over.doses == 1)[1]
   prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior))
   if (accumulation == FALSE){
     if (currdose==1){
@@ -329,7 +325,7 @@ lateonset.next <- function(design, target, p.true, currdose, tau, enter.times, d
   overtox <- res$overtox
 
   out <- list(target=target, ays=ays, ans=ans, decision=decision, currdose = currdose, 
-              nextdose=nextdose, overtox=overtox, tover.doses=tover.doses)
+              nextdose=nextdose, overtox=overtox, over.doses=over.doses)
   class(out) <- "cfo"
   return(out)
 }

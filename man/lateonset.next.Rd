@@ -2,7 +2,7 @@
 % Please edit documentation in R/lateonset.next.R
 \name{lateonset.next}
 \alias{lateonset.next}
-\title{Determination of the dose level for next cohort in the CFO-type designs with late-onset toxicities}
+\title{Determination of the dose level for next cohort in the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities}
 \usage{
 lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
@@ -11,7 +11,7 @@ lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times,
 \arguments{
 \item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
 \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
-to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
+to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO design.}
 
 \item{target}{the target DLT rate.}
 
@@ -19,7 +19,7 @@ to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{currdose}{the current dose level.}
 
-\item{tau}{maximal assessment window size}
+\item{tau}{the maximal assessment window size.}
 
 \item{enter.times}{the time that each participant enters the trial.}
 
@@ -30,12 +30,13 @@ to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{doses}{the dose level for each subject in the trial.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, 
+                   bet.prior = 1 - target)} by default. \code{alp.prior} and \code{bet.prior} represent the
+parameters of the prior distribution for the true DLT rate at any dose level. This prior
+distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli = 0.95}) for general use.}
+the default value of \code{cutoff.eli = 0.95} for general use.}
 
 \item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 extra safety.}
@@ -50,41 +51,36 @@ The \code{lateonset.next()} function returns
 \itemize{
 \item{target: }{the target DLT rate.}
 \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the
-movement directions, and \code{stop} indicates stopping the experiment}
+movement directions, and \code{stop} indicates stopping the experiment.}
 \item{currdose: }{the current dose level.}
 \item{nextdose: }{the recommended dose level for the next cohort.}
-\item{overtox: }{the situation regarding which position experiences overly toxicity, where 'NA' signifies that the
+\item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
 occurrence of overly toxicity did not happen.}
-\item{tover.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
-or not. }
+\item{over.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
+or not (1 for yes).}
 }
 }
 \description{
-Propose the next dose level in the CFO-type designs with late-onset toxicities, specifically, including
-Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, TITE-aCFO design, f-aCFO
-design and benchmark aCFO design.
+The function is used to determine the next dose level in the CFO-type designs with late-onset toxicities, specifically, including
+Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
+Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design
+and benchmark aCFO design.
 }
 \details{
-Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. As a
-result, the TITE framework and fractional framework serve as two imputation methods to handle pending data
-related to late-onset outcomes. This approach extends the original designs to integrate time information
+Late-onset outcomes commonly occur in phase I trials involving targeted agents or immunotherapies. The TITE
+framework and fractional framework serve as two imputation methods to handle pending data
+related to late-onset outcomes. This approach extends the CFO and aCFO designs to integrate time information
 for delayed outcomes, leading to the development of TITE-CFO, fCFO, TITE-aCFO, and f-aCFO designs. \cr
 In the TITE framework context, an assumption about the distribution of time to DLT must be pre-specified,
 whereas the fractional framework does not require justification for a specific distribution of the time to
 DLT. Consequently, fCFO and f-aCFO adapt to a more diverse range of scenarios.\cr
 The function \code{lateonset.next()} also provides the option to execute
-the benchmark CFO and aCFO design. These two methods await complete observation of toxicity outcomes for
+the benchmark CFO and benchmark aCFO design. These two methods await complete observation of toxicity outcomes for
 the previous cohorts before determining the next dose assignment. This enhances precision but comes at the
 expense of a prolonged trial duration.
 }
 \examples{
-## Given the parameters for the function, the unit for time-related parameters is in months. 
-## The parameter generation follows the following guidelines: 
-## 1) the assessment window ([0, $tau]) covers three months
-## 2) the accrual rate is set at two patients per month. 
-## 3) the arrival times of patients are distributed uniformly.
-## 4) the time to DLT events is simulated using a Weibull distribution, with 50\% of these events 
-##    occurring in the first half of the assessment window.
 target <- 0.2; p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
                6.54, 6.66, 6.93, 7.32, 7.66, 8.14, 8.74)
@@ -112,17 +108,17 @@ decision <- lateonset.next(design = 'bCFO', target, p.true, currdose = 4, tau = 
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the benchmark aCFO design
-decision <- lateonset.next(design='b-aCFO', target, p.true, currdose=4, tau = 3,   
+decision <- lateonset.next(design='b-aCFO', target, p.true, currdose = 4, tau = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 
 }
 \references{
-Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Jin, H., & Yin, G. (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for
-phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. \cr
-Yin, G., Zheng, S., & Xu, J. (2013). Fractional dose-finding methods with late-onset toxicity in
+Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for
+phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}, 22(5), 773–783.\cr
+Yin G, Zheng S, Xu J (2013). Fractional dose-finding methods with late-onset toxicity in
 phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
 }
 \author{

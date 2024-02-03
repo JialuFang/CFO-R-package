@@ -1,19 +1,20 @@
-#' This function runs multiple simulations of the 2dCFO design and averages the operating characteristics.
+#' Generate operating characteristics of drug-combination trials in multiple simulations
+#' 
+#' This function is used to conduct multiple simulations and obtain the operating characteristics of the 2dCFO design.
 #'
 #' @usage CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
 #'                prior.para = list(alp.prior = target, bet.prior = 1 - target), 
 #'                cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seeds = NULL)
 #'
-#'
 #' @param nsimu the total number of trials to be simulated. The default value is 1000.
 #' @param target the target DLT rate.
 #' @param p.true a matrix representing the true DIL rates under the different dose levels.
-#' @param init.level a numeric vector of length 2 representing the initial dose level (default is c(1,1)).
+#' @param init.level a numeric vector of length 2 representing the initial dose level (default is \code{c(1,1)}).
 #' @param ncohort the total number of cohorts.
 #' @param cohortsize the number of patients or size of each cohort. 
-#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
+#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
@@ -22,9 +23,13 @@
 #'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
-#' @param seeds A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is NULL).
+#' @param seeds A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).
 #'
-#' @return A list with the averaged operating characteristics across all simulations.
+#' @note In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
+#'          is typically set to 1000 or 5000 to ensure the accuracy of the results.
+#'
+#' @return the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
+#'         characteristics of the design: \cr
 #' \itemize{
 #'   \item{p.true}{the matrix of the true DLT rates under the different dose levels.}
 #'   \item{selpercent}{the matrix of the selection percentage of each dose level}
@@ -38,6 +43,14 @@
 #'   \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
 #'   \item{simu.setup}{the parameters for the simulation set-up.}
 #' }
+#' 
+#' @author Wenliang Wang
+#' 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
+#'             Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+#' 
 #' @export
 #' @examples
 #' ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 100 replications.

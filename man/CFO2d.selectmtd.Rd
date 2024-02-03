@@ -2,35 +2,36 @@
 % Please edit documentation in R/CFO2d.selectmtd.R
 \name{CFO2d.selectmtd}
 \alias{CFO2d.selectmtd}
-\title{Select the maximum tolerated dose (MTD) for real single drug trials}
+\title{Select the maximum tolerated dose (MTD) for real drug combination trials}
 \usage{
-CFO2d.selectmtd(target, npts, ntox, prior.para=list(alp.prior=target, bet.prior=1-target), 
-       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, verbose=TRUE)
+CFO2d.selectmtd(target, npts, ntox, 
+       prior.para = list(alp.prior = target, bet.prior = 1 - target), 
+       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, verbose = TRUE)
 }
 \arguments{
-\item{target}{the target DLT rate}
+\item{target}{the target DLT rate.}
 
-\item{npts}{a matrix containing the number of patients treated at each dose level}
+\item{npts}{a matrix containing the number of patients treated at each dose level.}
 
-\item{ntox}{a matrix containing the number of patients who experienced DLT at each dose level}
+\item{ntox}{a matrix containing the number of patients who experienced DLT at each dose level.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target)
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)}
 by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
-the true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior},
+the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior},
 \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli=0.95}) for general use.}
+the default value of \code{cutoff.eli = 0.95} for general use.}
 
-\item{extrasafe}{set \code{extrasafe=TRUE} to impose a more strict early stopping rule for
+\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 extra safety}
 
 \item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset=0.05}
+stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
+a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{verbose}{set \code{verbose=TRUE} to return more details of the results}
+\item{verbose}{set \code{verbose = TRUE} to return more details of the results}
 }
 \value{
 \code{CFO2d.selectmtd()} returns
@@ -42,7 +43,7 @@ generally works well.}
 }
 }
 \description{
-Select the maximum tolerated dose (MTD) when the real single-drug trial is completed
+Select the maximum tolerated dose (MTD) when the real drug combination trial is completed
 }
 \details{
 \code{CFO2d.selectmtd()} selects the MTD based on isotonic estimates of toxicity
@@ -52,42 +53,37 @@ are ties, we select from the ties the highest dose level when the estimate
 of the DLT rate is smaller than the target, or the lowest dose level
 when the estimate of the DLT rate is greater than the target. The
 isotonic estimates are obtained by the pooled-adjacent-violators algorithm
-(PAVA) (Barlow, 1972).
+(PAVA).
 }
 \note{
 The MTD selection and dose escalation/deescalation rule are two independent
-components of the trial design. The MTD selection rule in the CFO package remains consistent with that in
-the BOIN package; isotonic regression is employed to select the MTD after the completion of the trial.
+components of the trial design. Isotonic regression is employed to select the MTD after the completion of the trial.
 When appropriate, another dose selection procedure (e.g., based on a fitted logistic model) can be used to select
-the MTD after the completion of the trial using the CFO-type design.
+the MTD after the completion of the trial using the 2dCFO design.
 }
 \examples{
-cys <- matrix(c(0, 0, 2, 0, 0,
+ntox <- matrix(c(0, 0, 2, 0, 0,
                 0, 2, 7, 0, 0,
                 0, 2, 0, 0, 0), 
               nrow = 3, ncol = 5, byrow = TRUE)
 
-cns <- matrix(c(3,  0, 12, 0, 0,
+npts <- matrix(c(3,  0, 12, 0, 0,
                 3, 12, 24, 0, 0,
                 3,  3,  0, 0, 0), 
               nrow = 3, ncol = 5, byrow = TRUE)
-selmtd <- CFO2d.selectmtd(target=0.3, npts=cns, ntox=cys)
+selmtd <- CFO2d.selectmtd(target=0.3, npts=npts, ntox=ntox)
 summary(selmtd)
 plot(selmtd)
 
 }
 \references{
-Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Liu S. and Yuan, Y. (2015). Bayesian Optimal Interval Designs for
-Phase I Clinical Trials, \emph{Journal of the Royal Statistical Society:
-Series C}, 64, 507-523. \cr
-Yan, F., Zhang, L., Zhou, Y., Pan, H., Liu, S. and Yuan, Y. (2020).BOIN: An R Package
-for Designing Single-Agent and Drug-Combination Dose-Finding Trials Using Bayesian Optimal
-Interval Designs. \emph{Journal of Statistical Software}, 94(13), 1-32. \cr
-Yuan Y., Hess K.R., Hilsenbeck S.G. and Gilbert M.R. (2016). Bayesian Optimal Interval Design: A
-Simple and Well-performing Design for Phase I Oncology Trials, \emph{Clinical Cancer Research}, 22, 4291-4301. \cr
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
+Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
+Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic Regression in Two Independent Variables.
+\emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 }
 \author{
-Jialu Fang, Wenliang Wang
+Wenliang Wang
 }

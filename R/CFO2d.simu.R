@@ -1,48 +1,59 @@
-#' Obtain the operating characteristics of the 2dCFO designs for multiple simulations.
+#' Conduct one simulation using the two-dimensional calibration-free odds (2dCFO) design.
 #'
-#' @usage CFO2d.simu(target, p.true, init.level=c(1,1), ncohort, cohortsize, 
-#'                  prior.para=list(alp.prior=target, bet.prior=1-target),
-#'                  cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL)
+#' In the 2dCFO design, the function is used to conduct one single simulation and find the maximum tolerated dose (MTD).
+#'
+#' @usage CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, 
+#'                  prior.para = list(alp.prior = target, bet.prior = 1 - target),
+#'                  cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 #'
 #' @param target the target DLT rate.
 #' @param p.true a matrix representing the true DIL rates under the different dose levels.
-#' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is c(1,1).
+#' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is \code{c(1,1)}.
 #' @param ncohort the total number of cohorts.
 #' @param cohortsize the number of patients or size of each cohort. 
-#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior=target, bet.prior=1-target) by default. \code{alp.prior} 
+#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior})
+#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior})
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
-#' @param seed an integer to be set as the seed of the random number generator for reproducible results, the default is set to NULL.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.
 #'
-#' @details 
-#' The `CFO2d.simu` function simulates the operating characteristics of the CFO designs 
-#' in a two-dimensional dose-finding trial. The function uses parameters such as target DLT rate, true DLT rates 
-#' under different dose levels, and cohort details, and provides detailed output for performance evaluation. 
-#' @author Wenliang Wang
+#' @details The \code{CFO2d.simu()} function simulates the operating characteristics of the 2dCFO design 
+#' in a dose-combination trial. The function uses arguments such as target DLT rate, true DLT rates 
+#' under different dose levels, and cohort details to provide detailed output for performance evaluation.
+#' The early stopping and dose elimination rules are incorporated into the 2dCFO design 
+#' to ensure patient safety and benefit.
+#' 
 #' 
 #' @return A list with the following components:
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
-#'   \item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
+#'   \item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD = (99, 99)} indicates that this trial is terminated due to early stopping.}
 #'   \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
 #'   \item{npatients: }{a matrix of the number of patients allocated for different doses.}
 #'   \item{ntox: }{a matrix of the number of DLT observed for different doses.}
 #'   \item{npercent: }{the percentage of patients assigned to the target DLT rate.}
 #'   \item{over.doses: }{a matrix indicating whether each dose is overdosed or not (1 for yes).}
 #'   \item{cohortdose: }{the dose combination assigned for each cohort.}
-#'   \item{ptoxic: }{The percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
+#'   \item{ptoxic: }{the percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
 #'   \item{patientDLT: }{the DLT observed at each cohort.}
 #'   \item{sumDLT: }{the total number of DLT observed.}
 #'   \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 #' }
+#' 
+#' @author Wenliang Wang
+#' 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
+#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
+#'             Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+#' 
 #' @export
 #'
 #' @examples
@@ -55,7 +66,6 @@
 #' CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
 #' summary(CFO2dtrial)
 #' plot(CFO2dtrial)
-
 
 
 CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,  
@@ -185,9 +195,9 @@ CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,
       message('no such case')
     }
     
-    idx.chg <- CFO2d.next(target, cys, cns, c(cidx.A, cidx.B), prior.para=prior.para, cutoff.eli=cutoff.eli, extrasafe=extrasafe, offset=offset, seed=seed)$index
-    cidx.A <- cidx.A + idx.chg[1]
-    cidx.B <- cidx.B + idx.chg[2]
+    idx <- CFO2d.next(target, cys, cns, c(cidx.A, cidx.B), prior.para=prior.para, cutoff.eli=cutoff.eli, extrasafe=extrasafe, offset=offset, seed=seed)$nextdose
+    cidx.A <- idx[1]
+    cidx.B <- idx[2]
   }
   if (earlystop==0){
     MTD <- CFO2d.selectmtd(target, ans, ays)$MTD

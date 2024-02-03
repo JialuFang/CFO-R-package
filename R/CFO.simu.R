@@ -1,6 +1,6 @@
-#' Conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design and find the maximum tolerated dose (MTD).
+#' Conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design.
 #' 
-#' Use this function to conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design and find the maximum tolerated dose (MTD).
+#' In the CFO and aCFO designs, the function is used to conduct one single simulation and find the maximum tolerated dose (MTD).
 #'
 #' @usage CFO.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
@@ -9,59 +9,59 @@
 #' @param design option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
-#' @param ncohort the total number of cohorts.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
+#' @param ncohort the total number of cohorts.
 #' @param cohortsize the number of patients or size of each cohort.
-#' @param prior.para the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target)
+#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)}
 #'                  by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for the 
-#'                  true DLT rate at any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).
+#'                  true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
-#'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
+#'                    the default value of \code{cutoff.eli = 0.95} for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
 #'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
-#' @param seed an integer to be set as the seed of the random number generator for reproducible results, the default is set to \code{NULL}.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.
 #'                            
-#' @details The \code{CFO.simu()} function is designed to determine the maximum tolerated dose (MTD) for a single CFO or aCFO 
-#'          trial. If \code{design = 'CFO'}, this trial corresponds to the CFO design. If \code{design = 'aCFO'}, it
-#'          corresponds to the aCFO design. \cr
-#'          Given the toxicity outcomes from previous cohorts, each cohort is sequentially assigned to the most suitable dose 
-#'          level based on the CFO or aCFO decision rule. An early stopping and dose elimination are incorporated into the CFO or aCFO design 
+#' @note The \code{CFO.simu()} function is designed to conduct a single CFO or aCFO simulation. If \code{design = 'CFO'}, it corresponds 
+#'          to the CFO design. If \code{design = 'aCFO'}, it corresponds to the aCFO design. \cr
+#'          The early stopping and dose elimination rules are incorporated into the CFO or aCFO design 
 #'          to ensure patient safety and benefit. If there is substantial evidence indicating that the current dose level 
-#'          exhibits excessive toxicity (\eqn{\Pr(p_C > \target|x_C, m_C \geq 3) > 0.95}), we exclude the current dose level as 
-#'          well as higher dose levels from the trial. If the lowest dose level is overly toxic, the trial will be terminated 
+#'          exhibits excessive toxicity, we exclude the current dose level as well as higher dose levels from the trial. If the lowest dose level is overly toxic, the trial will be terminated 
 #'          according to the early stopping rule. Upon the predefined maximum sample size is reached or the lowest dose 
 #'          level is overly toxicity, the experiment is concluded, and the MTD is determined using isotonic regression.
 #'
 #' @return The \code{CFO.simu} function returns a list object comprising the following components:
 #'         \itemize{
 #'         \item{target: }{the target DLT rate.}
-#'         \item{MTD: }{the selected MTD. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
+#'         \item{MTD: }{the selected MTD. \code{MTD = 99} indicates that this simulation is terminated due to early stopping.}
 #'         \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
-#'         \item{npatients: }{the total number of patients allocated for all dose levels}
+#'         \item{npatients: }{the total number of patients allocated for all dose levels.}
 #'         \item{ntox: }{the total number of DLTs observed for all dose levels.}
 #'         \item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
 #'         \item{over.doses: }{a vector indicating whether each dose is overdosed or not (1 for yes).}
 #'         \item{cohortdose: }{a vector including the dose level assigned for each cohort.}
+#'         \item{ptoxic: }{the percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
 #'         \item{patientDLT: }{a vector including the DLT outcome observed for each patient.}
+#'         \item{sumDLT: }{the total number of DLT observed.}
+#'         \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 #'         }
 #' 
 #' @author Jialu Fang
 #' 
-#' @references Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 #'
 #' @examples
 #' target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
-#' ## find the MTD for a single CFO trial
+#' ### find the MTD for a single CFO simulation
 #' CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(CFOtrial)
 #' plot(CFOtrial)
-#' ## find the MTD for a single aCFO trial
+#' ### find the MTD for a single aCFO simulation
 #' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(aCFOtrial)
 #' plot(aCFOtrial)
@@ -180,9 +180,11 @@ CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
   }
   
   npercent <- ans[which(p.true == target)]/(ncohort*cohortsize)
+  ptoxic <- sum(ans[which(p.true > target)])/(ncohort*cohortsize)
   
   out<-list(target=target, MTD=MTD, correct=correct, npatients=ans, ntox=ays, npercent=npercent, 
-            over.doses=tover.doses, cohortdose=doselist, patientDLT=DLTlist)
+            over.doses=tover.doses, cohortdose=doselist, ptoxic=ptoxic, patientDLT=DLTlist,
+            sumDLT=sum(DLTlist), earlystop=earlystop)
   class(out) <- "cfo"
   return(out)
 }

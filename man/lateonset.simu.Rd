@@ -2,7 +2,7 @@
 % Please edit documentation in R/lateonset.simu.R
 \name{lateonset.simu}
 \alias{lateonset.simu}
-\title{Find the maximum tolerated dose (MTD) for a single trial using the CFO-type designs with late-onset toxicities.}
+\title{Conduct one simulation using the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities.}
 \usage{
 lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
        tau, tte.para, accrual.rate, accrual.dist,  
@@ -12,7 +12,7 @@ lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
 \arguments{
 \item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
 \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers
-to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
+to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO design.}
 
 \item{target}{the target DLT rate.}
 
@@ -24,7 +24,7 @@ to the benchmark CFO, and \code{'b-aCFO'} denotes the benchmark aCFO.}
 
 \item{cohortsize}{the number of patients or size of each cohort.}
 
-\item{tau}{maximal assessment window size.}
+\item{tau}{the maximal assessment window size.}
 
 \item{tte.para}{the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull
 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the
@@ -37,12 +37,12 @@ patients in each cohort arriving simultaneously at a given accrual rate. When \c
 it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an
 exponential distribution.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as list(alp.prior = target, bet.prior = 1 - target) by default. \code{alp.prior}
+\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta( \code{alpha.prior}, \code{beta.prior}).}
+any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
-the default value of (\code{cutoff.eli = 0.95}) for general use.}
+the default value of \code{cutoff.eli = 0.95} for general use.}
 
 \item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 extra safety.}
@@ -52,20 +52,23 @@ stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{seed}{an integer to set as the seed of the random number generator for reproducible results, the default is set to NULL.}
+\item{seed}{an integer to set as the seed of the random number generator for reproducible results. The default is set to NULL.}
 }
 \value{
 The \code{lateonset.simu()} function returns a list object comprising the following components:
 \itemize{
 \item{target: }{the target DLT rate.}
-\item{MTD: }{the selected MTD. \code{MTD=99} indicates that this trial is terminated due to early stopping.}
+\item{MTD: }{the selected MTD. \code{MTD = 99} indicates that this trial is terminated due to early stopping.}
 \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
 \item{npatients: }{the total number of patients allocated for all dose levels}
 \item{ntox: }{the total number of DLTs observed for all dose levels.}
 \item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
 \item{over.doses: }{a vector indicating whether each dose is overdosed or not (1 for yes).}
 \item{cohortdose: }{a vector including the dose level assigned for each cohort.}
+\item{ptoxic: }{the percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
 \item{patientDLT: }{a vector including the DLT outcome observed for each patient.}
+\item{sumDLT: }{the total number of DLT observed.}
+\item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 \item{totaltime: }{the duration of the trial.}
 \item{entertimes: }{the time that each participant enters the trial.}
 \item{DLT.times: }{the time to DLT for each subject in the trial. If no DLT occurs for a certain subject,
@@ -73,56 +76,55 @@ The \code{lateonset.simu()} function returns a list object comprising the follow
 }
 }
 \description{
-Use this function to find the maximum tolerated dose (MTD) for the CFO-type designs with late-onset toxicities,
-specifically, including Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO), benchmark CFO, TITE-aCFO design,
-the f-aCFO design and benchmark aCFO design.
+The function is used to conduct one single simulation and find the maximum tolerated dose (MTD) for the CFO-type designs with late-onset toxicities,
+specifically, including Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
+Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
 }
 \note{
-The results returned by \code{lateonset.simu()} represent a single trial outcome. In practical
-applications, multiple simulations are required to ascertain the MTD, and this can be achieved using the
-\code{CFO.oc()} function.
+The early stopping and dose elimination rules are incorporated into the design
+to ensure patient safety and benefit.
 }
 \examples{
 target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
-## find the MTD for a single TITE-CFO trial
+## find the MTD for a single TITE-CFO simulation
 TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(TITECFOtrial)
 plot(TITECFOtrial)
-## find the MTD for a single TITE-aCFO trial
+## find the MTD for a single TITE-aCFO simulation
 TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(TITEaCFOtrial)
 plot(TITEaCFOtrial)
-## find the MTD for a single fCFO trial
+## find the MTD for a single fCFO simulation
 fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(fCFOtrial)
 plot(fCFOtrial)
-## find the MTD for a single f-aCFO trial
+## find the MTD for a single f-aCFO simulation
 faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(faCFOtrial)
 plot(faCFOtrial)
-## find the MTD for a single benchmark CFO trial
+## find the MTD for a single benchmark CFO simulation
 bCFOtrial <- lateonset.simu (design = 'bCFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(bCFOtrial)
 plot(bCFOtrial)
-## find the MTD for a single benchmark aCFO trial
+## find the MTD for a single benchmark aCFO simulation
 baCFOtrial <- lateonset.simu (design = 'b-aCFO', target, p.true, init.level,  
                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(baCFOtrial)
 plot(baCFOtrial)
 }
 \references{
-Jin, H., & Yin, G. (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
+Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Jin, H., & Yin, G. (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for
-phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. \cr
-Yin, G., Zheng, S., & Xu, J. (2013). Fractional dose-finding methods with late-onset toxicity in
+Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for
+phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. 22(5), 773–783.\cr
+Yin G, Zheng S, Xu J (2013). Fractional dose-finding methods with late-onset toxicity in
 phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
 }
 \author{
