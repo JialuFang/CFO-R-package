@@ -17,11 +17,6 @@
 \description{
 Generate descriptive summary for objects returned by other functions.
 }
-\details{
-\code{summary()} prints the objects returned by other functions. Additionally, in the example,
-we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} is typically
-set to 5000 to ensure the accuracy of the results.
-}
 \examples{
 ## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1

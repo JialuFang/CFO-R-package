@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO.next.R
 \name{CFO.next}
 \alias{CFO.next}
-\title{Determination of the dose level for next cohort in the Calibration-Free Odds (CFO) design}
+\title{Determination of the dose level for next cohort in the calibration-free odds (CFO) design}
 \usage{
 CFO.next(target, cys, cns, currdose, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target),
@@ -40,8 +40,8 @@ The \code{CFO.next()} function returns a list object comprising the following el
 \item{cns: }{the current counts of patients treated at the left, current, and right dose levels.}
 \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the
 movement directions, and \code{stop} indicates stopping the experiment.}
-\item{currdose: }{the current level.}
-\item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose = 99} indicates that this trial is
+\item{currdose: }{the current dose level.}
+\item{nextdose: }{the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is
 terminated due to early stopping.}
 \item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by
 \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
@@ -66,8 +66,7 @@ the trial will be terminated according to the early stopping rule.
 \note{
 When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
 \code{cns} where there is no data are filled with \code{NA}. \cr
-The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the
-complete trial, the dose level and all the dose levels above will be eliminated.
+The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
 }
 \examples{
 ## determine the dose level for the next cohort of new patients

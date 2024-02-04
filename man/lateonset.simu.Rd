@@ -2,7 +2,7 @@
 % Please edit documentation in R/lateonset.simu.R
 \name{lateonset.simu}
 \alias{lateonset.simu}
-\title{Conduct one simulation using the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities.}
+\title{Conduct one simulation using the calibration-free odds type (CFO-type) design with late-onset toxicity.}
 \usage{
 lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
        tau, tte.para, accrual.rate, accrual.dist,  
@@ -48,7 +48,7 @@ the default value of \code{cutoff.eli = 0.95} for general use.}
 extra safety.}
 
 \item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
@@ -77,8 +77,8 @@ The \code{lateonset.simu()} function returns a list object comprising the follow
 }
 \description{
 The function is used to conduct one single simulation and find the maximum tolerated dose (MTD) for the CFO-type designs with late-onset toxicities,
-specifically, including Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
-Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
+specifically, including time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
+time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
 }
 \note{
 The early stopping and dose elimination rules are incorporated into the design

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO2d.selectmtd.R
 \name{CFO2d.selectmtd}
 \alias{CFO2d.selectmtd}
-\title{Select the maximum tolerated dose (MTD) for real drug combination trials}
+\title{Select the maximum tolerated dose (MTD) for the real drug combination trial}
 \usage{
 CFO2d.selectmtd(target, npts, ntox, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
@@ -24,14 +24,14 @@ the true DLT rate at any dose level. This prior distribution is specified as Bet
 the default value of \code{cutoff.eli = 0.95} for general use.}
 
 \item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety}
+extra safety.}
 
 \item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
 stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{verbose}{set \code{verbose = TRUE} to return more details of the results}
+\item{verbose}{set \code{verbose = TRUE} to return more details of the results.}
 }
 \value{
 \code{CFO2d.selectmtd()} returns
@@ -79,9 +79,9 @@ plot(selmtd)
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
-Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
-Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic Regression in Two Independent Variables.
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
+design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
+Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic regression in two independent variables.
 \emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 }
 \author{

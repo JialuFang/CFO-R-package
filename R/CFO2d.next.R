@@ -1,15 +1,15 @@
 #' Determinate the dose level for the next cohort in the two-dimensional calibration-free odds (2dCFO) design.
 #'
-#' This function is used to determine the next dose level for the next cohort in a 2dCFO design.
+#' This function is used to determine the next dose level for the next cohort in the 2dCFO design.
 #'
 #' @usage CFO2d.next(target, cys, cns, currdose, 
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
 #'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
 #'
-#' @param target The target DLT rate.
-#' @param cys A matrix of the number of DLTs observed for each dose combination.
-#' @param cns A matrix of the number of patients allocated for each dose combination.
-#' @param currdose A vector of the current dose indices in the horizontal and vertical direction.
+#' @param target the target DLT rate.
+#' @param cys a matrix of the number of DLTs observed for each dose combination.
+#' @param cns a matrix of the number of patients allocated for each dose combination.
+#' @param currdose a vector of the current dose indices in the horizontal and vertical direction.
 #' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
 #'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
 #'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
@@ -28,10 +28,9 @@
 #'  
 #' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and 
 #'          \code{cns} where there is no data are filled with \code{NA}. \cr
-#'          The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the 
-#'          complete trial, the dose level and all the dose levels above will be eliminated.
+#'          The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
 #' 
-#' @return A list with the following components:
+#' @return The \code{CFO2d.next()} function returns a list with the following components:
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
 #'   \item{cys: }{a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.}
@@ -39,7 +38,7 @@
 #'   \item{decision: }{a vector of length 2 representing the recommended decisions for vertical and horizontal 
 #'   directions, and \code{stop} indicates stopping the experiment}
 #'   \item{currdose: }{the current dose combination.}
-#'   \item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that this trial is 
+#'   \item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that the trial is 
 #'   terminated due to early stopping.}
 #'   \item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by 
 #'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the 
@@ -48,10 +47,10 @@
 #' 
 #' @author Wenliang Wang
 #' 
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
-#'             Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
+#'             design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258.
 #' 
 #' @export
 #' @examples

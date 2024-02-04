@@ -1,8 +1,8 @@
-#' Conduct one simulation using the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities.
+#' Conduct one simulation using the calibration-free odds type (CFO-type) design with late-onset toxicity.
 #'
 #' The function is used to conduct one single simulation and find the maximum tolerated dose (MTD) for the CFO-type designs with late-onset toxicities, 
-#' specifically, including Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
-#' Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
+#' specifically, including time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
+#' time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
 #'
 #' @usage lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        tau, tte.para, accrual.rate, accrual.dist,  
@@ -34,7 +34,7 @@
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
 #'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
+#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
 #' @param seed an integer to set as the seed of the random number generator for reproducible results. The default is set to NULL.

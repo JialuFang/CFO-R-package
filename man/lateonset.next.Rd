@@ -2,7 +2,7 @@
 % Please edit documentation in R/lateonset.next.R
 \name{lateonset.next}
 \alias{lateonset.next}
-\title{Determination of the dose level for next cohort in the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities}
+\title{Determination of the dose level for next cohort in the calibration-free odds type (CFO-type) design with late-onset toxicity}
 \usage{
 lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
@@ -15,7 +15,7 @@ to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO desi
 
 \item{target}{the target DLT rate.}
 
-\item{p.true}{The true DLT rates under the different dose levels.}
+\item{p.true}{the true DLT rates under the different dose levels.}
 
 \item{currdose}{the current dose level.}
 
@@ -62,9 +62,9 @@ or not (1 for yes).}
 }
 }
 \description{
-The function is used to determine the next dose level in the CFO-type designs with late-onset toxicities, specifically, including
-Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
-Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design
+The function is used to determine the next dose level in the CFO-type design with late-onset toxicity, specifically, including
+time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design,
+time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design
 and benchmark aCFO design.
 }
 \details{

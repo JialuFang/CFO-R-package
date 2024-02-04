@@ -1,4 +1,4 @@
-#' Conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design.
+#' Conduct one simulation using the Calibration-free odds (CFO) or accumulative CFO (aCFO) design.
 #' 
 #' In the CFO and aCFO designs, the function is used to conduct one single simulation and find the maximum tolerated dose (MTD).
 #'
@@ -36,7 +36,7 @@
 #' @return The \code{CFO.simu} function returns a list object comprising the following components:
 #'         \itemize{
 #'         \item{target: }{the target DLT rate.}
-#'         \item{MTD: }{the selected MTD. \code{MTD = 99} indicates that this simulation is terminated due to early stopping.}
+#'         \item{MTD: }{the selected MTD. \code{MTD = 99} indicates that the simulation is terminated due to early stopping.}
 #'         \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
 #'         \item{npatients: }{the total number of patients allocated for all dose levels.}
 #'         \item{ntox: }{the total number of DLTs observed for all dose levels.}
@@ -51,7 +51,7 @@
 #' 
 #' @author Jialu Fang
 #' 
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 #'
 #' @examples

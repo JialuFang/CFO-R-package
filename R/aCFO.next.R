@@ -1,5 +1,4 @@
-#' 
-#' Determination of the dose level for next cohort in the accumulative Calibration-Free Odds (aCFO) design
+#' Determination of the dose level for next cohort in the accumulative calibration-free odds (aCFO) design
 #' 
 #' In aCFO design, the function is used to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 #'
@@ -22,25 +21,18 @@
 #'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
-#'
-#' @details The aCFO design design incorporates the dose information of all positions (from the lowest to the 
-#'          highest dose levels) into the trial decision-making. Prior to assigning dose levels for new patient 
-#'          cohorts, aCFO compares the evidence from the current dose level with all doses to its left and right. 
-#'          This design is rooted in the odds ratio, specifically \eqn{O_C / \overline{O}_{J}} and 
-#'          \eqn{\overline{O}_C / O_R} from the CFO design. By aggregating odds ratios from the left and right sides, 
-#'          it forms two collective statistics: \eqn{ {\rm OR}_L =\sum_{i=1}^{J} O_C/ \overline{O}_{L_i} } for dose 
-#'          de-escalation (movement to the left) and \eqn{ {\rm OR}_R = \sum_{i=1}^{H} \overline{O}_C / O_{R_i} } 
-#'          for dose escalation (movement to the right), where \eqn{J} and \eqn{H} represent the counts of doses on the left and 
-#'          right sides of the current dose, respectively. For the new statistic \eqn{ {\rm OR}_L } and \eqn{ {\rm OR}_R }, 
-#'          their corresponding thresholds are derived by summing up its individual thresholds \eqn{\gamma_{L_i}} and 
-#'          \eqn{\gamma_{R_i}}, i.e., \eqn{\sum_{i=1}^{J}\gamma_{L_i}} and \eqn{\sum_{i=1}^{H}\gamma_{R_i}}. \cr
-#'          Besides，The aCFO design retains the same early stopping and dose elimination criteria as the CFO design. While preserving 
-#'          the nature of the CFO design (model-free and calibration-free), the aCFO designs enhance the efﬁciency by 
-#'          incorporating more dose information. 
-#'          
-#' @note    The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity. In the complete trial, the dose 
-#'          level and all the dose levels above will be eliminated.
 #' 
+#'
+#' @details The aCFO design is an extension of the CFO design. It integrates dose information from all positions (ranging 
+#' from the lowest to the highest dose levels) into the decision-making process of the trial. Before assigning dose levels 
+#' for new cohort, aCFO compares the evidence from the current dose level with all doses to its left and right. In contrast, 
+#' the original CFO design makes dose allocation by examining one dose level above and one below the current dose level. 
+#' Consequently, the aCFO design enhances the utilization of information while maintaining the characteristics of the CFO 
+#' design (model-free and calibration-free). Additionally, the aCFO design preserves the same early stopping and dose 
+#' elimination criteria as the CFO design.
+#'          
+#' @note The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
+#'          
 #' @return The \code{aCFO.next()} function returns a list object comprising the following elements: 
 #' \itemize{
 #'   \item{target: }{the target DLT rate.}
@@ -48,17 +40,17 @@
 #'   \item{ans: }{the current counts of patients treated at all dose levels.}
 #'   \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the 
 #'   movement directions, and \code{stop} indicates stopping the experiment.}
-#'   \item{currdose: }{the current level.}
-#'   \item{nextdose: }{the recommended dose level for the next cohort.\code{nextdose = 99} indicates that this trial is 
+#'   \item{currdose: }{the current dose level.}
+#'   \item{nextdose: }{the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is 
 #'   terminated due to early stopping.}
 #'   \item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by 
 #'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the 
 #'   occurrence of overly toxicity did not happen.}
 #' }
-#'         
+#'  
 #' @author Jialu Fang 
 #' 
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 #'
 #' @examples

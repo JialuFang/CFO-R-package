@@ -1,8 +1,8 @@
-#' Determination of the dose level for next cohort in the Calibration-Free Odds type (CFO-type) designs with late-onset toxicities
+#' Determination of the dose level for next cohort in the calibration-free odds type (CFO-type) design with late-onset toxicity
 #' 
-#' The function is used to determine the next dose level in the CFO-type designs with late-onset toxicities, specifically, including 
-#' Time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
-#' Time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design 
+#' The function is used to determine the next dose level in the CFO-type design with late-onset toxicity, specifically, including 
+#' time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
+#' time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design 
 #' and benchmark aCFO design.
 #' 
 #' @usage lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
@@ -13,7 +13,7 @@
 #'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
 #'               to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO design.
 #' @param target the target DLT rate.
-#' @param p.true The true DLT rates under the different dose levels.
+#' @param p.true the true DLT rates under the different dose levels.
 #' @param currdose the current dose level.
 #' @param tau the maximal assessment window size.
 #' @param enter.times the time that each participant enters the trial.
@@ -62,7 +62,7 @@
 #' 
 #' @author Jialu Fang 
 #' 
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
 #'             Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
 #'             phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}, 22(5), 773–783.\cr

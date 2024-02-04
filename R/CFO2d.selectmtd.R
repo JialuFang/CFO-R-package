@@ -1,4 +1,4 @@
-#' Select the maximum tolerated dose (MTD) for real drug combination trials
+#' Select the maximum tolerated dose (MTD) for the real drug combination trial
 #'
 #' Select the maximum tolerated dose (MTD) when the real drug combination trial is completed
 #'
@@ -16,12 +16,12 @@
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety
+#'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
 #'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
 #'                generally works well.
-#' @param verbose set \code{verbose = TRUE} to return more details of the results
+#' @param verbose set \code{verbose = TRUE} to return more details of the results.
 #'
 #' @details \code{CFO2d.selectmtd()} selects the MTD based on isotonic estimates of toxicity
 #'          probabilities. \code{CFO2d.selectmtd()} selects as the MTD dose \eqn{j^*}, for which the
@@ -48,11 +48,11 @@
 #'
 #' @author Wenliang Wang
 #'
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
-#'             Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
-#'             Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic Regression in Two Independent Variables. 
+#'             Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
+#'             design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
+#'             Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic regression in two independent variables. 
 #'             \emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 #'
 #' @examples

@@ -1,6 +1,6 @@
 #' Generate operating characteristics of sigle-drug trials in multiple simulations
 #' 
-#' This function is used to conduct multiple simulations and obtain the operating characteristics of sigle-drug trials.
+#' This function is used to perform multiple simulations for single-drug trials and obtain relevant operating characteristics.
 #'
 #' @usage CFO.oc(nsimu = 5000, design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, 
@@ -17,7 +17,7 @@
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param ncohort the total number of cohorts.
 #' @param cohortsize the number of patients or size of each cohort. 
-#' @param tau maximal assessment window size. \code{NA} should be assigned if the design without late-oneset outcomes.
+#' @param tau the maximal assessment window size. \code{NA} should be assigned if the design without late-oneset outcomes.
 #' @param tte.para the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull 
 #'                 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the 
 #'                 assessment window \code{tau}. \code{NA} should be assigned if the design without late-oneset outcomes.
@@ -33,7 +33,7 @@
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
 #' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety
+#'                   extra safety.
 #' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
 #'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
 #'                a more strict stopping rule. The default value \code{offset = 0.05}
@@ -48,10 +48,10 @@
 #'          Additionally, in the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
 #'          is typically set to 5000 to ensure the accuracy of the results.
 #'
-#' @return the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
+#' @return The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
 #'         characteristics of the design: \cr
 #'         \itemize{
-#' \item{p.true}{the true DLT rates under the different dose levels.}
+#' \item{p.true: }{the true DLT rates under the different dose levels.}
 #' \item{selpercent: }{the selection percentage at each dose level.}
 #' \item{npatients: }{the averaged number of patients treated at each dose level in one simulation.}
 #' \item{ntox: }{the averaged number of toxicity observed at each dose level in one simulation.}
@@ -62,12 +62,12 @@
 #' \item{averDLT: }{the percentage of the patients suffering DLT.}
 #' \item{averdur: }{the average trial duration if trials with late-onset toxicities.}
 #' \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-#' \item{simu.setup}{the parameters for the simulation set-up.}
+#' \item{simu.setup: }{the parameters for the simulation set-up.}
 #' }
 #' 
 #' @author Jialu Fang
 #' 
-#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
+#' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
 #'             Jin H, Yin G (2023). Time‐to‐event calibration‐free odds design: A robust efficient design for 
 #'             phase I trials with late‐onset outcomes. \emph{Pharmaceutical Statistics}. 22(5), 773–783.\cr

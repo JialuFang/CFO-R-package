@@ -21,7 +21,7 @@ CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize,
 
 \item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior})}
+any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
@@ -37,7 +37,7 @@ generally works well.}
 \item{seed}{an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.}
 }
 \value{
-A list with the following components:
+The \code{CFO2d.simu()} function returns a list with the following components:
 \itemize{
 \item{target: }{the target DLT rate.}
 \item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD = (99, 99)} indicates that this trial is terminated due to early stopping.}
@@ -58,8 +58,7 @@ In the 2dCFO design, the function is used to conduct one single simulation and f
 }
 \details{
 The \code{CFO2d.simu()} function simulates the operating characteristics of the 2dCFO design
-in a dose-combination trial. The function uses arguments such as target DLT rate, true DLT rates
-under different dose levels, and cohort details to provide detailed output for performance evaluation.
+in a dose-combination trial.
 The early stopping and dose elimination rules are incorporated into the 2dCFO design
 to ensure patient safety and benefit.
 }
@@ -77,8 +76,8 @@ plot(CFO2dtrial)
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
-Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
+design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258.
 }
 \author{
 Wenliang Wang

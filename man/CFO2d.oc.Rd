@@ -36,27 +36,27 @@ stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
 a more strict stopping rule. The default value \code{offset = 0.05}
 generally works well.}
 
-\item{seeds}{A vector of random seed for each simulations, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).}
+\item{seeds}{A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).}
 }
 \value{
-the \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating
+The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating
 characteristics of the design: \cr
 \itemize{
-\item{p.true}{the matrix of the true DLT rates under the different dose levels.}
-\item{selpercent}{the matrix of the selection percentage of each dose level}
-\item{npatients}{a matrix of the averaged number of patients allocated for different doses in one simulation.}
-\item{ntox}{a matrix of the averaged number of DLT observed for different doses in one simulation.}
-\item{MTDsel}{the percentage of the correct selection of the MTD.}
-\item{MTDallo}{the averaged percentage of patients assigned to the target DLT rate.}
+\item{p.true: }{the matrix of the true DLT rates under the different dose levels.}
+\item{selpercent: }{the matrix of the selection percentage of each dose level}
+\item{npatients: }{a matrix of the averaged number of patients allocated for different doses in one simulation.}
+\item{ntox: }{a matrix of the averaged number of DLT observed for different doses in one simulation.}
+\item{MTDsel: }{the percentage of the correct selection of the MTD.}
+\item{MTDallo: }{the averaged percentage of patients assigned to the target DLT rate.}
 \item{oversel: }{the percentage of selecting a dose above the MTD.}
-\item{overallo}{the averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
-\item{averDLT}{the averaged total number of DLTs observed.}
+\item{overallo: }{the averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
+\item{averDLT: }{the averaged total number of DLTs observed.}
 \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-\item{simu.setup}{the parameters for the simulation set-up.}
+\item{simu.setup: }{the parameters for the simulation set-up.}
 }
 }
 \description{
-This function is used to conduct multiple simulations and obtain the operating characteristics of the 2dCFO design.
+This function is used to conduct multiple simulations of drug-combination trials and obtain relevant the operating characteristics.
 }
 \note{
 In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu}
@@ -77,8 +77,8 @@ plot(CFO2doc)
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Wang W, Jin H, Zhang Y, Yin G (2023). Two-Dimensional Calibration-Free Odds (2dCFO)
-Design for Phase I Drug-Combination Trials. \emph{Frontiers in Oncology}, 13, 1294258.
+Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
+design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258.
 }
 \author{
 Wenliang Wang

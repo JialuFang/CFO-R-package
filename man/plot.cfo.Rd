@@ -15,7 +15,7 @@
 User doesn't need to input this parameter.}
 }
 \value{
-\code{plot()} returns a figure or a series of figures depending on the object entered
+\code{plot()} returns a figure or a series of figures depending on the object entered.
 }
 \description{
 Plot the objects returned by other functions, including (1) dose allocation of a single trial;
@@ -23,11 +23,6 @@ Plot the objects returned by other functions, including (1) dose allocation of a
 (3) operating characteristics of multiple simulations, including MTD selesction percentage,
 the averaged number of patients allocated for different doses in one simulation and the averaged
 number of DLT observed for different doses in one simulation.
-}
-\details{
-\code{plot()} returns a figure or a series of figures depending on the object entered.
-Additionally, in the example, we set \code{nsimu = 100} for testing time considerations.
-In reality, \code{nsimu} is typically set to 5000 to ensure the accuracy of the results.
 }
 \examples{
 

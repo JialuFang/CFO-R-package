@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFO.simu.R
 \name{CFO.simu}
 \alias{CFO.simu}
-\title{Conduct one simulation using the Calibration-Free Odds (CFO) or accumulative CFO (aCFO) design.}
+\title{Conduct one simulation using the Calibration-free odds (CFO) or accumulative CFO (aCFO) design.}
 \usage{
 CFO.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
@@ -42,7 +42,7 @@ generally works well.}
 The \code{CFO.simu} function returns a list object comprising the following components:
 \itemize{
 \item{target: }{the target DLT rate.}
-\item{MTD: }{the selected MTD. \code{MTD = 99} indicates that this simulation is terminated due to early stopping.}
+\item{MTD: }{the selected MTD. \code{MTD = 99} indicates that the simulation is terminated due to early stopping.}
 \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
 \item{npatients: }{the total number of patients allocated for all dose levels.}
 \item{ntox: }{the total number of DLTs observed for all dose levels.}

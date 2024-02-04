@@ -11,11 +11,8 @@
 #' @param name the name of the object to be plotted.
 #'             User doesn't need to input this parameter.
 #'
-#' @return \code{plot()} returns a figure or a series of figures depending on the object entered
+#' @return \code{plot()} returns a figure or a series of figures depending on the object entered.
 #' 
-#' @details \code{plot()} returns a figure or a series of figures depending on the object entered.
-#'           Additionally, in the example, we set \code{nsimu = 100} for testing time considerations. 
-#'           In reality, \code{nsimu} is typically set to 5000 to ensure the accuracy of the results.
 #' 
 #' @author Jialu Fang and Wenliang Wang
 #' 
