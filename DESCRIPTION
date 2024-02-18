@@ -1,5 +1,5 @@
 Package: CFO
-Title: Calibration-free odds type (CFO-type) desgins in phase I clinical trials
+Title: Calibration-Free Odds Type (CFO-Type) Desgins in Phase I Clinical Trials
 Version: 0.0.0.9000
 Authors@R: c(
     person("Jialu", "Fang", email ="u3008682@connect.hku.hk", role = c("aut", "cre")),
