@@ -5,55 +5,51 @@
 #'
 #' @usage CFO.next(target, cys, cns, currdose, 
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target),
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+#'        cutoff.eli = 0.95, early.stop = 0.95)
 #'
 #' @param target the target DLT rate.
-#' @param cys the current number of DLTs observed at the left, current, and right dose levels.
-#' @param cns the current number of patients treated at the left, current, and right dose levels.
+#' @param cys the cumulative numbers of DLTs observed at the left, current, and right dose levels.
+#' @param cns the cumulative numbers of patients treated at the left, current, and right dose levels.
 #' @param currdose the current dose level.
-#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
-#'                  by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
+#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
+#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
 #'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
-#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety.
-#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
 #'
 #' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
 #'          dose level and its adjacent levels. This evaluation is based on odds ratios denoted as \eqn{O_k}, where 
-#'          k = L, C, R represents left, current, and right dose levels. Additionally, we define \eqn{\overline{O}_k = 1/O_k}. 
+#'          \eqn{k = L, C, R} represents left, current (central), and right dose levels. Additionally, we define \eqn{\overline{O}_k = 1/O_k}. 
 #'          The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalation, while \eqn{\overline{O}_C / O_R} 
 #'          quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to 
 #'          minimize the probability of making incorrect decisions. The decision process is summarized in Table 1
 #'          of Jin and Yin (2022).
 #'          The early stopping and dose elimination rules are implemented to ensure patient safety. If the data suggest excessive 
-#'          toxicity at the current dose level, we exclude that level and those higher levels. If the lowest dose level is overly toxic,
+#'          toxicity at the current dose level, we exclude that dose level and those higher levels. If the lowest dose level is overly toxic,
 #'          the trial will be terminated according to the early stopping rule.
 #'          
 #' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and 
 #'          \code{cns} where there is no data are filled with \code{NA}. \cr
-#'          The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
+#'          The dose level indicated by \code{overtox} and all the dose levels above experience over-toxicity, and these dose levels will be eliminated.
 #'          
 #' @return The \code{CFO.next()} function returns a list object comprising the following elements:
 #' \itemize{
 #'   \item{taget: }{the target DLT rate.}
-#'   \item{cys: }{the current counts of DLTs observed at the left, current, and right dose levels.}
-#'   \item{cns: }{the current counts of patients treated at the left, current, and right dose levels.}
+#'   \item{cys: }{the cumulative counts of DLTs observed at the left, current, and right dose levels.}
+#'   \item{cns: }{the cumulative counts of patients treated at the left, current, and right dose levels.}
 #'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
 #'   movement directions, and \code{stop} indicates stopping the experiment.}
 #'   \item{currdose: }{the current dose level.}
 #'   \item{nextdose: }{the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is 
 #'   terminated due to early stopping.}
-#'   \item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by 
-#'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the 
-#'   occurrence of overly toxicity did not happen.}
+#'   \item{overtox: }{the situation regarding which positions experience over-toxicity. The dose level indicated by 
+#'   \code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the 
+#'   occurrence of over-toxicity did not happen.}
 #' }
 #'         
-#' @author Jialu Fang and Wenliang Wang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
@@ -75,7 +71,7 @@
 #' @import stats
 #' @export
 CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
-                     cutoff.eli=0.95, extrasafe=FALSE, offset=0.05){
+                     cutoff.eli=0.95, early.stop=0.95){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -251,14 +247,14 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     }
   }
   
-  if (extrasafe) {
+  if (cutoff.eli != early.stop) {
     cy <- cys[1]
     cn <- cns[1]
     if (is.na(cn)){
       cover.doses[i] <- NA
     }else{
       prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
-      if (overdose.fn(target, cutoff.eli-offset, prior.para)){
+      if (overdose.fn(target, early.stop, prior.para)){
         cover.doses[1:3] <- 1
       }
     }

@@ -9,7 +9,7 @@
 #' @return \code{summary()} prints the objects returned by other functions.
 #'
 #'
-#' @author Jialu Fang and Wenliang Wang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #'
 #' @export
 #' 
@@ -17,7 +17,7 @@
 #' ## settings for 1dCFO
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
-#' tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+#' assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
 #' ## summarize the object returned by CFO.next()
 #' decision <- CFO.next(target = 0.2, cys = c(0, 1, 0), cns = c(3, 6, 0), currdose = 3)
@@ -29,8 +29,8 @@
 #' dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.995, 0, 0, 0, 0, 0, 0, 0, 2.58)
 #' current.t<- 9.41
 #' doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
-#' decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, tau, enter.times,   
-#'                dlt.times, current.t, doses)
+#' decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, assess.window,   
+#'                enter.times, dlt.times, current.t, doses)
 #' summary(decision)
 #' 
 #' ## summarize the object returned by CFO.selectmtd()
@@ -43,12 +43,12 @@
 #' 
 #' ## summarize the object returned by lateonset.simu()
 #' faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(faCFOtrial)
 #' 
 #' ## summarize the object returned by CFO.oc()
 #' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'                       tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#'                       assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(faCFOoc)
 #' 
 #' 
@@ -103,7 +103,7 @@ summary.cfo<- function (object, ...)
       }else{
         nstop = object$percentstop*object$simu.setup$nsimu
         cat("In", object$simu.setup$nsimu, "simulations, early stopping occurred",
-            nstop, "times \n")
+            nstop, "times. \n")
         cat("Among simulations where early stopping did not occur: \n")
       }
       
@@ -113,7 +113,7 @@ summary.cfo<- function (object, ...)
       cat("Average number of patients treated at each dose level:\n")
       cat(formatC(object$npatients, digits = 3, format = "f"),
           sep = "  ", "\n")
-      cat("Average number of toxicity observed at each dose level:\n")
+      cat("Average number of toxicities observed at each dose level:\n")
       cat(formatC(object$ntox,  digits = 3, format = "f"),
           sep = "  ", "\n")
       cat("Percentage of correct selection of the MTD:", 
@@ -129,16 +129,16 @@ summary.cfo<- function (object, ...)
       
       if (!is.null(object$averdur)){
         cat("Average trial duration:",
-            formatC(object$averdur, digits = 3, format = "f")," \n")
+            formatC(object$averdur, digits = 1, format = "f")," \n")
       }
     }
     else if(length(dim(object$selpercent))==2) {
       # Summary for 2dCFO multiple trail simulation
-      cat("Selection percentage at each dose level:\n")
+      cat("Selection percentage at each dose combination:\n")
       print(object$selpercent)
-      cat("Average number of patients treated at each dose level:\n")
+      cat("Average number of patients treated at each dose combination:\n")
       print(object$npatients)
-      cat("Average number of toxicity observed at each dose level:\n")
+      cat("Average number of toxicities observed at each dose combination:\n")
       print(object$ntox)
       cat("Percentage of correct selection of the MTD:", 
           formatC(object$MTDsel, digits = 3, format = "f"), "\n")
@@ -163,10 +163,10 @@ summary.cfo<- function (object, ...)
         cat("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }
       else {
-        cat("The selected MTD is dose level", object$MTD, "\n")
+        cat("The selected MTD is dose level", paste0(object$MTD, "."), "\n")
         cat("For",length(object$cohortdose),"cohorts, the dose level assigned to each cohort is: \n")
         cat(formatC(object$cohortdose, format = "d"), sep = "  ", "\n")
-        cat("Number of toxicity observed at each dose level:\n")
+        cat("number of toxicities observed at each dose level:\n")
         cat(formatC(object$ntox, format = "d"), sep = "  ", "\n")
         cat("Number of patients treated at each dose level:\n")
         cat(formatC(object$npatients, format = "d"), sep = "  ", "\n")
@@ -181,7 +181,7 @@ summary.cfo<- function (object, ...)
       }
       else {
         # Summary for 2dCFO single trail simulation
-        cat("The selected MTD is dose level (", object$MTD[1], ",",object$MTD[2], ")\n\n")
+        cat("The selected MTD is dose level (", object$MTD[1], ",",object$MTD[2], ").\n\n")
       }
       # print assgined dosage for each cohort
       doses <- object$cohortdose
@@ -192,7 +192,7 @@ summary.cfo<- function (object, ...)
       )
       print(cohort_data, row.names = FALSE)
       cat("\n")
-      cat("Number of toxicity observed at each dose level:\n")
+      cat("number of toxicity observed at each dose level:\n")
       print(object$ntox)
       cat("\n")
       cat("Number of patients treated at each dose level:\n")
@@ -209,23 +209,23 @@ summary.cfo<- function (object, ...)
       if (is.na(object$overtox)) {
         cat("All tested doses are not overly toxic. \n\n")
       } else {
-        cat("Dose level", object$overtox, "and all levels above exhibit excessive toxicity", "\n")
+        cat("Dose level", object$overtox, "and all levels above exhibit excessive toxicity.", "\n")
       }
-      cat("The decision regarding the direction of movement for drug A is", object$decision[1], "\n")
-      cat("The decision regarding the direction of movement for drug B is", object$decision[2], "\n")
-      cat("The next cohort will be assigned to dose level (", object$nextdose[1],",",object$nextdose[2],")", "\n")
-    } else {                       ##summary for one dim XXX.next()
+      cat("The decision regarding the direction of movement for drug A is", paste0(object$decision[1], "."), "\n")
+      cat("The decision regarding the direction of movement for drug B is", paste0(object$decision[2], "."), "\n")
+      cat("The next cohort will be assigned to dose level (", object$nextdose[1],",",object$nextdose[2],").", "\n")
+    } else {  ##summary for one dim XXX.next()
       if (is.na(object$overtox)) {
-        cat("All tested doses are not overly toxic \n\n")
+        cat("All tested doses are not overly toxic. \n\n")
       } else {
-        cat("Dose level", object$overtox, "and all levels above exhibit excessive toxicity", "\n")
+        cat("Dose level", object$overtox, "and all levels above exhibit excessive toxicity.", "\n")
       }
       if (object$decision == "stop"){
         cat("The lowest dose level is overly toxic. We terminate the entire trial for safety.")
       }else{
-        cat("The current dose level is", object$currdose, "\n")
-        cat("The decision regarding the direction of movement is", object$decision, "\n")
-        cat("The next cohort will be assigned to dose level", object$nextdose, "\n")
+        cat("The current dose level is", paste0(object$currdose, "."), "\n")
+        cat("The decision regarding the direction of movement is", paste0(object$decision, "."), "\n")
+        cat("The next cohort will be assigned to dose level", paste0(object$nextdose, "."), "\n")
       }
     }
   }
@@ -240,7 +240,7 @@ summary.cfo<- function (object, ...)
         cat("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }
       else {
-        cat("The MTD is dose level ", object$MTD, "\n\n")
+        cat("The MTD is dose level ", paste0(object$MTD, "."), "\n\n")
       }
       cat("Dose    Posterior DLT             95%                  \n",
           sep = "")
@@ -259,20 +259,9 @@ summary.cfo<- function (object, ...)
             99) {
           cat("All tested doses are overly toxic. No MTD is selected! \n")
         }
-        else cat("The MTD is dose combination (", object$MTD[1,
-                                                             1], ", ", object$MTD[1, 2], ") \n\n")
+        else cat("The MTD is dose combination (", object$MTD[1,1], ", ", object$MTD[1, 2], "). \n\n")
       }
-      else {
-        if (length(object$MTD) == 0) {
-          cat("All tested doses are overly toxic. No MTD is selected! \n")
-        }
-        else {
-          cat("The MTD contour includes dose combinations ",
-              paste("(", object$MTD[, 1], ", ", object$MTD[,
-                                                           2], ")", sep = ""), "\n\n")
-        }
-      }
-      cat("Isotonic estimates of toxicity probabilities and 95% confidence intervals for combinations are \n")
+      cat("Isotonic estimates of toxicity probabilities and 95% credible intervals for dose combinations are \n")
       # for (i in 1:dim(object$p_est_CI)[1]) {
       #   cat(formatC(object$p_est_CI[i, ], digits = 2, format = "f",
       #               width = 5), sep = "  ", "\n")

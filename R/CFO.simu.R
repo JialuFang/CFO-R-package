@@ -4,26 +4,22 @@
 #'
 #' @usage CFO.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
+#'        cutoff.eli = 0.95, early.stop = 0.95, seed = NULL)
 #'
 #' @param design option for selecting different designs, which can be set as \code{'CFO'} and \code{'aCFO'}.
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
 #' @param ncohort the total number of cohorts.
-#' @param cohortsize the number of patients or size of each cohort.
-#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)}
-#'                  by default. \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for the 
-#'                  true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
+#' @param cohortsize the number of patients of each cohort.
+#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
+#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
+#'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
-#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety.
-#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
-#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default value is set to \code{NULL}.
 #'                            
 #' @note The \code{CFO.simu()} function is designed to conduct a single CFO or aCFO simulation. If \code{design = 'CFO'}, it corresponds 
 #'          to the CFO design. If \code{design = 'aCFO'}, it corresponds to the aCFO design. \cr
@@ -31,7 +27,7 @@
 #'          to ensure patient safety and benefit. If there is substantial evidence indicating that the current dose level 
 #'          exhibits excessive toxicity, we exclude the current dose level as well as higher dose levels from the trial. If the lowest dose level is overly toxic, the trial will be terminated 
 #'          according to the early stopping rule. Upon the predefined maximum sample size is reached or the lowest dose 
-#'          level is overly toxicity, the experiment is concluded, and the MTD is determined using isotonic regression.
+#'          level is over-toxicity, the experiment is concluded, and the MTD is determined using isotonic regression.
 #'
 #' @return The \code{CFO.simu} function returns a list object comprising the following components:
 #'         \itemize{
@@ -49,7 +45,7 @@
 #'         \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 #'         }
 #' 
-#' @author Jialu Fang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
@@ -68,7 +64,7 @@
 #' @export
 CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
                      prior.para=list(alp.prior=target, bet.prior=1-target),
-                     cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
+                     cutoff.eli=0.95, early.stop=0.95, seed=NULL){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -134,11 +130,11 @@ CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
     }
     
     if (currdose == 1){
-      if (extrasafe) {
+      if (cutoff.eli != early.stop) {
         cy <- ays[1]
         cn <- ans[1]
         prior.para <- c(list(y=cy, n=cn), list(alp.prior=alp.prior, bet.prior=bet.prior))
-        if (overdose.fn(target, cutoff.eli-offset, prior.para)){
+        if (overdose.fn(target, early.stop, prior.para)){
           tover.doses[1:ndose] <- 1
         }
       }
@@ -160,16 +156,16 @@ CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
         cys <- c(NA, ays[1:(currdose+1)])
         cns <- c(NA, ans[1:(currdose+1)])
       }
-      currdose <- CFO.next(target, cys, cns, currdose, prior.para, cutoff.eli, extrasafe, offset)$nextdose
+      currdose <- CFO.next(target, cys, cns, currdose, prior.para, cutoff.eli, early.stop)$nextdose
     }else if (design == 'aCFO'){
-      currdose <- aCFO.next(target, ays, ans, currdose, prior.para, cutoff.eli, extrasafe, offset)$nextdose
+      currdose <- aCFO.next(target, ays, ans, currdose, prior.para, cutoff.eli, early.stop)$nextdose
     }else{
       stop("The input design is invalid; it can only be set as 'CFO' or 'aCFO'.")
     }
   }
   
   if (earlystop==0){
-    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
+    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, early.stop, verbose=FALSE)$MTD
   }else{
     MTD <- 99
   }

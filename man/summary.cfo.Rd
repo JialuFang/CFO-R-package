@@ -21,7 +21,7 @@ Generate descriptive summary for objects returned by other functions.
 ## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
-tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 
 ## summarize the object returned by CFO.next()
 decision <- CFO.next(target = 0.2, cys = c(0, 1, 0), cns = c(3, 6, 0), currdose = 3)
@@ -33,8 +33,8 @@ enter.times<- c(0, 0.266, 0.638, 1.54, 2.48, 3.14, 3.32, 4.01, 4.39, 5.38, 5.76,
 dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.995, 0, 0, 0, 0, 0, 0, 0, 2.58)
 current.t<- 9.41
 doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
-decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, tau, enter.times,   
-               dlt.times, current.t, doses)
+decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, assess.window,   
+               enter.times, dlt.times, current.t, doses)
 summary(decision)
 
 ## summarize the object returned by CFO.selectmtd()
@@ -47,12 +47,12 @@ summary(aCFOtrial)
 
 ## summarize the object returned by lateonset.simu()
 faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
-                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(faCFOtrial)
 
 ## summarize the object returned by CFO.oc()
 faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
-                      tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+                      assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 summary(faCFOoc)
 
 
@@ -95,5 +95,5 @@ summary(CFO2doc)
 
 }
 \author{
-Jialu Fang and Wenliang Wang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }

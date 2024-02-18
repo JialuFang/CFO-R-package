@@ -4,23 +4,19 @@
 #'
 #' @usage CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, 
 #'                  prior.para = list(alp.prior = target, bet.prior = 1 - target),
-#'                  cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
+#'                  cutoff.eli = 0.95, early.stop = 0.95, seed = NULL)
 #'
 #' @param target the target DLT rate.
 #' @param p.true a matrix representing the true DIL rates under the different dose levels.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is \code{c(1,1)}.
 #' @param ncohort the total number of cohorts.
-#' @param cohortsize the number of patients or size of each cohort. 
-#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
-#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
+#' @param cohortsize the number of patients of each cohort. 
+#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
+#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
+#'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of (\code{cutoff.eli = 0.95}) for general use.
-#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety.
-#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
 #' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.
 #'
@@ -46,7 +42,7 @@
 #'   \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
 #' }
 #' 
-#' @author Wenliang Wang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
@@ -69,7 +65,7 @@
 
 CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,  
                        prior.para=list(alp.prior=target, bet.prior=1-target), 
-                       cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
+                       cutoff.eli=0.95, early.stop=0.95, seed=NULL){
   # target: Target DIL rate
   # p.true: True DIL rates under the different dose levels
   # ncohort: The number of cohorts
@@ -134,8 +130,8 @@ CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,
       tover.doses[cidx.A:ndose.A, cidx.B:ndose.B] <- 1
     }
     if (cidx.A == 1 & cidx.B == 1) {
-      if (extrasafe) {
-        if (overdose.2d(target, cutoff.eli-offset, obs)){
+      if (cutoff.eli != early.stop) {
+        if (overdose.2d(target, early.stop, obs)){
           tover.doses[1:1] <- 1
         }
       }
@@ -194,7 +190,7 @@ CFO2d.simu <- function(target, p.true, init.level=c(1,1), ncohort, cohortsize,
       message('no such case')
     }
     
-    idx <- CFO2d.next(target, cys, cns, c(cidx.A, cidx.B), prior.para=prior.para, cutoff.eli=cutoff.eli, extrasafe=extrasafe, offset=offset, seed=seed)$nextdose
+    idx <- CFO2d.next(target, cys, cns, c(cidx.A, cidx.B), prior.para=prior.para, cutoff.eli=cutoff.eli, early.stop=early.stop, seed=seed)$nextdose
     cidx.A <- idx[1]
     cidx.B <- idx[2]
   }

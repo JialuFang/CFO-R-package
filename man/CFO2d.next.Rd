@@ -6,7 +6,7 @@
 \usage{
 CFO2d.next(target, cys, cns, currdose, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
+       cutoff.eli = 0.95, early.stop = 0.95, seed = NULL)
 }
 \arguments{
 \item{target}{the target DLT rate.}
@@ -17,22 +17,17 @@ CFO2d.next(target, cys, cns, currdose,
 
 \item{currdose}{a vector of the current dose indices in the horizontal and vertical direction.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)}
+by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
+the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of \code{cutoff.eli = 0.95} for general use.}
 
-\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety}
-
-\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset = 0.05}
+\item{early.stop}{the threshold value for early stopping. The default value \code{early.stop = 0.95}
 generally works well.}
 
-\item{seed}{an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.}
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results. The default value is set to \code{NULL}.}
 }
 \value{
 The \code{CFO2d.next()} function returns a list with the following components:
@@ -45,22 +40,22 @@ directions, and \code{stop} indicates stopping the experiment}
 \item{currdose: }{the current dose combination.}
 \item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that the trial is
 terminated due to early stopping.}
-\item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by
-\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
-occurrence of overly toxicity did not happen.}
+\item{overtox: }{the situation regarding which positions experience over-toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the
+occurrence of over-toxicity did not happen.}
 }
 }
 \description{
 This function is used to determine the next dose level for the next cohort in the 2dCFO design.
 }
 \details{
-In 2dCFO design, decision-making within the two-dimensional toxicity probability space is conducted by performing two independent one-dimensional
+In the 2dCFO design, decision-making within the two-dimensional toxicity probability space is conducted by performing two independent one-dimensional
 CFO analyses along both the horizontal and vertical axes (Wang et al. 2023).
 }
 \note{
 When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and
 \code{cns} where there is no data are filled with \code{NA}. \cr
-The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
+The dose level indicated by \code{overtox} and all the dose levels above experience over-toxicity, and these dose levels will be eliminated.
 }
 \examples{
 cns <- matrix(c(3, 3, 0,
@@ -83,5 +78,5 @@ Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dC
 design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258.
 }
 \author{
-Wenliang Wang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }

@@ -5,9 +5,9 @@
 #' time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design and benchmark aCFO design.
 #'
 #' @usage lateonset.simu(design, target, p.true, init.level = 1, ncohort, cohortsize,
-#'        tau, tte.para, accrual.rate, accrual.dist,  
+#'        assess.window, tte.para, accrual.rate, accrual.dist,  
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
+#'        cutoff.eli = 0.95, early.stop = 0.95, seed = NULL)
 #'
 #' @param design option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'}, 
 #'               \code{'fCFO'}, \code{'f-aCFO'}, \code{'bCFO'}, and \code{'b-aCFO'}. Specifically, \code{'bCFO'} refers 
@@ -15,29 +15,25 @@
 #' @param target the target DLT rate.
 #' @param p.true the true DLT rates under the different dose levels.
 #' @param ncohort the total number of cohorts.
-#' @param cohortsize the number of patients or size of each cohort. 
-#' @param tau the maximal assessment window size.
-#' @param tte.para the parameter related with the distribution of the time to DLT events. The time to DLT is sample from a Weibull 
-#'                 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the initial half of the 
-#'                 assessment window \code{tau}.
-#' @param accrual.rate the accrual.rate rate, i.e., the number of patients accrued in per unit time.
+#' @param cohortsize the number of patients of each cohort. 
+#' @param assess.window the maximal assessment window size.
+#' @param tte.para the parameter related with the distribution of the time to DLT events. The time to DLT is sampled from a Weibull 
+#'                 distribution, with \code{tte.para} representing the proportion of DLTs occurring within the first half of the 
+#'                 assessment window.
+#' @param accrual.rate the accrual.rate rate, i.e., the number of patients accrued per unit time.
 #' @param accrual.dist the distribution of the arrival times of patients. When \code{accrual.dist = 'fix'}, it corresponds to all 
 #'                     patients in each cohort arriving simultaneously at a given accrual rate. When \code{accrual.dist = 'unif'}, 
 #'                     it corresponds to a uniform distribution, and when \code{accrual.dist = 'exp'}, it corresponds to an 
 #'                     exponential distribution.
 #' @param init.level the dose level assigned to the first cohort. The default value \code{init.level} is 1.
-#' @param prior.para  the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
-#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
+#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
+#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
+#'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
-#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety.
-#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
-#' @param seed an integer to set as the seed of the random number generator for reproducible results. The default is set to NULL.
+#' @param seed an integer to set as the seed of the random number generator for reproducible results. The default value is set to NULL.
 #' 
 #' @note The early stopping and dose elimination rules are incorporated into the design 
 #'        to ensure patient safety and benefit.
@@ -63,7 +59,7 @@
 #' }
 #' 
 #'         
-#' @author Jialu Fang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials. 
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
@@ -76,52 +72,52 @@
 #' @examples
 #' target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
-#' tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+#' assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' ## find the MTD for a single TITE-CFO simulation
 #' TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(TITECFOtrial)
 #' plot(TITECFOtrial)
 #' ## find the MTD for a single TITE-aCFO simulation
 #' TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(TITEaCFOtrial)
 #' plot(TITEaCFOtrial)
 #' ## find the MTD for a single fCFO simulation
 #' fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(fCFOtrial)
 #' plot(fCFOtrial)
 #' ## find the MTD for a single f-aCFO simulation
 #' faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(faCFOtrial)
 #' plot(faCFOtrial)
 #' ## find the MTD for a single benchmark CFO simulation
 #' bCFOtrial <- lateonset.simu (design = 'bCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(bCFOtrial)
 #' plot(bCFOtrial)
 #' ## find the MTD for a single benchmark aCFO simulation
 #' baCFOtrial <- lateonset.simu (design = 'b-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(baCFOtrial)
 #' plot(baCFOtrial)
 lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
-                           tau, tte.para, accrual.rate, accrual.dist, 
+                           assess.window, tte.para, accrual.rate, accrual.dist, 
                            prior.para=list(alp.prior=target, bet.prior=1-target), 
-                           cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
+                           cutoff.eli=0.95, early.stop=0.95, seed=NULL){
   
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
   
   # The function is to obtain the DLT results (with TITE) for each subject
-  gen.tite<-function(n, pi, tau=1, alpha=0.5){
+  gen.tite<-function(n, pi, assess.window=1, alpha=0.5){
     #args:
     #   n: Num of subjects to generate
-    #   pi: Target DLT rate, pi=Pr(T<=tau)
-    #   tau: Maximal window size
+    #   pi: Target DLT rate, pi=Pr(T<=assess.window)
+    #   assess.window: Maximal window size
     #   alpha: Parameter for generate time
     #Return:
     #   if no DLT, tox.t=0
@@ -130,7 +126,7 @@ lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohort
     {
       ## solve parameters for Weibull given pi=1-S(T) and phalft=1-S(T/2)
       alpha = log(log(1-pi)/log(1-pihalft))/log(2);
-      lambda = -log(1-pi)/(tau^alpha);
+      lambda = -log(1-pi)/(assess.window^alpha);
       t = (-log(runif(n))/lambda)^(1/alpha);
       return(t);
     }
@@ -140,7 +136,7 @@ lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohort
     #### Weibull
     pihalft = alpha*pi;  # alpha*100% event in (0, 1/2T)
     t.tox = weib(n, pi, pihalft);
-    tox[t.tox<=tau]=1;
+    tox[t.tox<=assess.window]=1;
     ntox.st = sum(tox);
     t.tox[tox==0]=0;
     return(list(tox=tox, t.tox=t.tox, ntox.st=ntox.st));
@@ -184,7 +180,7 @@ lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohort
     enter.times <- c(enter.times, current.t+delta.times)
     
     # obtain the results of the patients
-    obscohort <- gen.tite(cohortsize, curP, alpha=tte.para, tau=tau);
+    obscohort <- gen.tite(cohortsize, curP, alpha=tte.para, assess.window=assess.window);
     dlt.times <- c(dlt.times, obscohort$t.tox);
     dlts <- c(dlts, obscohort$tox);
     doses <- c(doses, rep(currdose, cohortsize));
@@ -199,20 +195,20 @@ lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohort
         delta.time <- rexp(1, rate=accrual.rate)
       }
     }else{
-      delta.time <- tau
+      delta.time <- assess.window
     }
     current.t<- enter.times[length(enter.times)] + delta.time;
     
     if (design == 'bCFO' || design == 'b-aCFO'){
-      current.t <- enter.times[length(enter.times)] + tau
-      res <- lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, current.t, doses, 
-                            prior.para, cutoff.eli, extrasafe, offset)
+      current.t <- enter.times[length(enter.times)] + assess.window
+      res <- lateonset.next(design, target, p.true, currdose, assess.window, enter.times, dlt.times, current.t, doses, 
+                            prior.para, cutoff.eli, early.stop)
       over.doses <- res$over.doses
       overTox <- res$overTox
       current.t <- current.t + delta.time
     }else{
-      res <- lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, current.t, doses, 
-                            prior.para, cutoff.eli, extrasafe, offset)
+      res <- lateonset.next(design, target, p.true, currdose, assess.window, enter.times, dlt.times, current.t, doses, 
+                            prior.para, cutoff.eli, early.stop)
       over.doses <- res$over.doses
       overTox <- res$overTox
     }
@@ -227,14 +223,14 @@ lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohort
   
   ans <- NULL
   ays <- NULL
-  assess.t <- enter.times + tau
+  assess.t <- enter.times + assess.window
   y.raw <- (dlt.times!=0)*1
   for (j in 1:ndose){
     ans <- c(ans, sum(doses==j))
     ays <- c(ays, sum(y.raw[doses==j]))
   }
   if (earlystop==0){
-    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, extrasafe, offset, verbose=FALSE)$MTD
+    MTD <- CFO.selectmtd(target, ans, ays, prior.para, cutoff.eli, early.stop, verbose=FALSE)$MTD
   }else{
     MTD <- 99
   }

@@ -36,45 +36,45 @@ CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohort
 plot(CFOtrial)
 
 CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
-         tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+         assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 plot(CFOoc)
 ## aCFO design
 aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 plot(aCFOtrial)
 aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
-          tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+          assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 plot(aCFOoc)
 
 
 ##############design with late-onset outcomes################
-tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 ## TITE-CFO design
  TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
-                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 plot(TITECFOtrial)
 TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(TITECFOoc)
 ## TITE-aCFO design
 TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
-                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 plot(TITEaCFOtrial)
 TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(TITEaCFOoc)
 ## fCFO design
 fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
-                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 plot(fCFOtrial)
 fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(fCFOoc)
 ## f-aCFO design
 faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
-                ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 plot(faCFOtrial)
 faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
-        tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(faCFOoc)
 
 ## select the MTD based on the trial data
@@ -106,5 +106,5 @@ selmtd <- CFO2d.selectmtd(target=0.3, npts=npts, ntox=ntox)
 plot(selmtd)
 }
 \author{
-Jialu Fang and Wenliang Wang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }

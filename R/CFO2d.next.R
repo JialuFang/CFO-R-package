@@ -4,31 +4,27 @@
 #'
 #' @usage CFO2d.next(target, cys, cns, currdose, 
 #'        prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-#'        cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seed = NULL)
+#'        cutoff.eli = 0.95, early.stop = 0.95, seed = NULL)
 #'
 #' @param target the target DLT rate.
 #' @param cys a matrix of the number of DLTs observed for each dose combination.
 #' @param cns a matrix of the number of patients allocated for each dose combination.
 #' @param currdose a vector of the current dose indices in the horizontal and vertical direction.
-#' @param prior.para the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior} 
-#'                 and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at 
-#'                 any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
+#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
+#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
+#'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
-#' @param extrasafe set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-#'                   extra safety
-#' @param offset a small positive number (between \code{0} and \code{0.5}) to control how strict the
-#'                stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-#'                a more strict stopping rule. The default value \code{offset = 0.05}
+#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
-#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default is set to \code{NULL}.
+#' @param seed an integer to be set as the seed of the random number generator for reproducible results. The default value is set to \code{NULL}.
 #' 
-#' @details In 2dCFO design, decision-making within the two-dimensional toxicity probability space is conducted by performing two independent one-dimensional 
+#' @details In the 2dCFO design, decision-making within the two-dimensional toxicity probability space is conducted by performing two independent one-dimensional 
 #'          CFO analyses along both the horizontal and vertical axes (Wang et al. 2023).
 #'  
 #' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys} and 
 #'          \code{cns} where there is no data are filled with \code{NA}. \cr
-#'          The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
+#'          The dose level indicated by \code{overtox} and all the dose levels above experience over-toxicity, and these dose levels will be eliminated.
 #' 
 #' @return The \code{CFO2d.next()} function returns a list with the following components:
 #' \itemize{
@@ -40,12 +36,12 @@
 #'   \item{currdose: }{the current dose combination.}
 #'   \item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that the trial is 
 #'   terminated due to early stopping.}
-#'   \item{overtox: }{the situation regarding which positions experience overly toxicity. The dose level indicated by 
-#'   \code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the 
-#'   occurrence of overly toxicity did not happen.}
+#'   \item{overtox: }{the situation regarding which positions experience over-toxicity. The dose level indicated by 
+#'   \code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the 
+#'   occurrence of over-toxicity did not happen.}
 #' }
 #' 
-#' @author Wenliang Wang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
@@ -68,7 +64,7 @@
 #' summary(decision)
 
 
-CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), cutoff.eli=0.95, extrasafe=FALSE, offset=0.05, seed=NULL){
+CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target), cutoff.eli=0.95, early.stop=0.95, seed=NULL){
   cidx.A <- 0
   cidx.B <- 0
   alp.prior <- prior.para$alp.prior
@@ -304,8 +300,8 @@ CFO2d.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=tar
     }
   }
   
-  if (extrasafe) {
-    if (currdose==c(1,1) & overdose.fn(target, cutoff.eli-offset, cys[1,1], cns[1,1], prior.para)){
+  if (cutoff.eli != early.stop) {
+    if (currdose==c(1,1) & overdose.fn(target, early.stop, cys[1,1], cns[1,1], prior.para)){
       cover.doses[1,1] <- 1
       out <- list(target=target, cys=cys, cns=cns, decision="stop", currdose = currdose, nextdose = c(99,99), overtox = c(1,1))
       class(out) <- "cfo"

@@ -6,62 +6,57 @@
 \usage{
 aCFO.next(target, ays, ans, currdose, 
        prior.para = list(alp.prior = target, bet.prior = 1 - target),
-       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+       cutoff.eli = 0.95, early.stop = 0.95)
 }
 \arguments{
 \item{target}{the target DLT rate.}
 
-\item{ays}{the current number of DLTs observed in patients for all dose levels.}
+\item{ays}{the cumulative numbers of DLTs observed in patients for all dose levels.}
 
-\item{ans}{the current number of patients for all dose levels.}
+\item{ans}{the cumulative numbers of patients for all dose levels.}
 
 \item{currdose}{the current dose level.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)}
+by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
+the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of \code{cutoff.eli = 0.95} for general use.}
 
-\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety.}
-
-\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe = TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset = 0.05}
+\item{early.stop}{the threshold value for early stopping. The default value \code{early.stop = 0.95}
 generally works well.}
 }
 \value{
 The \code{aCFO.next()} function returns a list object comprising the following elements:
 \itemize{
 \item{target: }{the target DLT rate.}
-\item{ays: }{the current counts of DLTs observed at all dose levels.}
-\item{ans: }{the current counts of patients treated at all dose levels.}
+\item{ays: }{the cumulative counts of DLTs observed at all dose levels.}
+\item{ans: }{the cumulative counts of patients treated at all dose levels.}
 \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the
 movement directions, and \code{stop} indicates stopping the experiment.}
 \item{currdose: }{the current dose level.}
 \item{nextdose: }{the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is
 terminated due to early stopping.}
-\item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
-\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
-occurrence of overly toxicity did not happen.}
+\item{overtox: }{the situation regarding which position experiences over-toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the
+occurrence of over-toxicity did not happen.}
 }
 }
 \description{
-In aCFO design, the function is used to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
+In the aCFO design, the function is used to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
 }
 \details{
 The aCFO design is an extension of the CFO design. It integrates dose information from all positions (ranging
-from the lowest to the highest dose levels) into the decision-making process of the trial. Before assigning dose levels
-for new cohort, aCFO compares the evidence from the current dose level with all doses to its left and right. In contrast,
+from the lowest to the highest dose levels) into the decision-making process of the trial. Before assigning the dose level
+for a new cohort, aCFO compares the evidence from the current dose level with all doses to its left and right. In contrast,
 the original CFO design makes dose allocation by examining one dose level above and one below the current dose level.
 Consequently, the aCFO design enhances the utilization of information while maintaining the characteristics of the CFO
 design (model-free and calibration-free). Additionally, the aCFO design preserves the same early stopping and dose
 elimination criteria as the CFO design.
 }
 \note{
-The dose level indicated by \code{overtox} and all the dose levels above experience overly toxicity, and these dose levels will be eliminated.
+The dose level indicated by \code{overtox} and all the dose levels above experience over-toxicity, and these dose levels will be eliminated.
 }
 \examples{
 ## determine the dose level for the next cohort of new patients
@@ -86,5 +81,5 @@ Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical t
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
 }
 \author{
-Jialu Fang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }

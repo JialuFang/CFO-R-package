@@ -4,9 +4,9 @@
 \alias{lateonset.next}
 \title{Determination of the dose level for next cohort in the calibration-free odds type (CFO-type) design with late-onset toxicity}
 \usage{
-lateonset.next(design, target, p.true, currdose, tau, enter.times, dlt.times, 
+lateonset.next(design, target, p.true, currdose, assess.window, enter.times, dlt.times, 
        current.t, doses, prior.para = list(alp.prior = target, bet.prior = 1 - target),
-       cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05)
+       cutoff.eli = 0.95, early.stop = 0.95)
 }
 \arguments{
 \item{design}{option for selecting different designs, which can be set as \code{'TITE-CFO'}, \code{'TITE-aCFO'},
@@ -19,7 +19,7 @@ to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO desi
 
 \item{currdose}{the current dose level.}
 
-\item{tau}{the maximal assessment window size.}
+\item{assess.window}{the maximal assessment window size.}
 
 \item{enter.times}{the time that each participant enters the trial.}
 
@@ -30,20 +30,14 @@ to the benchmark CFO design, and \code{'b-aCFO'} denotes the benchmark aCFO desi
 
 \item{doses}{the dose level for each subject in the trial.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, 
-                   bet.prior = 1 - target)} by default. \code{alp.prior} and \code{bet.prior} represent the
-parameters of the prior distribution for the true DLT rate at any dose level. This prior
-distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)}
+by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
+the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of \code{cutoff.eli = 0.95} for general use.}
 
-\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety.}
-
-\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset = 0.05}
+\item{early.stop}{the threshold value for early stopping. The default value \code{early.stop = 0.95}
 generally works well.}
 }
 \value{
@@ -54,9 +48,9 @@ The \code{lateonset.next()} function returns
 movement directions, and \code{stop} indicates stopping the experiment.}
 \item{currdose: }{the current dose level.}
 \item{nextdose: }{the recommended dose level for the next cohort.}
-\item{overtox: }{the situation regarding which position experiences overly toxicity. The dose level indicated by
-\code{overtox} and all the dose levels above experience overly toxicity. \code{overtox = NA} signifies that the
-occurrence of overly toxicity did not happen.}
+\item{overtox: }{the situation regarding which position experiences over-toxicity. The dose level indicated by
+\code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the
+occurrence of over-toxicity did not happen.}
 \item{over.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic
 or not (1 for yes).}
 }
@@ -88,27 +82,27 @@ dlt.times<- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0.610, 0, 2.98, 0, 0, 1.95, 0, 0, 1.48)
 current.t<- 9.41
 doses<-c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4)
 ## determine the dose level for the next cohort using the TITE-CFO design
-decision <- lateonset.next(design = 'TITE-CFO', target, p.true, currdose = 4, tau = 3,   
+decision <- lateonset.next(design = 'TITE-CFO', target, p.true, currdose = 4, assess.window = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the TITE-aCFO design
-decision <- lateonset.next(design = 'TITE-aCFO', target, p.true, currdose = 4, tau = 3,   
+decision <- lateonset.next(design = 'TITE-aCFO', target, p.true, currdose = 4, assess.window = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the f-CFO design
-decision <- lateonset.next(design = 'fCFO', target, p.true, currdose = 4, tau = 3,  
+decision <- lateonset.next(design = 'fCFO', target, p.true, currdose = 4, assess.window = 3,  
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the f-aCFO design
-decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, tau = 3,   
+decision <- lateonset.next(design = 'f-aCFO', target, p.true, currdose = 4, assess.window = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the benchmark CFO design
-decision <- lateonset.next(design = 'bCFO', target, p.true, currdose = 4, tau = 3,   
+decision <- lateonset.next(design = 'bCFO', target, p.true, currdose = 4, assess.window = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 ## determine the dose level for the next cohort using the benchmark aCFO design
-decision <- lateonset.next(design='b-aCFO', target, p.true, currdose = 4, tau = 3,   
+decision <- lateonset.next(design='b-aCFO', target, p.true, currdose = 4, assess.window = 3,   
                enter.times, dlt.times, current.t, doses)
 summary(decision)
 
@@ -122,5 +116,5 @@ Yin G, Zheng S, Xu J (2013). Fractional dose-finding methods with late-onset tox
 phase I clinical trials. \emph{Journal of Biopharmaceutical Statistics}, 23(4), 856-870.
 }
 \author{
-Jialu Fang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }

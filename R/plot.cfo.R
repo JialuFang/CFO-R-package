@@ -14,7 +14,7 @@
 #' @return \code{plot()} returns a figure or a series of figures depending on the object entered.
 #' 
 #' 
-#' @author Jialu Fang and Wenliang Wang
+#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
 #' 
 #' @importFrom grDevices dev.flush dev.hold devAskNewPage
 #' @importFrom graphics axis barplot mtext par plot
@@ -34,45 +34,45 @@
 #' plot(CFOtrial)
 #' 
 #' CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
-#'          tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+#'          assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' plot(CFOoc)
 #' ## aCFO design
 #' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' plot(aCFOtrial)
 #' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'           tau = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+#'           assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
 #' plot(aCFOoc)
 #' 
 #' 
 #' ##############design with late-onset outcomes################
-#' tau <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+#' assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' ## TITE-CFO design
 #'  TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(TITECFOtrial)
 #' TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(TITECFOoc)
 #' ## TITE-aCFO design
 #' TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(TITEaCFOtrial)
 #' TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(TITEaCFOoc)
 #' ## fCFO design
 #' fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(fCFOtrial)
 #' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(fCFOoc)
 #' ## f-aCFO design
 #' faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, tau, tte.para, accrual.rate, accrual.dist, seed = 1)
+#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' plot(faCFOtrial)
 #' faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'         tau, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' plot(faCFOoc)
 #' 
 #' ## select the MTD based on the trial data
@@ -121,7 +121,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     if (!is.null(objectPlot$simu.setup)) { #plot for one-dim multiple simulations
       if(is.null(dim(objectPlot$selpercent))){
         attributesToPlot <- c("selpercent", "npatients", "ntox")
-        titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
+        titles <- c("MTD selection", "Average patients allocation", "Average DLT observed")
         ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
         
         par(mfrow = c(3, 1))
@@ -150,7 +150,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
       }
       else if(length(dim(objectPlot$selpercent))==2) {
           attributesToPlot <- c("selpercent", "npatients", "ntox")
-          titles <- c("MTD selection rate", "Average patients allocation", "Average DLT observed")
+          titles <- c("MTD selection", "Average patients allocation", "Average DLT observed")
           ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
 
           par(mfrow = c(3, 1))
@@ -191,7 +191,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     ###############################################################################
     if (!is.null(objectPlot$correct)) { 
       if(length(objectPlot$MTD) == 1){
-        if (!is.null(objectPlot$totaltime)){ #plot for CFO.simu()
+        if (!is.null(objectPlot$totaltime)){ #plot for lateonset.simu()
           dose <- objectPlot$cohortdose
           DLT <- objectPlot$patientDLT
           ncohort <- length(objectPlot$cohortdose)
@@ -210,7 +210,22 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
           
           new_seq <- ifelse(objectPlot$DLTtimes!=0, sequences+objectPlot$DLTtimes, NA)
-          new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels+0.3, NA)
+          new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels, NA)
+          
+          add_noise <- function(vec) {
+            counts <- table(vec)
+            counts <- table(names(counts))
+            result <- numeric(length(vec))
+            for (i in seq_along(vec)) {
+              if (!is.na(vec[i])) {
+                result[i] <- vec[i] + 0.1 * counts[as.character(vec[i])]  # add 0.05 for unique value
+                counts[as.character(vec[i])] <- counts[as.character(vec[i])] + 1
+              }
+            }
+            return(result)
+          }
+          
+          new_y <- add_noise(new_y)
           
           df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
           dfnew <- data.frame(sequence = sequences, dose_levels = dose_levels, new_seq = new_seq, new_y = new_y)
@@ -238,7 +253,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           }
           print(p)
         }
-        else{ #plot for lateonset.simu()
+        else{ #plot for CFO.simu()
           dose <- objectPlot$cohortdose
           DLT <- objectPlot$patientDLT
           ncohort <- length(objectPlot$cohortdose)

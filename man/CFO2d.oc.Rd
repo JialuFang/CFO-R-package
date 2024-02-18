@@ -6,7 +6,7 @@
 \usage{
 CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
                prior.para = list(alp.prior = target, bet.prior = 1 - target), 
-               cutoff.eli = 0.95, extrasafe = FALSE, offset = 0.05, seeds = NULL)
+               cutoff.eli = 0.95, early.stop = 0.95, seeds = NULL)
 }
 \arguments{
 \item{nsimu}{the total number of trials to be simulated. The default value is 1000.}
@@ -19,21 +19,16 @@ CFO2d.oc(nsimu = 1000, target, p.true, init.level = c(1,1), ncohort, cohortsize,
 
 \item{ncohort}{the total number of cohorts.}
 
-\item{cohortsize}{the number of patients or size of each cohort.}
+\item{cohortsize}{the number of patients of each cohort.}
 
-\item{prior.para}{the prior parameters for a beta distribution, usually set as \code{list(alp.prior = target, bet.prior = 1 - target)} by default. \code{alp.prior}
-and \code{bet.prior} represent the parameters of the prior distribution for the true DLT rate at
-any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
+\item{prior.para}{the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)}
+by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for
+the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of (\code{cutoff.eli = 0.95}) for general use.}
 
-\item{extrasafe}{set \code{extrasafe = TRUE} to impose a more strict early stopping rule for
-extra safety.}
-
-\item{offset}{a small positive number (between \code{0} and \code{0.5}) to control how strict the
-stopping rule is when \code{extrasafe=TRUE}. A larger value leads to
-a more strict stopping rule. The default value \code{offset = 0.05}
+\item{early.stop}{the threshold value for early stopping. The default value \code{early.stop = 0.95}
 generally works well.}
 
 \item{seeds}{A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).}
@@ -81,5 +76,5 @@ Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dC
 design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258.
 }
 \author{
-Wenliang Wang
+Jialu Fang, Wenliang Wang, and Guosheng Yin
 }
