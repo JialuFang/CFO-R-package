@@ -34,7 +34,7 @@ generally works well.}
 \value{
 The \code{CFO2d.simu()} function returns a list with the following components:
 \itemize{
-\item target: the target DLT rate.}
+\item target: the target DLT rate.
 \item MTD: a vector of length 2 representing the recommended dose level. \code{MTD = (99, 99)} indicates that this trial is terminated due to early stopping.
 \item correct: a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).
 \item npatients: a matrix of the number of patients allocated for different doses.
