@@ -2,8 +2,8 @@
 #'
 #' Plot the objects returned by other functions, including (1) dose allocation of a single trial;
 #' (2) the estimate of toxicity probability for each dose and corresponding 95% credible interval;
-#' (3) operating characteristics of multiple simulations, including MTD selesction percentage, 
-#' the averaged number of patients allocated for different doses in one simulation and the averaged 
+#' (3) operating characteristics of multiple simulations, including MTD selection percentage, 
+#' the averaged number of patients allocated to different doses in one simulation and the averaged 
 #' number of DLT observed for different doses in one simulation.
 #' 
 #' @param x the object returned by other functions

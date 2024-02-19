@@ -39,7 +39,7 @@ characteristics of the design: \cr
 \itemize{
 \item p.true: the matrix of the true DLT rates under the different dose levels.
 \item selpercent: the matrix of the selection percentage of each dose level.
-\item npatients: a matrix of the averaged number of patients allocated for different doses in one simulation.
+\item npatients: a matrix of the averaged number of patients allocated to different doses in one simulation.
 \item ntox: a matrix of the averaged number of DLT observed for different doses in one simulation.
 \item MTDsel: the percentage of the correct selection of the MTD.
 \item MTDallo: the averaged percentage of patients assigned to the target DLT rate.

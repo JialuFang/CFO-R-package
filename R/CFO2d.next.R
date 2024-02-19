@@ -8,7 +8,7 @@
 #'
 #' @param target the target DLT rate.
 #' @param cys a matrix of the number of DLTs observed for each dose combination.
-#' @param cns a matrix of the number of patients allocated for each dose combination.
+#' @param cns a matrix of the number of patients allocated to each dose combination.
 #' @param currdose a vector of the current dose indices in the horizontal and vertical direction.
 #' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
 #'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
@@ -30,7 +30,7 @@
 #' \itemize{
 #'   \item target: the target DLT rate.
 #'   \item cys: a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.
-#'   \item cns: a 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.
+#'   \item cns: a 3 by 3 matrix of the number of patients allocated to each dose combination at and around the current dose.
 #'   \item decision: a vector of length 2 representing the recommended decisions for vertical and horizontal 
 #'   directions, and \code{stop} indicates stopping the experiment.
 #'   \item currdose: the current dose combination.

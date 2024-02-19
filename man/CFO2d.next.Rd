@@ -13,7 +13,7 @@ CFO2d.next(target, cys, cns, currdose,
 
 \item{cys}{a matrix of the number of DLTs observed for each dose combination.}
 
-\item{cns}{a matrix of the number of patients allocated for each dose combination.}
+\item{cns}{a matrix of the number of patients allocated to each dose combination.}
 
 \item{currdose}{a vector of the current dose indices in the horizontal and vertical direction.}
 
@@ -34,7 +34,7 @@ The \code{CFO2d.next()} function returns a list with the following components:
 \itemize{
 \item target: the target DLT rate.
 \item cys: a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.
-\item cns: a 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.
+\item cns: a 3 by 3 matrix of the number of patients allocated to each dose combination at and around the current dose.
 \item decision: a vector of length 2 representing the recommended decisions for vertical and horizontal
 directions, and \code{stop} indicates stopping the experiment.
 \item currdose: the current dose combination.

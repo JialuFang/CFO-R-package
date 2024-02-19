@@ -43,11 +43,11 @@
 #' \item target: the target DLT rate.
 #' \item MTD: the selected MTD. \code{MTD = 99} indicates that this trial is terminated due to early stopping.
 #' \item correct: a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).
-#' \item npatients: the total number of patients allocated for all dose levels
+#' \item npatients: the total number of patients allocated to all dose levels
 #' \item ntox: the total number of DLTs observed for all dose levels.
 #' \item npercent: the percentage of subjects assigned to the target DLT rate.
 #' \item over.doses: a vector indicating whether each dose is overdosed or not (1 for yes).
-#' \item cohortdose: a vector including the dose level assigned for each cohort.
+#' \item cohortdose: a vector including the dose level assigned to each cohort.
 #' \item ptoxic: the percentage of subjects assigned to dose levels with a DLT rate greater than the target.
 #' \item patientDLT: a vector including the DLT outcome observed for each patient.
 #' \item sumDLT: the total number of DLT observed.
