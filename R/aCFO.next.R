@@ -31,17 +31,17 @@
 #'          
 #' @return The \code{aCFO.next()} function returns a list object comprising the following elements: 
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
-#'   \item{ays: }{the cumulative counts of DLTs observed at all dose levels.}
-#'   \item{ans: }{the cumulative counts of patients treated at all dose levels.}
-#'   \item{decision: }{the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the 
-#'   movement directions, and \code{stop} indicates stopping the experiment.}
-#'   \item{currdose: }{the current dose level.}
-#'   \item{nextdose: }{the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is 
-#'   terminated due to early stopping.}
-#'   \item{overtox: }{the situation regarding which position experiences over-toxicity. The dose level indicated by 
+#'   \item target: the target DLT rate.
+#'   \item ays: the cumulative counts of DLTs observed at all dose levels.
+#'   \item ans: the cumulative counts of patients treated at all dose levels.
+#'   \item decision: the decision in the aCFO design, where \code{left}, \code{stay}, and \code{right} represent the 
+#'   movement directions, and \code{stop} indicates stopping the experiment.
+#'   \item currdose: the current dose level.
+#'   \item nextdose: the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is 
+#'   terminated due to early stopping.
+#'   \item overtox: the situation regarding which position experiences over-toxicity. The dose level indicated by 
 #'   \code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the 
-#'   occurrence of over-toxicity did not happen.}
+#'   occurrence of over-toxicity did not happen.
 #' }
 #'  
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin 

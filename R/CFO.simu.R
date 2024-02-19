@@ -31,18 +31,18 @@
 #'
 #' @return The \code{CFO.simu} function returns a list object comprising the following components:
 #'         \itemize{
-#'         \item{target: }{the target DLT rate.}
-#'         \item{MTD: }{the selected MTD. \code{MTD = 99} indicates that the simulation is terminated due to early stopping.}
-#'         \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
-#'         \item{npatients: }{the total number of patients allocated for all dose levels.}
-#'         \item{ntox: }{the total number of DLTs observed for all dose levels.}
-#'         \item{npercent: }{the percentage of subjects assigned to the target DLT rate.}
-#'         \item{over.doses: }{a vector indicating whether each dose is overdosed or not (1 for yes).}
-#'         \item{cohortdose: }{a vector including the dose level assigned for each cohort.}
-#'         \item{ptoxic: }{the percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
-#'         \item{patientDLT: }{a vector including the DLT outcome observed for each patient.}
-#'         \item{sumDLT: }{the total number of DLT observed.}
-#'         \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
+#'         \item target: the target DLT rate.
+#'         \item MTD: the selected MTD. \code{MTD = 99} indicates that the simulation is terminated due to early stopping.
+#'         \item correct: a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).
+#'         \item npatients: the total number of patients allocated for all dose levels.
+#'         \item ntox: the total number of DLTs observed for all dose levels.
+#'         \item npercent: the percentage of subjects assigned to the target DLT rate.
+#'         \item over.doses: a vector indicating whether each dose is overdosed or not (1 for yes).
+#'         \item cohortdose: a vector including the dose level assigned for each cohort.
+#'         \item ptoxic: the percentage of subjects assigned to dose levels with a DLT rate greater than the target.
+#'         \item patientDLT: a vector including the DLT outcome observed for each patient.
+#'         \item sumDLT: the total number of DLT observed.
+#'         \item earlystop: a binary indicator of whether the trial is early stopped (1 for yes).
 #'         }
 #' 
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin

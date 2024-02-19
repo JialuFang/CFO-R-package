@@ -9,7 +9,7 @@
 #' @param x the object returned by other functions
 #' @param ... ignored arguments
 #' @param name the name of the object to be plotted.
-#'             User doesn't need to input this parameter.
+#'             User does not need to input this parameter.
 #'
 #' @return \code{plot()} returns a figure or a series of figures depending on the object entered.
 #' 

@@ -47,18 +47,18 @@
 #' @return The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
 #'         characteristics of the design: \cr
 #'         \itemize{
-#' \item{p.true: }{the true DLT rates under the different dose levels.}
-#' \item{selpercent: }{the selection percentage at each dose level.}
-#' \item{npatients: }{the averaged number of patients treated at each dose level in one simulation.}
-#' \item{ntox: }{the averaged number of toxicity observed at each dose level in one simulation.}
-#' \item{MTDsel: }{the percentage of correct selection of the MTD.}
-#' \item{MTDallo: }{the percentage of patients allocated to the MTD.}
-#' \item{oversel: }{the percentage of selecting a dose above the MTD.}
-#' \item{overallo: }{the percentage of allocating patients at dose levels above the MTD.}
-#' \item{averDLT: }{the percentage of the patients suffering DLT.}
-#' \item{averdur: }{the average trial duration if trials with late-onset toxicities.}
-#' \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-#' \item{simu.setup: }{the parameters for the simulation set-up.}
+#' \item p.true: the true DLT rates under the different dose levels.
+#' \item selpercent: the selection percentage at each dose level.
+#' \item npatients: the averaged number of patients treated at each dose level in one simulation.
+#' \item ntox: the averaged number of toxicity observed at each dose level in one simulation.
+#' \item MTDsel: the percentage of correct selection of the MTD.
+#' \item MTDallo: the percentage of patients allocated to the MTD.
+#' \item oversel: the percentage of selecting a dose above the MTD.
+#' \item overallo: the percentage of allocating patients at dose levels above the MTD.
+#' \item averDLT: the percentage of the patients suffering DLT.
+#' \item averdur: the average trial duration if trials with late-onset toxicities.
+#' \item percentstop: the percentage of early stopping without selecting the MTD.
+#' \item simu.setup: the parameters for the simulation set-up.
 #' }
 #' 
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin

@@ -31,10 +31,10 @@
 #'
 #' @return  \code{CFO.selectmtd()} returns 
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
-#'   \item{MTD: }{the selected MTD.}
-#'   \item{p_est: }{the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.}
-#'   \item{p_overdose: }{the probability of overdosing defined as \eqn{Pr(toxicity > \code{target}|data)}}
+#'   \item target: the target DLT rate.
+#'   \item MTD: the selected MTD.
+#'   \item p_est: the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.
+#'   \item p_overdose: the probability of overdosing defined as \eqn{Pr(toxicity > \code{target}|data)}.
 #' }
 #'
 #'

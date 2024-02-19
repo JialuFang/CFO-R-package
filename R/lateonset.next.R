@@ -43,16 +43,16 @@
 #' 
 #' @return The \code{lateonset.next()} function returns 
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
-#'   \item{decision: }{the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
-#'   movement directions, and \code{stop} indicates stopping the experiment.}
-#'   \item{currdose: }{the current dose level.}
-#'   \item{nextdose: }{the recommended dose level for the next cohort.}
-#'   \item{overtox: }{the situation regarding which position experiences over-toxicity. The dose level indicated by 
+#'   \item target: the target DLT rate.
+#'   \item decision: the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
+#'   movement directions, and \code{stop} indicates stopping the experiment.
+#'   \item currdose: the current dose level.
+#'   \item nextdose: the recommended dose level for the next cohort.
+#'   \item overtox: the situation regarding which position experiences over-toxicity. The dose level indicated by 
 #'   \code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the 
-#'   occurrence of over-toxicity did not happen.}
-#'   \item{over.doses: }{a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
-#'   or not (1 for yes).}
+#'   occurrence of over-toxicity did not happen.
+#'   \item over.doses: a vector indicating whether the dose level (from the first to last dose level) is over-toxic 
+#'   or not (1 for yes).
 #' }
 #' 
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin 

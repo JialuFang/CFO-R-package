@@ -27,17 +27,17 @@
 #' @return The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
 #'         characteristics of the design: \cr
 #' \itemize{
-#'   \item{p.true: }{the matrix of the true DLT rates under the different dose levels.}
-#'   \item{selpercent: }{the matrix of the selection percentage of each dose level}
-#'   \item{npatients: }{a matrix of the averaged number of patients allocated for different doses in one simulation.}
-#'   \item{ntox: }{a matrix of the averaged number of DLT observed for different doses in one simulation.}
-#'   \item{MTDsel: }{the percentage of the correct selection of the MTD.}
-#'   \item{MTDallo: }{the averaged percentage of patients assigned to the target DLT rate.}
-#'   \item{oversel: }{the percentage of selecting a dose above the MTD.}
-#'   \item{overallo: }{the averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.}
-#'   \item{averDLT: }{the averaged total number of DLTs observed.}
-#'   \item{percentstop: }{the percentage of early stopping without selecting the MTD.}
-#'   \item{simu.setup: }{the parameters for the simulation set-up.}
+#'   \item p.true: the matrix of the true DLT rates under the different dose levels.
+#'   \item selpercent: the matrix of the selection percentage of each dose level.
+#'   \item npatients: a matrix of the averaged number of patients allocated for different doses in one simulation.
+#'   \item ntox: a matrix of the averaged number of DLT observed for different doses in one simulation.
+#'   \item MTDsel: the percentage of the correct selection of the MTD.
+#'   \item MTDallo: the averaged percentage of patients assigned to the target DLT rate.
+#'   \item oversel: the percentage of selecting a dose above the MTD.
+#'   \item overallo: the averaged percentage of patients assigned to dose levels with a DLT rate greater than the target.
+#'   \item averDLT: the averaged total number of DLTs observed.
+#'   \item percentstop: the percentage of early stopping without selecting the MTD.
+#'   \item simu.setup: the parameters for the simulation set-up.
 #' }
 #' 
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin

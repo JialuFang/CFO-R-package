@@ -32,17 +32,17 @@ generally works well.}
 \value{
 The \code{CFO2d.next()} function returns a list with the following components:
 \itemize{
-\item{target: }{the target DLT rate.}
-\item{cys: }{a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.}
-\item{cns: }{a 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.}
-\item{decision: }{a vector of length 2 representing the recommended decisions for vertical and horizontal
-directions, and \code{stop} indicates stopping the experiment}
-\item{currdose: }{the current dose combination.}
-\item{nextdose: }{the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that the trial is
-terminated due to early stopping.}
-\item{overtox: }{the situation regarding which positions experience over-toxicity. The dose level indicated by
-\code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the
-occurrence of over-toxicity did not happen.}
+\item target: the target DLT rate.
+\item cys: a 3 by 3 matrix of the number of DLT observed for each dose combination at and around the current dose.
+\item cns: a 3 by 3 matrix of the number of patients allocated for each dose combination at and around the current dose.
+\item decision: a vector of length 2 representing the recommended decisions for vertical and horizontal
+directions, and \code{stop} indicates stopping the experiment.
+\item currdose: the current dose combination.
+\item nextdose: the recommended dose combination for the next cohort. \code{nextdose = (99, 99)} indicates that the trial is
+terminated due to early stopping.
+\item overtox: the situation regarding which positions experience over-toxicity. The dose level indicated by
+\code {overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that the
+occurrence of over-toxicity did not happen.
 }
 }
 \description{

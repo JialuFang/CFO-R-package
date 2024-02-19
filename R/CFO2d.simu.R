@@ -28,18 +28,18 @@
 #' 
 #' @return The \code{CFO2d.simu()} function returns a list with the following components:
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
-#'   \item{MTD: }{a vector of length 2 representing the recommended dose level. \code{MTD = (99, 99)} indicates that this trial is terminated due to early stopping.}
-#'   \item{correct: }{a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).}
-#'   \item{npatients: }{a matrix of the number of patients allocated for different doses.}
-#'   \item{ntox: }{a matrix of the number of DLT observed for different doses.}
-#'   \item{npercent: }{the percentage of patients assigned to the target DLT rate.}
-#'   \item{over.doses: }{a matrix indicating whether each dose is overdosed or not (1 for yes).}
-#'   \item{cohortdose: }{the dose combination assigned for each cohort.}
-#'   \item{ptoxic: }{the percentage of subjects assigned to dose levels with a DLT rate greater than the target.}
-#'   \item{patientDLT: }{the DLT observed at each cohort.}
-#'   \item{sumDLT: }{the total number of DLT observed.}
-#'   \item{earlystop: }{a binary indicator of whether the trial is early stopped (1 for yes).}
+#'   \item target: the target DLT rate.}
+#'   \item MTD: a vector of length 2 representing the recommended dose level. \code{MTD = (99, 99)} indicates that this trial is terminated due to early stopping.
+#'   \item correct: a binary indicator of whether the recommended dose level matches the target DLT rate (1 for yes).
+#'   \item npatients: a matrix of the number of patients allocated for different doses.
+#'   \item ntox: a matrix of the number of DLT observed for different doses.
+#'   \item npercent: the percentage of patients assigned to the target DLT rate.
+#'   \item over.doses: a matrix indicating whether each dose is overdosed or not (1 for yes).
+#'   \item cohortdose: the dose combination assigned for each cohort.
+#'   \item ptoxic: the percentage of subjects assigned to dose levels with a DLT rate greater than the target.
+#'   \item patientDLT: the DLT observed at each cohort.
+#'   \item sumDLT: the total number of DLT observed.
+#'   \item earlystop: a binary indicator of whether the trial is early stopped (1 for yes).
 #' }
 #' 
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin

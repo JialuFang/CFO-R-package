@@ -34,10 +34,10 @@
 #'
 #' @return  \code{CFO2d.selectmtd()} returns 
 #' \itemize{
-#'   \item{target: }{the target DLT rate.}
-#'   \item{MTD: }{the selected MTD.}
-#'   \item{p_est: }{the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.}
-#'   \item{p_est_CI: }{the credible interval for the isotonic estimate.}
+#'   \item target: the target DLT rate.
+#'   \item MTD: the selected MTD.
+#'   \item p_est: the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.
+#'   \item p_est_CI: the credible interval for the isotonic estimate.
 #' }
 #'
 #'
