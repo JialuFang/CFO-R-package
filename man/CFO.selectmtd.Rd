@@ -31,9 +31,11 @@ generally works well.}
 \code{CFO.selectmtd()} returns
 \itemize{
 \item target: the target DLT rate.
-\item MTD: the selected MTD.
+\item MTD: the selected MTD. \code{MTD = 99} indicates that all tested doses are overly toxic.
 \item p_est: the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.
+\code{p_est = NA} if all tested doses are overly toxic.
 \item p_overdose: the probability of overdosing defined as \eqn{Pr(toxicity > \code{target}|data)}.
+\code{p_overdose = NA} if all tested doses are overly toxic.
 }
 }
 \description{
@@ -68,7 +70,7 @@ plot(selmtd)
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic regression in two independent variables.
+Bril G, Dykstra R, Pillers C, Robertson T (1984). Algorithm AS 206: Isotonic regression in two independent variables.
 \emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 }
 \author{

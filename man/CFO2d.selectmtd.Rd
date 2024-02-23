@@ -31,9 +31,11 @@ generally works well.}
 \code{CFO2d.selectmtd()} returns
 \itemize{
 \item target: the target DLT rate.
-\item MTD: the selected MTD.
+\item MTD: the selected MTD. \code{MTD = (99, 99)} indicates that all tested doses are overly toxic.
 \item p_est: the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.
+\code{p_est = NA} if all tested doses are overly toxic.
 \item p_est_CI: the credible interval for the isotonic estimate.
+\code{p_est_CI = NA} if all tested doses are overly toxic.
 }
 }
 \description{
@@ -56,7 +58,7 @@ When appropriate, another dose selection procedure (e.g., based on a fitted logi
 the MTD after the completion of the trial using the 2dCFO design.
 }
 \examples{
-ntox <- matrix(c(0, 0, 2, 0, 0,
+ntox <- matrix(c(3, 0, 2, 0, 0,
                 0, 2, 7, 0, 0,
                 0, 2, 0, 0, 0), 
               nrow = 3, ncol = 5, byrow = TRUE)
@@ -75,7 +77,7 @@ Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical t
 \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
 Wang W, Jin H, Zhang Y, Yin G (2023). Two-dimensional calibration-free odds (2dCFO)
 design for phase I drug-combination trials. \emph{Frontiers in Oncology}, 13, 1294258. \cr
-Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic regression in two independent variables.
+Bril G, Dykstra R, Pillers C, Robertson T (1984). Algorithm AS 206: Isotonic regression in two independent variables.
 \emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 }
 \author{

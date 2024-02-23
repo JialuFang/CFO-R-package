@@ -93,16 +93,6 @@
 #'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 #' summary(faCFOtrial)
 #' plot(faCFOtrial)
-#' ## find the MTD for a single benchmark CFO simulation
-#' bCFOtrial <- lateonset.simu (design = 'bCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-#' summary(bCFOtrial)
-#' plot(bCFOtrial)
-#' ## find the MTD for a single benchmark aCFO simulation
-#' baCFOtrial <- lateonset.simu (design = 'b-aCFO', target, p.true, init.level,  
-#'                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-#' summary(baCFOtrial)
-#' plot(baCFOtrial)
 lateonset.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
                            assess.window, tte.para, accrual.rate, accrual.dist, 
                            prior.para=list(alp.prior=target, bet.prior=1-target), 

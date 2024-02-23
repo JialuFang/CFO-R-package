@@ -10,10 +10,18 @@
 #'
 #'
 #' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
+#' 
+#' @note In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
+#'       is typically set to 5000 to ensure the accuracy of the results.
 #'
 #' @export
 #' 
 #' @examples
+#' 
+#' \donttest{
+#' # This test may take longer than 5 seconds to run
+#' # It is provided for illustration purposes only
+#' # Users can run this code directly
 #' ## settings for 1dCFO
 #' nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
@@ -67,7 +75,7 @@
 #'                 0, 2, 0,
 #'                 0, 0, 0), 
 #'               nrow = 3, ncol = 3, byrow = TRUE)
-#' currdose <- c(2,3); target <- 0.3; ncohort <- 20; cohortsize <- 3
+#' currdose <- c(2,3); target <- 0.3; ncohort <- 12; cohortsize <- 3
 #' 
 #' ## summarize the object returned by CFO2d.next()
 #' decision <- CFO2d.next(target, cys, cns, currdose = currdose, seed = 1)
@@ -87,7 +95,7 @@
 #' CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
 #'                     seeds = 1:100)
 #' summary(CFO2doc)
-#' 
+#' }
 #' 
 summary.cfo<- function (object, ...)
 {
@@ -241,34 +249,35 @@ summary.cfo<- function (object, ...)
       }
       else {
         cat("The MTD is dose level ", paste0(object$MTD, "."), "\n\n")
+        cat("Dose    Posterior DLT             95%                  \n",
+            sep = "")
+        cat("Level     Estimate         Credible Interval   Pr(toxicity>",
+            object$target, "|data)\n", sep = "")
+        for (i in 1:nrow(object$p_est)) {
+          cat(" ", i, "        ", as.character(object$p_est[i,2]), "         ", 
+              as.character(object$p_est[i,3]), "         ", as.character(object$p_overdose[i]),
+              "\n")
+        }
+        cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n")
       }
-      cat("Dose    Posterior DLT             95%                  \n",
-          sep = "")
-      cat("Level     Estimate         Credible Interval   Pr(toxicity>",
-          object$target, "|data)\n", sep = "")
-      for (i in 1:nrow(object$p_est)) {
-        cat(" ", i, "        ", as.character(object$p_est[i,2]), "         ", 
-            as.character(object$p_est[i,3]), "         ", as.character(object$p_overdose[i]),
-            "\n")
-      }
-      cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n")
     }
     if (length(object$MTD) >= 2) {
       if (length(object$MTD) == 2) {
-        if (object$MTD[1, 1] == 99 && object$MTD[1, 2] ==
-            99) {
+        if (object$MTD[1, 1] == 99 && object$MTD[1, 2] ==99) {
           cat("All tested doses are overly toxic. No MTD is selected! \n")
         }
-        else cat("The MTD is dose combination (", object$MTD[1,1], ", ", object$MTD[1, 2], "). \n\n")
+        else {
+          cat("The MTD is dose combination (", object$MTD[1,1], ", ", object$MTD[1, 2], "). \n\n")
+          cat("Isotonic estimates of toxicity probabilities and 95% credible intervals for dose combinations are \n")
+          # for (i in 1:dim(object$p_est_CI)[1]) {
+          #   cat(formatC(object$p_est_CI[i, ], digits = 2, format = "f",
+          #               width = 5), sep = "  ", "\n")
+          # }
+          print(noquote(object$p_est_CI))
+          cat("\n")
+          cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n\n")
+        }
       }
-      cat("Isotonic estimates of toxicity probabilities and 95% credible intervals for dose combinations are \n")
-      # for (i in 1:dim(object$p_est_CI)[1]) {
-      #   cat(formatC(object$p_est_CI[i, ], digits = 2, format = "f",
-      #               width = 5), sep = "  ", "\n")
-      # }
-      print(noquote(object$p_est_CI))
-      cat("\n")
-      cat("NOTE: no estimate is provided for the doses at which no patient was treated.\n\n")
     }
   }
 }

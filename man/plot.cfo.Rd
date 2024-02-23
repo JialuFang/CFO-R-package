@@ -24,71 +24,48 @@ Plot the objects returned by other functions, including (1) dose allocation of a
 the averaged number of patients allocated to different doses in one simulation and the averaged
 number of DLT observed for different doses in one simulation.
 }
+\note{
+In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu}
+is typically set to 5000 to ensure the accuracy of the results.
+}
 \examples{
 
-###### single-drug trial ######
-
-############design without late-onset outcomes################
+\donttest{
+# This test may take longer than 5 seconds to run
+# It is provided for illustration purposes only
+# Users can run this code directly
+## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
-## CFO design
+assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
+
+## plot the object returned by CFO.simu()
 CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 plot(CFOtrial)
 
-CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
-         assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
-plot(CFOoc)
-## aCFO design
-aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
-plot(aCFOtrial)
-aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
-          assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
-plot(aCFOoc)
-
-
-##############design with late-onset outcomes################
-assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
-## TITE-CFO design
- TITECFOtrial <- lateonset.simu (design = 'TITE-CFO', target, p.true, init.level,  
-                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-plot(TITECFOtrial)
-TITECFOoc <- CFO.oc (nsimu, design='TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
-        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-plot(TITECFOoc)
-## TITE-aCFO design
-TITEaCFOtrial <- lateonset.simu (design = 'TITE-aCFO', target, p.true, init.level,  
-                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-plot(TITEaCFOtrial)
-TITEaCFOoc <- CFO.oc (nsimu, design='TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
-        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-plot(TITEaCFOoc)
-## fCFO design
-fCFOtrial <- lateonset.simu (design = 'fCFO', target, p.true, init.level,  
-                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-plot(fCFOtrial)
-fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
-        assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-plot(fCFOoc)
+## plot the object returned by lateonset.simu()
 ## f-aCFO design
 faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,  
                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 plot(faCFOtrial)
+
+## summarize the object returned by CFO.oc()
 faCFOoc <- CFO.oc (nsimu, design = 'f-aCFO', target, p.true, init.level, ncohort, cohortsize,
         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 plot(faCFOoc)
 
-## select the MTD based on the trial data
+## plot the object returned by CFO.selectmtd()
 selmtd <- CFO.selectmtd(target=0.2, npts=c(3,3,27,3,0,0,0), ntox=c(0,0,4,2,0,0,0))
 plot(selmtd)
 
 
 
-###### drug-combination trial ######
+## settings for 2dCFO
 p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
                    0.10, 0.15, 0.30, 0.45, 0.55,
                    0.15, 0.30, 0.45, 0.50, 0.60), 
                  nrow = 3, ncol = 5, byrow = TRUE)
-target <- 0.3; ncohort <- 20; cohortsize <- 3
+target <- 0.3; ncohort <- 12; cohortsize <- 3
 
 ## plot the single simulation returned by CFO2d.simu()
 CFO2dtrial <- CFO2d.simu(target, p.true, init.level = c(1,1), ncohort, cohortsize, seed = 1)
@@ -104,6 +81,7 @@ ntox <- matrix(c(0, 0, 2, 0, 0, 0, 2, 7, 0, 0, 0, 2, 0, 0, 0), nrow = 3, ncol = 
 npts <- matrix(c(3, 0, 12, 0, 0, 3, 12, 24, 0, 0, 3, 3, 0, 0, 0), nrow = 3, ncol = 5, byrow = TRUE)
 selmtd <- CFO2d.selectmtd(target=0.3, npts=npts, ntox=ntox)
 plot(selmtd)
+}
 }
 \author{
 Jialu Fang, Wenliang Wang, and Guosheng Yin

@@ -21,7 +21,7 @@
 #'                generally works well.
 #' @param seeds A vector of random seeds for each simulation, for example, \code{seeds = 1:nsimu} (default is \code{NULL}).
 #'
-#' @note In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
+#' @note In the example, we set \code{nsimu = 10} for testing time considerations. In reality, \code{nsimu} 
 #'          is typically set to 1000 or 5000 to ensure the accuracy of the results.
 #'
 #' @return The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
@@ -49,14 +49,14 @@
 #' 
 #' @export
 #' @examples
-#' ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 100 replications.
+#' ## Simulate a two-dimensional dose-finding trial with 20 cohorts of size 3 for 10 replications.
 #' p.true <- matrix(c(0.05, 0.10, 0.15, 0.30, 0.45,
 #' 0.10, 0.15, 0.30, 0.45, 0.55,
 #' 0.15, 0.30, 0.45, 0.50, 0.60), 
 #' nrow = 3, ncol = 5, byrow = TRUE)
-#' target <- 0.3; ncohort <- 20; cohortsize <- 3
-#' CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
-#'                     seeds = 1:100)
+#' target <- 0.3; ncohort <- 12; cohortsize <- 3
+#' CFO2doc <- CFO2d.oc(nsimu = 5, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
+#'                     seeds = 1:5)
 #' summary(CFO2doc)
 #' plot(CFO2doc)
 

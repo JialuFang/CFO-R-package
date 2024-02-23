@@ -32,9 +32,11 @@
 #' @return  \code{CFO.selectmtd()} returns 
 #' \itemize{
 #'   \item target: the target DLT rate.
-#'   \item MTD: the selected MTD.
+#'   \item MTD: the selected MTD. \code{MTD = 99} indicates that all tested doses are overly toxic.
 #'   \item p_est: the isotonic estimate of the DLT probablity at each dose and associated \eqn{95\%} credible interval.
+#'    \code{p_est = NA} if all tested doses are overly toxic.
 #'   \item p_overdose: the probability of overdosing defined as \eqn{Pr(toxicity > \code{target}|data)}.
+#'    \code{p_overdose = NA} if all tested doses are overly toxic.
 #' }
 #'
 #'
@@ -48,7 +50,7 @@
 #'
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
-#'             Bril G, Dykstra R, Pillers C, Robertson T (1984). lgorithm AS 206: Isotonic regression in two independent variables. 
+#'             Bril G, Dykstra R, Pillers C, Robertson T (1984). Algorithm AS 206: Isotonic regression in two independent variables. 
 #'             \emph{Journal of the Royal Statistical Society. Series C (Applied Statistics)}, 33(3), 352–357.
 #'
 #'
@@ -129,6 +131,7 @@ CFO.selectmtd <- function (target, npts, ntox, prior.para=list(alp.prior=target,
     selectd = sort(abs(phat - target), index.return = T)$ix[1]
     selectdose = adm.index[selectd]
   }
+  
   if (verbose == TRUE) {
     trtd = (n != 0)
     poverdose = pava(1 - pbeta(target, y[trtd] + alp.prior, n[trtd] -
@@ -159,10 +162,18 @@ CFO.selectmtd <- function (target, npts, ntox, prior.para=list(alp.prior=target,
     }
     p_est = data.frame(cbind(dose = 1:length(npts), phat = A1,
                              CI = paste("(", A2, ",", A3, ")", sep = "")))
-    out = list(target = target, MTD = selectdose, p_est = p_est,
-               p_overdose = A4)
+    if (selectdose == 99) {
+      message("All tested doses are overly toxic. No MTD is selected! \n")
+      out = list(target = target, MTD = selectdose, p_est = NA, p_overdose = NA)
+    } else {
+      out = list(target = target, MTD = selectdose, p_est = p_est,
+                 p_overdose = A4)
+    }
   }
   else {
+    if (selectdose == 99) {
+      message("All tested doses are overly toxic. No MTD is selected! \n")
+    }
     out = list(target = target, MTD = selectdose)
   }
   class(out)<-"cfo"

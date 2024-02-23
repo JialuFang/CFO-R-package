@@ -103,16 +103,6 @@ faCFOtrial <- lateonset.simu (design = 'f-aCFO', target, p.true, init.level,
                 ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
 summary(faCFOtrial)
 plot(faCFOtrial)
-## find the MTD for a single benchmark CFO simulation
-bCFOtrial <- lateonset.simu (design = 'bCFO', target, p.true, init.level,  
-                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-summary(bCFOtrial)
-plot(bCFOtrial)
-## find the MTD for a single benchmark aCFO simulation
-baCFOtrial <- lateonset.simu (design = 'b-aCFO', target, p.true, init.level,  
-                ncohort, cohortsize, assess.window, tte.para, accrual.rate, accrual.dist, seed = 1)
-summary(baCFOtrial)
-plot(baCFOtrial)
 }
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.

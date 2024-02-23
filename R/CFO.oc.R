@@ -41,7 +41,7 @@
 #'          is determined by setting the \code{design} argument. Some time-related arguments (\code{assess.window}, \code{accrual.rate}, 
 #'          \code{tte.para}, and \code{accrual.dist}) need to be set as values only when running a design that can handle late-onset 
 #'          toxicities; otherwise, they default to \code{NA}.\cr
-#'          Additionally, in the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu} 
+#'          Additionally, in the example, we set \code{nsimu = 5} for testing time considerations. In reality, \code{nsimu} 
 #'          is typically set to 5000 to ensure the accuracy of the results.
 #'
 #' @return The \code{CFO.oc()} function returns basic setup of ($simu.setup) and the operating 
@@ -75,51 +75,60 @@
 #'
 #' @examples
 #' ## setting
-#' nsimu <- 100; target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
+#' nsimu <- 5; target <- 0.2; ncohort <- 12; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 #' prior.para = list(alp.prior = target, bet.prior = 1 - target)
 #' assess.window <- 3; accrual.rate <- 2; tte.para <- 0.5; accrual.dist <- 'unif'
 #' 
-#' ## get the operating characteristics for 100 simulations using the CFO design
-#' CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
-#'          assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
-#' summary(CFOoc)
-#' plot(CFOoc)
-#' ## get the operating characteristics for 100 simulations using the aCFO design
-#' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'        assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
-#' summary(aCFOoc)
-#' plot(aCFOoc)
-#' ## get the operating characteristics for 100 simulations using the TITE-CFO design
-#' TITECFOoc <- CFO.oc (nsimu, design = 'TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
-#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-#' summary(TITECFOoc)
-#' plot(TITECFOoc)
-#' ## get the operating characteristics for 100 simulations using the TITE-aCFO design
-#' TITEaCFOoc <- CFO.oc (nsimu, design = 'TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
-#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-#' summary(TITEaCFOoc)
-#' plot(TITEaCFOoc)
-#' ## get the operating characteristics for 100 simulations using the fCFO design
-#' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
-#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
-#' summary(fCFOoc)
-#' plot(fCFOoc)
-#' ## get the operating characteristics for 100 simulations using the f-aCFO design
+#' 
+#' ## get the operating characteristics for 5 simulations using the f-aCFO design
 #' faCFOoc <- CFO.oc (nsimu, design='f-aCFO', target, p.true, init.level, ncohort, cohortsize,
 #'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(faCFOoc)
 #' plot(faCFOoc)
-#' ## get the operating characteristics for 100 simulations using the bCFO design
+#' 
+#' \donttest{
+#' # This test may take longer than 5 seconds to run
+#' # It is provided for illustration purposes only
+#' # Users can run this code directly
+#' 
+#' ## get the operating characteristics for 5 simulations using the CFO design
+#' CFOoc <- CFO.oc (nsimu, design = 'CFO', target, p.true, init.level, ncohort, cohortsize,
+#'          assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+#' summary(CFOoc)
+#' plot(CFOoc)
+#' 
+#' ## get the operating characteristics for 5 simulations using the aCFO design
+#' aCFOoc <- CFO.oc (nsimu, design = 'aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'        assess.window = NA, tte.para = NA, accrual.rate = NA, accrual.dist = NA, seeds = 1:nsimu)
+#' summary(aCFOoc)
+#' plot(aCFOoc)
+#' ## get the operating characteristics for 5 simulations using the TITE-CFO design
+#' TITECFOoc <- CFO.oc (nsimu, design = 'TITE-CFO', target, p.true, init.level, ncohort, cohortsize,
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#' summary(TITECFOoc)
+#' plot(TITECFOoc)
+#' ## get the operating characteristics for 5 simulations using the TITE-aCFO design
+#' TITEaCFOoc <- CFO.oc (nsimu, design = 'TITE-aCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#' summary(TITEaCFOoc)
+#' plot(TITEaCFOoc)
+#' ## get the operating characteristics for 5 simulations using the fCFO design
+#' fCFOoc <- CFO.oc (nsimu, design = 'fCFO', target, p.true, init.level, ncohort, cohortsize,
+#'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
+#' summary(fCFOoc)
+#' plot(fCFOoc)
+#' ## get the operating characteristics for 5 simulations using the bCFO design
 #' bCFOoc <- CFO.oc (nsimu, design = 'bCFO', target, p.true, init.level, ncohort, cohortsize,
 #'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(bCFOoc)
 #' plot(bCFOoc)
-#' ## get the operating characteristics for 100 simulations using the b-aCFO design
+#' ## get the operating characteristics for 5 simulations using the b-aCFO design
 #' baCFOoc <- CFO.oc (nsimu, design = 'b-aCFO', target, p.true, init.level, ncohort, cohortsize,
 #'         assess.window, tte.para, accrual.rate, accrual.dist, seeds = 1:nsimu)
 #' summary(baCFOoc)
 #' plot(baCFOoc)
+#' }
 CFO.oc <- function(nsimu=5000, design, target, p.true, init.level=1, ncohort, cohortsize,
                    assess.window=NA, tte.para=NA, accrual.rate=NA, accrual.dist=NA, 
                    prior.para=list(alp.prior=target, bet.prior=1-target), 

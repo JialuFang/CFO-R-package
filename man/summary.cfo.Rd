@@ -17,7 +17,16 @@
 \description{
 Generate descriptive summary for objects returned by other functions.
 }
+\note{
+In the example, we set \code{nsimu = 100} for testing time considerations. In reality, \code{nsimu}
+is typically set to 5000 to ensure the accuracy of the results.
+}
 \examples{
+
+\donttest{
+# This test may take longer than 5 seconds to run
+# It is provided for illustration purposes only
+# Users can run this code directly
 ## settings for 1dCFO
 nsimu <- 100; ncohort <- 12; cohortsize <- 3; init.level <- 1
 p.true <- c(0.02, 0.05, 0.20, 0.28, 0.34, 0.40, 0.44); target <- 0.2
@@ -71,7 +80,7 @@ cys <- matrix(c(0, 1, 0,
                 0, 2, 0,
                 0, 0, 0), 
               nrow = 3, ncol = 3, byrow = TRUE)
-currdose <- c(2,3); target <- 0.3; ncohort <- 20; cohortsize <- 3
+currdose <- c(2,3); target <- 0.3; ncohort <- 12; cohortsize <- 3
 
 ## summarize the object returned by CFO2d.next()
 decision <- CFO2d.next(target, cys, cns, currdose = currdose, seed = 1)
@@ -91,7 +100,7 @@ summary(CFO2dtrial)
 CFO2doc <- CFO2d.oc(nsimu = 100, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
                     seeds = 1:100)
 summary(CFO2doc)
-
+}
 
 }
 \author{

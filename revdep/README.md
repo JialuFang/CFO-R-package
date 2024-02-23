@@ -16,9 +16,9 @@
 
 # Dependencies
 
-|package |old |new        |Δ  |
-|:-------|:---|:----------|:--|
-|CFO     |NA  |0.0.0.9000 |*  |
+|package |old |new   |Δ  |
+|:-------|:---|:-----|:--|
+|CFO     |NA  |1.0.0 |*  |
 
 # Revdeps
 
