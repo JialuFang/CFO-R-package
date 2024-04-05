@@ -1,6 +1,6 @@
 Package: CFO
 Title: CFO-Type Designs in Phase I Clinical Trials
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(
     person("Jialu", "Fang", email ="u3008682@connect.hku.hk", role = c("aut", "cre")),
     person("Wenliang", "Wang", email ="wangwl@connect.hku.hk", role = "aut"),
