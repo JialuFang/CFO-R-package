@@ -10,4 +10,5 @@ Description: In phase I clinical trials, the primary objective is to ascertain t
 License: GPL-2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+URL: https://github.com/wwangbl/CFO-R-package
+BugReports: https://github.com/wwangbl/CFO-R-package/issues
