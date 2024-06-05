@@ -1,6 +1,6 @@
 Package: CFO
 Title: CFO-Type Designs in Phase I Clinical Trials
-Version: 1.1.1
+Version: 1.2.1
 Authors@R: c(
     person("Jialu", "Fang", email ="u3008682@connect.hku.hk", role = c("aut", "cre")),
     person("Wenliang", "Wang", email ="wangwl@connect.hku.hk", role = "aut"),
@@ -10,5 +10,4 @@ Description: In phase I clinical trials, the primary objective is to ascertain t
 License: GPL-2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/wwangbl/CFO-R-package
-BugReports: https://github.com/wwangbl/CFO-R-package/issues
+RoxygenNote: 7.3.1
