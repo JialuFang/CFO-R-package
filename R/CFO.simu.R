@@ -56,13 +56,18 @@
 #' target <- 0.2; ncohort <- 33; cohortsize <- 3; init.level <- 1
 #' p.true <- c(0.01, 0.07, 0.20, 0.35, 0.50, 0.65, 0.80)
 #' ### find the MTD for a single CFO simulation
-#' CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 100)
+#' CFOtrial <- CFO.simu(design = 'CFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(CFOtrial)
 #' plot(CFOtrial)
+#' \donttest{
+#' # This test may take longer than 5 seconds to run
+#' # It is provided for illustration purposes only
+#' # Users can run this code directly
 #' ### find the MTD for a single aCFO simulation
 #' aCFOtrial <- CFO.simu(design = 'aCFO', target, p.true, init.level, ncohort, cohortsize, seed = 1)
 #' summary(aCFOtrial)
 #' plot(aCFOtrial)
+#'}
 #' @export
 CFO.simu <- function(design, target, p.true, init.level=1, ncohort, cohortsize,
                      prior.para=list(alp.prior=target, bet.prior=1-target),
