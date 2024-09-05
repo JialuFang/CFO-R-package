@@ -96,6 +96,27 @@
 #' CFO2doc <- CFO2d.oc(nsimu = 5, target, p.true, init.level = c(1,1), ncohort, cohortsize, 
 #'                     seeds = 1:5)
 #' summary(CFO2doc)
+#' 
+#' ## summarize the object returned by CFOeff.next()
+#' decision <- CFOeff.next(target=0.4,txs=c(3,1,7,11,26),tys=c(0,0,0,0,6),
+#'               tns= c(6, 3, 12, 17, 36), currdose = 3, mineff = 0.3)
+#' summary(decision)
+#' 
+#' ## summarize the object returned by CFOeff.simu()
+#' target <- 0.30; mineff <- 0.30
+#' prior.para = list(alp.prior = target, bet.prior = 1 - target, 
+#'                   alp.prior.eff = 0.5, bet.prior.eff = 0.5)
+#' p.true=c(0.05, 0.07, 0.1, 0.12, 0.16)
+#' pE.true=c(0.35, 0.45, 0.5, 0.55, 0.75)
+#' result <- CFOeff.simu(target, p.true, pE.true, ncohort, init.level, cohortsize,
+#'                        prior.para, mineff = mineff, seed = 1)
+#' summary(result)
+#' 
+#' ## summarize the object returned by CFOeff.oc()
+#' nsimu = 10
+#' result <- CFOeff.oc(target, p.true, pE.true, prior.para, 
+#'           init.level,cohortsize, ncohort, nsimu, mineff = mineff, seeds = 1:nsimu)
+#' summary(result)
 #' }
 #' 
 summary.cfo<- function (object, ...)
@@ -126,18 +147,17 @@ summary.cfo<- function (object, ...)
       cat("Average number of toxicities observed at each dose level:\n")
       cat(formatC(object$ntox,  digits = 3, format = "f"),
           sep = "  ", "\n")
+      cat("Average number of  efficacy outcome observed at each dose level:\n")
+      cat(formatC(object$neff,  digits = 3, format = "f"),
+          sep = "  ", "\n")
       cat("Percentage of correct selection of the OBD:", 
           formatC(object$OBDsel, digits = 3, format = "f"), "\n")
       cat("Percentage of patients allocated to the OBD:", 
           formatC(object$OBDallo, digits = 3, format = "f"), "\n")
-      cat("Percentage of selecting a dose above the OBD:",
-          formatC(object$oversel, digits = 3, format = "f")," \n")
-      cat("Percentage of allocating patients at dose levels above the OBD:",
-          formatC(object$overallo, digits = 3, format = "f")," \n")
       cat("Percentage of the patients suffering DLT:",
           formatC(object$averDLT, digits = 3, format = "f")," \n")
-      cat("Percentage of the patients efficacy outcomes:",
-          formatC(object$averEff, digits = 3, format = "f")," \n")
+      cat("Percentage of the patients with efficacy outcomes:",
+          formatC(object$avereff, digits = 3, format = "f")," \n")
       
       if (!is.null(object$averdur)){
         cat("Average trial duration:",
