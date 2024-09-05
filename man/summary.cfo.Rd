@@ -105,5 +105,5 @@ summary(CFO2doc)
 
 }
 \author{
-Jialu Fang, Wenliang Wang, and Guosheng Yin
+Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin
 }

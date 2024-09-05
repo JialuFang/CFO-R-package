@@ -17,7 +17,7 @@
 #'       is typically set to 5000 to ensure the accuracy of the results.
 #' 
 #' 
-#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
+#' @author Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin
 #' 
 #' @importFrom grDevices dev.flush dev.hold devAskNewPage
 #' @importFrom graphics axis barplot mtext par plot
@@ -80,7 +80,7 @@
 #' plot(selmtd)
 #'}
 #' 
- 
+
 plot.cfo<- function (x,..., name = deparse(substitute(x)))
 {
   new.obj = unlist(strsplit(name, split = "\\$"))
@@ -96,10 +96,38 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     ###############################################################################
     ############################plot for CFO.oc()###############################
     ###############################################################################
-    if (!is.null(objectPlot$simu.setup)) { #plot for one-dim multiple simulations
+    if (!is.null(objectPlot$simu.setup)) { #plot for CFOeff.oc
       oldpar <- par(no.readonly = TRUE) 
       on.exit(par(oldpar))
-      if(is.null(dim(objectPlot$selpercent))){
+      if(!is.null(objectPlot$class)) {
+        attributesToPlot <- c("selpercent", "npatients", "ntox", "neff")
+        titles <- c("OBD selection", "Average patients allocation", "Average DLT observed", "Average efficacy outcome observed")
+        ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs", "Number of efficacy")
+        
+        par(mfrow = c(2, 2))
+        
+        # Loop through each attribute and create a plot
+        for (i in seq_along(attributesToPlot)) {
+          attr <- attributesToPlot[i]
+          # Check if the attribute exists in the objectPlot
+          if (!is.null(objectPlot[[attr]])) {
+            # Extract the vector
+            vectorToPlot <- objectPlot[[attr]]
+            
+            # Convert to percentages only for selPercent
+            if (attr == "selpercent") {
+              vectorToPlot <- vectorToPlot * 100
+            }
+            
+            # Create the bar plot with horizontal x-axis labels
+            bplot <- barplot(vectorToPlot, ylab = ylabels[i], main = titles[i], xlab = "Dose level",
+                             cex.names = 1, xaxt = "n", ylim = c(0, max(vectorToPlot))*1.3,
+                             cex.lab = 1.3)
+            axis(1, at = bplot, labels = seq(1, length(objectPlot[[attr]])))
+          }
+        }
+      }
+      else if(is.null(dim(objectPlot$selpercent))){
         attributesToPlot <- c("selpercent", "npatients", "ntox")
         titles <- c("MTD selection", "Average patients allocation", "Average DLT observed")
         ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
@@ -128,38 +156,38 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
         }
       }
       else if(length(dim(objectPlot$selpercent))==2) {
-          attributesToPlot <- c("selpercent", "npatients", "ntox")
-          titles <- c("MTD selection", "Average patients allocation", "Average DLT observed")
-          ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
-
-          par(mfrow = c(3, 1))
-
-          # Loop through each attribute and create a plot
-          for (i in seq_along(attributesToPlot)) {
-            attr <- attributesToPlot[i]
-            # Check if the attribute exists in the objectPlot
-            if (!is.null(objectPlot[[attr]])) {
-              # Extract the matrix
-              matrixToPlot <- objectPlot[[attr]]
-
-              # Convert the matrix to a vector by column
-              matrixVector <- as.vector(matrixToPlot)
-
-              # Convert to percentages only for selpercent
-              if (attr == "selpercent") {
-                matrixVector <- matrixVector * 100
-              }
-
-              # Create x-axis labels
-              dimMatrix <- dim(matrixToPlot)
-              xLabels <- expand.grid(row = 1:dimMatrix[1], col = 1:dimMatrix[2])
-              xLabels <- apply(xLabels, 1, function(x) paste("(", x[1], ",", x[2], ")", sep = ""))
-
-              # Create the bar plot with horizontal x-axis labels
-              barplot(matrixVector, names.arg = xLabels, las = 2,
-                      xlab = "Combined dose level", ylab = ylabels[i], main = titles[i])
+        attributesToPlot <- c("selpercent", "npatients", "ntox")
+        titles <- c("MTD selection", "Average patients allocation", "Average DLT observed")
+        ylabels <- c("Percentage (%)", "Number of patients", "Number of DLTs")
+        
+        par(mfrow = c(3, 1))
+        
+        # Loop through each attribute and create a plot
+        for (i in seq_along(attributesToPlot)) {
+          attr <- attributesToPlot[i]
+          # Check if the attribute exists in the objectPlot
+          if (!is.null(objectPlot[[attr]])) {
+            # Extract the matrix
+            matrixToPlot <- objectPlot[[attr]]
+            
+            # Convert the matrix to a vector by column
+            matrixVector <- as.vector(matrixToPlot)
+            
+            # Convert to percentages only for selpercent
+            if (attr == "selpercent") {
+              matrixVector <- matrixVector * 100
             }
+            
+            # Create x-axis labels
+            dimMatrix <- dim(matrixToPlot)
+            xLabels <- expand.grid(row = 1:dimMatrix[1], col = 1:dimMatrix[2])
+            xLabels <- apply(xLabels, 1, function(x) paste("(", x[1], ",", x[2], ")", sep = ""))
+            
+            # Create the bar plot with horizontal x-axis labels
+            barplot(matrixVector, names.arg = xLabels, las = 2,
+                    xlab = "Combined dose level", ylab = ylabels[i], main = titles[i])
           }
+        }
       }
     }
     
@@ -168,7 +196,65 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     #########################plot for XXX.simu()###################################
     ###############################################################################
     else if (!is.null(objectPlot$correct)) { 
-      if(length(objectPlot$MTD) == 1){
+      if (length(objectPlot$OBD) == 1){#plot for CFOeff
+        dose <- objectPlot$cohortdose
+        DLT <- objectPlot$patientDLT
+        EFF <- objectPlot$patienteff
+        ncohort <- length(objectPlot$cohortdose)
+        cohortsize <- sum(objectPlot$npatients)/ncohort
+        
+        # Generate y_labels
+        y_labels <- seq(1, max(dose))
+        
+        # Generate sequences for each patient
+        sequences <- 1:(ncohort * cohortsize)
+        
+        # Generate dose_levels for each patient
+        dose_levels <- rep(dose, each = cohortsize)
+        
+        # Generate DLT_observed for each patient
+        DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
+        
+        # Generate EFF_observed for each patient
+        EFF_observed <- matrix(EFF, nrow = cohortsize, ncol = ncohort)
+        
+        dfDLT <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+        dfEFF <- data.frame(sequence = sequences, dose_levels = dose_levels, EFF_observed = EFF_observed)
+        
+        # Create the plot
+        # p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
+        #   geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
+        #   geom_step(direction = 'hv', color = 'black') +
+        #   scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+        #   labs(x = "Sequence of patients treated", 
+        #        y = "Dose level",
+        #        fill = 'DLT observed') +
+        #   theme_minimal() +
+        #   theme(text = element_text(size = 12), legend.title=element_blank(), 
+        #         legend.position= 'top', legend.margin = margin(0, 0, 0, 0)) +
+        #   scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
+        # 
+        p <- ggplot() +
+          # Plot toxicity data
+          geom_point(data = dfDLT, aes(x = sequence, y = dose_levels + 0.05, fill = as.factor(DLT_observed)), 
+                     size = 2.5, color = "black", shape = 22) +
+          # Plot efficacy data
+          geom_point(data = dfEFF, aes(x = sequence, y = dose_levels - 0.05, shape = as.factor(EFF_observed)), 
+                     size = 2.5, color = "black") +
+          scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed')) +
+          scale_shape_manual(values = c(13, 21), labels = c('No efficacy', 'Efficacy')) +
+          scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+          labs(x = "Sequence of patients treated", 
+               y = "Dose level",
+               fill = 'DLT observed') +
+          theme_minimal() +
+          theme(legend.position = "bottom",
+                legend.title = element_blank(),
+                legend.key = element_rect(fill = NA, color = "black"))
+        # Display the plot
+        print(p)
+      }
+      else if (length(objectPlot$MTD) == 1) {
         if (!is.null(objectPlot$totaltime)){ #plot for lateonset.simu()
           dose <- objectPlot$cohortdose
           DLT <- objectPlot$patientDLT
@@ -215,32 +301,32 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           dfnew <- na.omit(dfnew)
           
           suppressWarnings({
-          # Create the plot
-          p <- ggplot(df, aes(x = sequences, y = dose_levels)) +
-            geom_point(aes(shape = factor(DLT_observed,levels=c(0,1,2))), color = 'black', size = 2.5) +
-            geom_step(direction = 'hv', color = 'black') +
-            scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-            labs(x = "Time (in months)", 
-                 y = "Dose level",
-                 fill = 'DLT observed') +
-            theme_minimal() +
-            theme(text = element_text(size = 12), 
-                  legend.title=element_blank(), 
-                  legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
-            scale_shape_manual(values = c(1, 16, 4), 
-                               labels = c('DLT not observed', 'DLT observed', 'DLT time'), 
-                               drop = FALSE) 
-          
-          for (row in 1:(nrow(dfnew))){
-            xuse=c(dfnew[row,"sequences"],dfnew[row,"new_seq"])
-            yuse=c(dfnew[row,"dose_levels"],dfnew[row,"new_y"])
-            dfuse <-data.frame(xuse=xuse, yuse=yuse)
-            p <- p + 
-              annotate("point", x = xuse[2], y = yuse[2], shape = 4,size = 2.5) +
-              geom_step(aes(x = xuse, y = yuse), data = dfuse,direction = 'vh',
-                        linetype = 2)
-          }
-          print(p)})
+            # Create the plot
+            p <- ggplot(df, aes(x = sequences, y = dose_levels)) +
+              geom_point(aes(shape = factor(DLT_observed,levels=c(0,1,2))), color = 'black', size = 2.5) +
+              geom_step(direction = 'hv', color = 'black') +
+              scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+              labs(x = "Time (in months)", 
+                   y = "Dose level",
+                   fill = 'DLT observed') +
+              theme_minimal() +
+              theme(text = element_text(size = 12), 
+                    legend.title=element_blank(), 
+                    legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
+              scale_shape_manual(values = c(1, 16, 4), 
+                                 labels = c('DLT not observed', 'DLT observed', 'DLT time'), 
+                                 drop = FALSE) 
+            
+            for (row in 1:(nrow(dfnew))){
+              xuse=c(dfnew[row,"sequences"],dfnew[row,"new_seq"])
+              yuse=c(dfnew[row,"dose_levels"],dfnew[row,"new_y"])
+              dfuse <-data.frame(xuse=xuse, yuse=yuse)
+              p <- p + 
+                annotate("point", x = xuse[2], y = yuse[2], shape = 4,size = 2.5) +
+                geom_step(aes(x = xuse, y = yuse), data = dfuse,direction = 'vh',
+                          linetype = 2)
+            }
+            print(p)})
         }
         else{ #plot for CFO.simu()
           dose <- objectPlot$cohortdose
@@ -327,7 +413,7 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
       }
       else {
         if (!is.null(objectPlot$p_est)) {
-        
+          
           if (length(objectPlot$MTD) >= 2) {
             p_est.comb=objectPlot$p_est
             rownames(p_est.comb)=1:dim(p_est.comb)[1]
@@ -376,8 +462,8 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           }
         }
       }
-
-  
+      
+      
     }
     
     ###############################################################################

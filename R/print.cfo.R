@@ -11,7 +11,7 @@
 #'
 #' @return \code{print()} prints the objects returned by other functions.
 #'
-#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
+#' @author Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin
 #' 
 #' @note In the example, we set \code{nsimu = 5} for testing time considerations. In reality, \code{nsimu} 
 #'    is typically set to 5000 to ensure the accuracy of the results.

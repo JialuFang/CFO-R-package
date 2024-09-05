@@ -9,7 +9,7 @@
 #' @return \code{summary()} prints the objects returned by other functions.
 #'
 #'
-#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin
+#' @author Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin
 #' 
 #' @note In the example, we set \code{nsimu = 5} for testing time considerations. In reality, \code{nsimu} 
 #'       is typically set to 5000 to ensure the accuracy of the results.
@@ -104,9 +104,10 @@ summary.cfo<- function (object, ...)
   ###############################################################################
   ############################summary for XXX.oc()###############################
   ###############################################################################
+  
   if (!is.null(object$simu.setup)) {
-    if(is.null(dim(object$selpercent))){
-      if (object$percentstop == 0){
+    if (!is.null(object$class)) {
+      if (object$percentstop == 0) {
         cat("No instance of early stopping was observed in",
             object$simu.setup$nsimu, "simulations. \n")
       }else{
@@ -125,58 +126,98 @@ summary.cfo<- function (object, ...)
       cat("Average number of toxicities observed at each dose level:\n")
       cat(formatC(object$ntox,  digits = 3, format = "f"),
           sep = "  ", "\n")
-      cat("Percentage of correct selection of the MTD:", 
-          formatC(object$MTDsel, digits = 3, format = "f"), "\n")
-      cat("Percentage of patients allocated to the MTD:", 
-          formatC(object$MTDallo, digits = 3, format = "f"), "\n")
-      cat("Percentage of selecting a dose above the MTD:",
+      cat("Percentage of correct selection of the OBD:", 
+          formatC(object$OBDsel, digits = 3, format = "f"), "\n")
+      cat("Percentage of patients allocated to the OBD:", 
+          formatC(object$OBDallo, digits = 3, format = "f"), "\n")
+      cat("Percentage of selecting a dose above the OBD:",
           formatC(object$oversel, digits = 3, format = "f")," \n")
-      cat("Percentage of allocating patients at dose levels above the MTD:",
+      cat("Percentage of allocating patients at dose levels above the OBD:",
           formatC(object$overallo, digits = 3, format = "f")," \n")
       cat("Percentage of the patients suffering DLT:",
           formatC(object$averDLT, digits = 3, format = "f")," \n")
+      cat("Percentage of the patients efficacy outcomes:",
+          formatC(object$averEff, digits = 3, format = "f")," \n")
       
       if (!is.null(object$averdur)){
         cat("Average trial duration:",
             formatC(object$averdur, digits = 1, format = "f")," \n")
       }
-    }
-    else if(length(dim(object$selpercent))==2) {
-      # Summary for 2dCFO multiple trail simulation
-      cat("Selection percentage at each dose combination:\n")
-      print(object$selpercent)
-      cat("Average number of patients treated at each dose combination:\n")
-      print(object$npatients)
-      cat("Average number of toxicities observed at each dose combination:\n")
-      print(object$ntox)
-      cat("Percentage of correct selection of the MTD:", 
-          formatC(object$MTDsel, digits = 3, format = "f"), "\n")
-      cat("Percentage of patients allocated to the MTD:", 
-          formatC(object$MTDallo, digits = 3, format = "f"), "\n")
-      cat("Percentage of selecting a dose above the MTD:",
-          formatC(object$oversel, digits = 3, format = "f")," \n")
-      cat("Percentage of allocating patients at dose levels above the MTD:",
-          formatC(object$overallo, digits = 3, format = "f")," \n")
-      cat("Percentage of the patients suffering DLT:",
-          formatC(object$averDLT/sum(object$npatients), digits = 3, format = "f")," \n")
+    }else{
+      if(is.null(dim(object$selpercent))){
+        if (object$percentstop == 0){
+          cat("No instance of early stopping was observed in",
+              object$simu.setup$nsimu, "simulations. \n")
+        }else{
+          nstop = object$percentstop*object$simu.setup$nsimu
+          cat("In", object$simu.setup$nsimu, "simulations, early stopping occurred",
+              nstop, "times. \n")
+          cat("Among simulations where early stopping did not occur: \n")
+        }
+        
+        cat("Selection percentage at each dose level:\n")
+        cat(formatC(object$selpercent, digits = 3, format = "f"),
+            sep = "  ", "\n")
+        cat("Average number of patients treated at each dose level:\n")
+        cat(formatC(object$npatients, digits = 3, format = "f"),
+            sep = "  ", "\n")
+        cat("Average number of toxicities observed at each dose level:\n")
+        cat(formatC(object$ntox,  digits = 3, format = "f"),
+            sep = "  ", "\n")
+        cat("Percentage of correct selection of the MTD:", 
+            formatC(object$MTDsel, digits = 3, format = "f"), "\n")
+        cat("Percentage of patients allocated to the MTD:", 
+            formatC(object$MTDallo, digits = 3, format = "f"), "\n")
+        cat("Percentage of selecting a dose above the MTD:",
+            formatC(object$oversel, digits = 3, format = "f")," \n")
+        cat("Percentage of allocating patients at dose levels above the MTD:",
+            formatC(object$overallo, digits = 3, format = "f")," \n")
+        cat("Percentage of the patients suffering DLT:",
+            formatC(object$averDLT, digits = 3, format = "f")," \n")
+        
+        if (!is.null(object$averdur)){
+          cat("Average trial duration:",
+              formatC(object$averdur, digits = 1, format = "f")," \n")
+        }
+      }
+      else if(length(dim(object$selpercent))==2) {
+        # Summary for 2dCFO multiple trail simulation
+        cat("Selection percentage at each dose combination:\n")
+        print(object$selpercent)
+        cat("Average number of patients treated at each dose combination:\n")
+        print(object$npatients)
+        cat("Average number of toxicities observed at each dose combination:\n")
+        print(object$ntox)
+        cat("Percentage of correct selection of the MTD:", 
+            formatC(object$MTDsel, digits = 3, format = "f"), "\n")
+        cat("Percentage of patients allocated to the MTD:", 
+            formatC(object$MTDallo, digits = 3, format = "f"), "\n")
+        cat("Percentage of selecting a dose above the MTD:",
+            formatC(object$oversel, digits = 3, format = "f")," \n")
+        cat("Percentage of allocating patients at dose levels above the MTD:",
+            formatC(object$overallo, digits = 3, format = "f")," \n")
+        cat("Percentage of the patients suffering DLT:",
+            formatC(object$averDLT/sum(object$npatients), digits = 3, format = "f")," \n")
+      }
     }
   }
-  
   ###############################################################################
   #########################summary for XXX.simu()###############################
   ###############################################################################
   
-  if(!is.null(object$correct)){ ###summary for XXX.simu()
-    if (length(object$MTD) == 1) {  ###summary for one-dim XXX.simu()
-      if (object$MTD == 99) {
+  if(!is.null(object$correct)) { ###summary for XXX.simu()
+    if (!is.null(object$class)) {#summary for CFOeff.simu
+      if (object$OBD == 99) {
         warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
       }
       else {
-        cat("The selected MTD is dose level", paste0(object$MTD, "."), "\n")
+        cat("The selected OBD is dose level", paste0(object$OBD, "."), "\n")
         cat("For",length(object$cohortdose),"cohorts, the dose level assigned to each cohort is: \n")
         cat(formatC(object$cohortdose, format = "d"), sep = "  ", "\n")
         cat("Number of toxicities observed at each dose level:\n")
         cat(formatC(object$ntox, format = "d"), sep = "  ", "\n")
+        cat("Number of efficacy outcomes at each dose level:\n")
+        cat(formatC(object$neff, format = "d"), sep = "  ", "\n")
         cat("Number of patients treated at each dose level:\n")
         cat(formatC(object$npatients, format = "d"), sep = "  ", "\n")
         if (!is.null(object$totaltime)){
@@ -184,37 +225,81 @@ summary.cfo<- function (object, ...)
               formatC(object$totaltime, digits = 3, format = "f")," \n")
         }
       }
-    } else {  ###summary for two-dim XXX.simu()
-      if (object$MTD[1] == 99 | object$MTD[2] == 99) {
-        warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+    }else {
+      if (length(object$MTD) == 1) {  ###summary for one-dim XXX.simu()
+        if (object$MTD == 99) {
+          warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+        }
+        else {
+          cat("The selected MTD is dose level", paste0(object$MTD, "."), "\n")
+          cat("For",length(object$cohortdose),"cohorts, the dose level assigned to each cohort is: \n")
+          cat(formatC(object$cohortdose, format = "d"), sep = "  ", "\n")
+          cat("Number of toxicities observed at each dose level:\n")
+          cat(formatC(object$ntox, format = "d"), sep = "  ", "\n")
+          cat("Number of patients treated at each dose level:\n")
+          cat(formatC(object$npatients, format = "d"), sep = "  ", "\n")
+          if (!is.null(object$totaltime)){
+            cat("The duration of the trial in months:",
+                formatC(object$totaltime, digits = 3, format = "f")," \n")
+          }
+        }
+      } else {  ###summary for two-dim XXX.simu()
+        if (object$MTD[1] == 99 | object$MTD[2] == 99) {
+          warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+        }
+        else {
+          # Summary for 2dCFO single trail simulation
+          cat("The selected MTD is dose level (", object$MTD[1], ",",object$MTD[2], ").\n\n")
+        }
+        # print assgined dosage for each cohort
+        doses <- object$cohortdose
+        cohort_data <- data.frame(
+          cohort = 1:nrow(doses),
+          dose_A = doses[, 1],
+          dose_B = doses[, 2]
+        )
+        print(cohort_data, row.names = FALSE)
+        cat("\n")
+        cat("Number of toxicity observed at each dose level:\n")
+        print(object$ntox)
+        cat("\n")
+        cat("Number of patients treated at each dose level:\n")
+        print(object$npatients)
       }
-      else {
-        # Summary for 2dCFO single trail simulation
-        cat("The selected MTD is dose level (", object$MTD[1], ",",object$MTD[2], ").\n\n")
-      }
-      # print assgined dosage for each cohort
-      doses <- object$cohortdose
-      cohort_data <- data.frame(
-        cohort = 1:nrow(doses),
-        dose_A = doses[, 1],
-        dose_B = doses[, 2]
-      )
-      print(cohort_data, row.names = FALSE)
-      cat("\n")
-      cat("Number of toxicity observed at each dose level:\n")
-      print(object$ntox)
-      cat("\n")
-      cat("Number of patients treated at each dose level:\n")
-      print(object$npatients)
     }
   }
-  
   ###############################################################################
   #########################summary for XXX.next()################################
   ###############################################################################
   
   if(!is.null(object$decision)){
-    if(length(object$decision)==2){ ##summary for two dim XXX.next()
+    if (!is.null(object$class)){### summary for CFOeff.next()
+      cat("The admissible set contains the dose level:\n")
+      cat(formatC(object$admset, format = "d"),
+          sep = "  ", "\n")
+      cat("The expected toxicity probabilities of the dose levels in the admissible set:\n")
+      cat(formatC(object$toxprob,  digits = 4, format = "f"),
+          sep = "  ", "\n")
+      if (is.na(object$overtox)) {
+        cat("All tested doses are not overly toxic. \n\n")
+      } else {
+        cat("Dose level", object$overtox, "and all levels above exhibit excessive toxicity.", "\n")
+      }
+      if (object$decision == "stop_for_tox"){
+        cat("The lowest dose level is overly toxic. We terminate the entire trial for safety.")
+      }else if (object$decision == "stop_for_no_eff"){
+        cat("All the dose levels in the admisble set show low efficacy. The trial was terminated")
+      }else{
+        cat("The current dose level is", paste0(object$currdose, "."), "\n")
+        cat("The empirical probability of q[k] being the largest among all the dose levels in the admissible set:\n")
+        cat(formatC(object$effprob,  digits = 4, format = "f"),
+            sep = "  ", "\n")
+        cat("where q[k] is efficacy probability at dose level k. \n\n")
+        cat("The decision regarding the direction of movement of the admissible set is:", paste0(object$decision, "."), "\n")
+        cat("The next cohort will be assigned to dose level", paste0(object$nextdose, "."), "\n")
+      }
+    }
+    else if(length(object$decision)==2){ ##summary for two dim XXX.next()
       cat("The expected toxicity probabilities at the current dose and the eight adjacent doses surrounding it:\n")
       print(object$toxprob)
       cat('\n')

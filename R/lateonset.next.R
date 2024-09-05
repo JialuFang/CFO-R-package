@@ -1,6 +1,7 @@
-#' Determination of the dose level for next cohort in the calibration-free odds type (CFO-type) design with late-onset toxicity
+#' Determination of the dose level for next cohort in the calibration-free odds type (CFO-type) design with late-onset toxicity for phase I trials
 #' 
-#' The function is used to determine the next dose level in the CFO-type design with late-onset toxicity, specifically, including 
+#' Based on the toxicity outcomes of the enrolled cohorts, the function is used to determine the next 
+#' dose level in the CFO-type designs with late-onset toxicity for phase I trials, specifically, including 
 #' time-to-event CFO (TITE-CFO) design, fractional CFO (fCFO) design, benchmark CFO design, 
 #' time-to-event accumulative CFO (TITE-aCFO) design, fractional accumulative CFO (f-aCFO) design 
 #' and benchmark aCFO design.
@@ -55,7 +56,7 @@
 #'   or not (1 for yes).
 #' }
 #' 
-#' @author Jialu Fang, Wenliang Wang, and Guosheng Yin 
+#' @author Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin 
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
 #'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr

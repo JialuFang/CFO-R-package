@@ -1,79 +1,83 @@
+#' Determination of the dose level for next cohort in the calibration-free odds (CFO) design for phase I/II trials
 #' 
-#' Determination of the dose level for next cohort in the calibration-free odds (CFO) design for phase I trials
-#' 
-#' In the CFO design for phase I trials, the function is used to determine the dose movement based on the toxicity outcomes of the enrolled cohorts.
-#'
-#' @usage CFO.next(target, cys, cns, currdose, 
-#'        prior.para = list(alp.prior = target, bet.prior = 1 - target),
-#'        cutoff.eli = 0.95, early.stop = 0.95)
-#'
+#' In the CFO design for phase I/II trials, the function is used to determine the dose movement 
+#' based on the toxicity outcomes and efficacy outcomes of the enrolled cohorts.
+#' @usage CFOeff.next(target, txs, tys, tns, currdose, 
+#'                    prior.para=list(alp.prior = target, bet.prior = 1 - target, 
+#'                    alp.prior.eff = 0.5, bet.prior.eff = 0.5),  
+#'                    cutoff.eli=0.95, early.stop=0.95, effearly.stop = 0.9, mineff)
 #' @param target the target DLT rate.
-#' @param cys the cumulative numbers of DLTs observed at the left, current, and right dose levels.
-#' @param cns the cumulative numbers of patients treated at the left, current, and right dose levels.
+#' @param txs the cumulative counts of efficacy outcomes at all dose levels.
+#' @param tys the cumulative counts of DLTs observed at all dose levels.
+#' @param tns the cumulative counts of patients treated at all dose levels.
 #' @param currdose the current dose level.
-#' @param prior.para the prior parameters for a beta distribution, where set as \code{list(alp.prior = target, bet.prior = 1 - target)} 
-#'                  by default, \code{alp.prior} and \code{bet.prior} represent the parameters of the prior distribution for 
-#'                  the true DLT rate at any dose level. This prior distribution is specified as Beta(\code{alpha.prior}, \code{beta.prior}).
+#' @param prior.para the prior parameters for two beta distributions, where is set as \code{list(alp.prior = target, 
+#'                  bet.prior = 1 - target, alp.prior.eff = 0.5, bet.prior.eff = 0.5)} by default. \code{alp.prior} and \code{bet.prior} 
+#'                  represent the parameters of the prior distribution for the true DLT rate at any dose level. This prior distribution 
+#'                  is specified as Beta(\code{alp.prior}, \code{bet.prior}). \code{alp.eff.prior} and \code{bet.eff.prior}
+#'                  represent the parameters of the Jeffreys' prior distribution for each \eqn{q_k} which is corresponding efficacy probability 
+#'                  of the dose level \eqn{k}. This prior distribution 
+#'                  is specified as Beta(\code{alp.eff.prior}, \code{bet.eff.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
 #' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
 #'                generally works well.
-#'
-#' @details The CFO design determines the dose level for the next cohort by assessing evidence from the current 
-#'          dose level and its adjacent levels. This evaluation is based on odds ratios denoted as \eqn{O_k}, where 
-#'          \eqn{k = L, C, R} represents left, current (central), and right dose levels. Additionally, we define \eqn{\overline{O}_k = 1/O_k}. 
-#'          The ratio \eqn{O_C / \overline{O}_{L}} indicates the inclination for de-escalation, while \eqn{\overline{O}_C / O_R} 
-#'          quantifies the tendency for escalation. Threshold values \eqn{\gamma_L} and \eqn{\gamma_R} are chosen to 
-#'          minimize the probability of making incorrect decisions. The decision process is summarized in Table 1
-#'          of Jin and Yin (2022).
-#'          The early stopping and dose elimination rules are implemented to ensure patient safety. If the data suggest excessive 
-#'          toxicity at the current dose level, we exclude that dose level and those higher levels. If the lowest dose level is overly toxic,
-#'          the trial will be terminated according to the early stopping rule.
-#'          
-#' @note    When the current dose level is the lowest or highest (i.e., at the boundary), the parts in \code{cys}, 
-#'          \code{cns}, and \code{toxprob} where there is no data are filled with \code{NA}. \cr
-#'          The dose level indicated by \code{overtox} and all the dose levels above experience over-toxicity, and these dose levels will be eliminated.
-#'          
-#' @return The \code{CFO.next()} function returns a list object comprising the following elements:
+#' @param effearly.stop the threshold value for early stopping when efficacy is lower than \code{mineff}. The trial would be terminated
+#'                      early for futility if \eqn{Pr(q_k<\psi |y_k,m_k \ge 3)} is smaller than the value of \code{effearly.stop} where \eqn{q_k}
+#'                      corresponding efficacy probability of dose level \eqn{k}, \eqn{\psi} is the the lowest acceptable efficacy rate which is  
+#'                      set by \code{mineff} here and \eqn{y_k, m_k} are 
+#'                      the number of efficacy outcomes and patient at dose level \eqn{k}. By default, 
+#'                      \code{effearly.stop} is set as \code{effearly.stop = 0.9}.
+#' @param mineff the lowest acceptable efficacy rate.
+#' 
+#' @details
+#' The CFO design for phase I/II trials will determine admissible set \eqn{A_n} through the dose escalation rules for the MTD. The current dose is set as 
+#' \eqn{d_n}. If the decision is to de-escalate the dose, the set \eqn{A_n} will be \eqn{\{1,\dots,d_n-1\}}. If the decision is to stay at the 
+#' current dose, then the admissible set \eqn{A_n} will be \eqn{\{1,\dots,d_n\}}. If the decision is to escalate the dose, then \eqn{A_n} will be
+#' \eqn{\{1,\dots,d_n+1\}}. The dose level \eqn{d_{n+1}} for the next cohort will be selected from \eqn{A_n} by using the rule:
+#' \eqn{d_{n+1} = argmax_{k\in A_n}Pr(q_k = max_{j\in A_n}\{q_j\}| D_n)} where \eqn{D_n} and \eqn{q_k} are the current data and the 
+#' efficacy probability for dose level \eqn{k}.
+#' 
+#' @return The \code{CFOeff.next()} function returns a list object comprising the following elements:
 #' \itemize{
 #'   \item target: the target DLT rate.
-#'   \item cys: the cumulative counts of DLTs observed at the left, current, and right dose levels.
-#'   \item cns: the cumulative counts of patients treated at the left, current, and right dose levels.
-#'   \item decision: the decision in the CFO design, where \code{left}, \code{stay}, and \code{right} represent the 
-#'   movement directions, and \code{stop} indicates stopping the experiment.
+#'   \item txs: the cumulative counts of efficacy outcomes at all dose levels.
+#'   \item tys: the cumulative counts of DLTs observed at all dose levels.
+#'   \item tns: the cumulative counts of patients treated at all dose levels.
+#'   \item decision: the decision in the CFO design, where \code{de-escalation}, \code{stay}, and \code{escalation} represent the 
+#'   movement directions of the dose level, \code{stop_for_tox} indicates stopping the experiment because the lowest dose level 
+#'   is overly toxic and \code{stop_for_low_eff} indicates that all dose level in the admissible set shows low efficacy.
 #'   \item currdose: the current dose level.
 #'   \item nextdose: the recommended dose level for the next cohort. \code{nextdose = 99} indicates that the trial is 
 #'   terminated due to early stopping.
 #'   \item overtox: the situation regarding which positions experience over-toxicity. The dose level indicated 
 #'   by \code{overtox} and all the dose levels above experience over-toxicity. \code{overtox = NA} signifies that 
 #'   the occurrence of over-toxicity did not happen.
-#'   \item toxprob: the expected toxicity probability, \eqn{Pr(p_k > \phi | x_k, m_k)}, at the left, current, and 
-#'   right dose levels, where \eqn{p_k}, \eqn{x_k}, and \eqn{m_k} is the dose-limiting toxicity (DLT) rate, the 
+#'   \item toxprob: the expected toxicity probability, \eqn{Pr(p_k > \phi | x_k, m_k)}, for doses in admissible set,
+#'   where \eqn{p_k}, \eqn{x_k}, and \eqn{m_k} are the dose-limiting toxicity (DLT) rate, the 
 #'   numbers of observed DLTs, and the numbers of patients at dose level \eqn{k}.
+#'   \item effprob: the empirical probability of \eqn{Pr(q_k=max_{j\in A_n}\{q_j\}|D_n)} for doses in admissible set, 
+#'   where \eqn{q_k} is efficacy probability at dose level \eqn{k}. \eqn{A_n} is the admissible set determined through 
+#'   the dose escalation rules for the MTD and \eqn{D_n} is the current cumulative dataset.
+#'   \item admset: the admissible set \eqn{A_n}. The dose level for the next cohort will be selected from \eqn{A_n}.
+#'   \item class: the phase of the trial.
 #' }
+#' 
 #' @author Jialu Fang, Wenliang Wang, Ninghao Zhang, and Guosheng Yin
 #' 
 #' @references Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
-#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066.
+#'             \emph{Statistical Methods in Medical Research}, 31(6), 1051-1066. \cr
 #' 
-#' @examples
-#' ## determine the dose level for the next cohort of new patients
-#' cys <- c(0, 1, 0); cns <- c(3, 6, 0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=3)
-#' summary(decision)
-#' 
-#' cys <- c(NA, 3, 0); cns <- c(NA, 3, 0)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=1)
-#' summary(decision)
-#' 
-#' cys <- c(0, 3, NA); cns <- c(3, 3, NA)
-#' decision <- CFO.next(target=0.2, cys=cys, cns=cns, currdose=7)
-#' summary(decision)
-#' 
-#' @import stats
 #' @export
-CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=target, bet.prior=1-target),
-                     cutoff.eli=0.95, early.stop=0.95){
+#'
+#' @examples 
+#' txs = c(3, 1, 7, 11, 26); tys = c(0, 0, 0, 0, 6); tns = c(6, 3, 12, 17, 36)
+#' target <- 0.4
+#' decision <- CFOeff.next(target,txs,tys,tns,currdose = 3, mineff = 0.3)
+#' summary(decision)
+CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.prior = target, bet.prior = 1 - target, alp.prior.eff = 0.5, 
+                                                                         bet.prior.eff = 0.5), 
+                        cutoff.eli=0.95, early.stop=0.95, effearly.stop=0.9, mineff){
   ###############################################################################
   ###############define the functions used for main function#####################
   ###############################################################################
@@ -84,19 +88,35 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     1 - pbeta(phi, alp, bet)
   }
   
+  under.eff.fn <- function(mineff, effearly.stop,prior.para=list())
+  {
+    args <- c(list(target = mineff), prior.para)
+    x <- prior.para$x
+    n <- prior.para$n
+    alp.prior <- prior.para$alp.prior.eff
+    bet.prior <- prior.para$bet.prior.eff
+    ppE <- 1 - post.prob.fn(mineff, x, n, alp.prior, bet.prior)
+    if ((ppE >= effearly.stop) & (n >= 3)) {
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+  }
+  
   overdose.fn <- function(phi, threshold, prior.para=list()){
     y <- prior.para$y
     n <- prior.para$n
     alp.prior <- prior.para$alp.prior
     bet.prior <- prior.para$bet.prior
     pp <- post.prob.fn(phi, y, n, alp.prior, bet.prior)
-    # print(data.frame("prob of overdose" = pp))
     if ((pp >= threshold) & (prior.para$n>=3)){
       return(TRUE)
     }else{
       return(FALSE)
     }
   }
+  
+  
   
   prob.int <- function(phi, y1, n1, y2, n2, alp.prior, bet.prior){
     alp1 <- alp.prior + y1
@@ -174,7 +194,7 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     margin.ys <- p.y1s.mat * p.y2s.mat
     margin.ys
   }
-
+  
   # Obtain the optimal gamma for the hypothesis test
   optim.gamma.fn <- function(n1, n2, phi, type, alp.prior, bet.prior){
     OR.table <- All.OR.table(phi, n1, n2, type, alp.prior, bet.prior) 
@@ -224,16 +244,46 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     list(gamma=gam, min.err=min.err)
   }
   
+  moveprobs <- function(ad.xs, ad.ns, alp.prior, bet.prior){
+    alps <- ad.xs + alp.prior
+    bets <- ad.ns - ad.xs + bet.prior
+    nd <- length(ad.xs)
+    
+    Nsps <- 10000
+    sps.list <- list() 
+    for (i in 1:nd){
+      sps.list[[i]] <- rbeta(Nsps, alps[i], bets[i])
+    }
+    
+    spss <- do.call(rbind, sps.list)
+    argMaxs <- apply(spss, 2, which.max)
+    probs <- as.vector(table(argMaxs))/Nsps
+    
+    probs
+  }
   ###############################################################################
   ############################MAIN DUNCTION######################################
   ###############################################################################
+  #the results for current 3 dose levels
+  if (currdose != 1) {
+    cys <- tys[(currdose - 1):(currdose + 1)]
+    cns <- tns[(currdose - 1):(currdose + 1)]
+  }else{
+    cys <- c(NA, tys[1:(currdose + 1)])
+    cns <- c(NA, tns[1:(currdose + 1)])
+  }
+  
+  
   if (is.null(prior.para$alp.prior)){
     prior.para <- c(prior.para, list(alp.prior=target, bet.prior=1-target))
   }
   alp.prior <- prior.para$alp.prior
   bet.prior <- prior.para$bet.prior
+  alp.prior.eff <- prior.para$alp.prior.eff
+  bet.prior.eff <- prior.para$bet.prior.eff
   
   cover.doses <- c(0,0,0)
+  cunder.effs <- c(0,0,0)
   
   for (i in 1:3){
     cy <- cys[i]
@@ -241,7 +291,8 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     if (is.na(cn)){
       cover.doses[i] <- NA
     }else{
-      prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
+      prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior, 
+                                            alp.prior.eff = alp.prior.eff, bet.prior.eff = bet.prior.eff))
       if (overdose.fn(target, cutoff.eli, prior.para)){
         cover.doses[i:3] <- 1
         break()
@@ -249,16 +300,6 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     }
   }
   
-  cover.prob <- c(0,0,0)
-  for (i in 1:3){
-    cy <- cys[i]
-    cn <- cns[i]
-    if (is.na(cn)){
-      cover.prob[i] <- NA
-    }else{
-      cover.prob[i] <- post.prob.fn(target, cy, cn, alp.prior, bet.prior)
-    }
-  }
   
   if (cutoff.eli != early.stop) {
     cy <- cys[1]
@@ -266,7 +307,8 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     if (is.na(cn)){
       cover.doses[1] <- NA
     }else{
-      prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior))
+      prior.para <- c(list(y=cy, n=cn),list(alp.prior=alp.prior, bet.prior=bet.prior, 
+                                            alp.prior.eff = alp.prior.eff, bet.prior.eff = bet.prior.eff))
       if (overdose.fn(target, early.stop, prior.para)){
         cover.doses[1:3] <- 1
       }
@@ -275,12 +317,14 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
   
   cover.doses <- ifelse(is.na(cys), NA, cover.doses)
   
+  
   position <- which(cover.doses == 1)[1]
   overtox <- c(-1, 0, 1)[position] + currdose
-  prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior))
+  prior.para <- c(list(alp.prior=alp.prior, bet.prior=bet.prior, 
+                       alp.prior.eff = alp.prior.eff, bet.prior.eff = bet.prior.eff))
   if ((cover.doses[2] == 1)&(currdose == 1)){
     index <- NA
-    decision <- "stop"
+    decision <- "stop_for_tox"
   } else {
     if (cover.doses[2] == 1){
       index <- -1
@@ -334,14 +378,67 @@ CFO.next <- function(target, cys, cns, currdose, prior.para=list(alp.prior=targe
     }
   }
   
-  if (decision=='stop'){
+
+  if (decision == 'stop_for_tox'){
     nextdose <- 99
   }else{
-    nextdose <- currdose+index
+    up.idx <- currdose + index
+  if (up.idx == 1) {
+    nextdose <- 1
+    probs <- 1
+    set <- 1
+    cover.prob <- post.prob.fn(target, tys[1], tns[1], alp.prior, bet.prior)
+  }else{
+    low.idx <- 1
+    ad.xs <- txs[low.idx:up.idx]
+    ad.ys <- tys[low.idx:up.idx]
+    ad.ns <- tns[low.idx:up.idx]
+    set <- c(low.idx:up.idx)
+    
+    for (dose in set){
+      ax <- ad.xs[dose]
+      an <- ad.ns[dose]
+      if (is.na(cn)){
+        cover.doses[dose] <- NA
+      }else{
+        prior.para <- c(list(x=ax, n=an),list(alp.prior=alp.prior, bet.prior=bet.prior, 
+                                              alp.prior.eff = alp.prior.eff, bet.prior.eff = bet.prior.eff))
+        if (under.eff.fn(mineff, effearly.stop, prior.para)){
+          cunder.effs[dose] <- 1
+        }
+      }
+    }
+    probs <- moveprobs(ad.xs, ad.ns, prior.para$alp.prior.eff, prior.para$bet.prior.eff)
+    if (sum(cunder.effs) == length(set)){
+      nextdose <- 99
+      decision = 'stop_for_no_eff'
+    }
+    else {
+      if (length(ad.xs) == 1) {
+        nextdose <- low.idx
+      }else{
+        nextdose <- which.max(probs)
+        
+      }
+    }
+    
+    cover.prob <- rep(0, up.idx)
+    for (i in 1:length(ad.xs)){
+      ty <- ad.ys[i]
+      tn <- ad.ns[i]
+      if (is.na(tn)){
+        cover.prob[i] <- NA
+      }else{
+        cover.prob[i] <- post.prob.fn(target, ty, tn, alp.prior, bet.prior)
+      }
+    }
+  }
   }
   
-  out <- list(target=target, cys=cys, cns=cns, decision=decision, currdose = currdose, 
-              nextdose=nextdose, overtox=overtox, toxprob=cover.prob)
-  class(out) <- c("cfo_decision", "cfo")
+  out <- list(target = target, txs = txs, tys = tys, tns = tns, decision = decision, currdose = currdose, 
+              nextdose = nextdose, overtox = overtox, toxprob = cover.prob, effprob = probs, 
+              admset = set, class = "phaseI/II")
+  class(out) <- c("cfo_eff_decision", "cfo")
   return(out)
 }
+
