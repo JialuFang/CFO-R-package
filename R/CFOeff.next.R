@@ -11,23 +11,21 @@
 #' @param tys the cumulative counts of DLTs observed at all dose levels.
 #' @param tns the cumulative counts of patients treated at all dose levels.
 #' @param currdose the current dose level.
-#' @param prior.para the prior parameters for two beta distributions, where is set as \code{list(alp.prior = target, 
+#' @param prior.para the prior parameters for two beta distributions, where set as \code{list(alp.prior = target, 
 #'                  bet.prior = 1 - target, alp.prior.eff = 0.5, bet.prior.eff = 0.5)} by default. \code{alp.prior} and \code{bet.prior} 
 #'                  represent the parameters of the prior distribution for the true DLT rate at any dose level. This prior distribution 
-#'                  is specified as Beta(\code{alp.prior}, \code{bet.prior}). \code{alp.eff.prior} and \code{bet.eff.prior}
-#'                  represent the parameters of the Jeffreys' prior distribution for each \eqn{q_k} which is corresponding efficacy probability 
-#'                  of the dose level \eqn{k}. This prior distribution 
-#'                  is specified as Beta(\code{alp.eff.prior}, \code{bet.eff.prior}).
+#'                  is specified as Beta(\code{alpha.prior}, \code{beta.prior}). \code{alp.eff.prior} and \code{bet.eff.prior}
+#'                  represent the parameters of the Jeffreys' prior distribution for the efficacy probability at any dose level.
+#'                  This prior distribution is specified as Beta(\code{alpha.eff.prior}, \code{beta.eff.prior}).
 #' @param cutoff.eli the cutoff to eliminate overly toxic doses for safety. We recommend
 #'                    the default value of \code{cutoff.eli = 0.95} for general use.
-#' @param early.stop the threshold value for early stopping. The default value \code{early.stop = 0.95}
-#'                generally works well.
-#' @param effearly.stop the threshold value for early stopping when efficacy is lower than \code{mineff}. The trial would be terminated
-#'                      early for futility if \eqn{Pr(q_k<\psi |y_k,m_k \ge 3)} is smaller than the value of \code{effearly.stop} where \eqn{q_k}
-#'                      corresponding efficacy probability of dose level \eqn{k}, \eqn{\psi} is the the lowest acceptable efficacy rate which is  
-#'                      set by \code{mineff} here and \eqn{y_k, m_k} are 
-#'                      the number of efficacy outcomes and patient at dose level \eqn{k}. By default, 
-#'                      \code{effearly.stop} is set as \code{effearly.stop = 0.9}.
+#' @param early.stop the threshold value for early stopping due to overly toxic. The default value \code{early.stop = 0.95}
+#'                   generally works well.
+#' @param effearly.stop the threshold value for early stopping due to low efficacy. The trial would be terminated
+#'                      early if \eqn{Pr(q_k<\psi |y_k,m_k \ge 3)} is smaller than the value of \code{effearly.stop} where \eqn{q_k, y_k} and \eqn{m_k}
+#'                      are the efficacy probability, the number of efficacy outcomes and the number of patients at dose level \eqn{k}. 
+#'                      \eqn{\psi} is the the lowest acceptable efficacy rate which is set by \code{mineff} here. 
+#'                      By default, \code{effearly.stop} is set as \code{0.9}.
 #' @param mineff the lowest acceptable efficacy rate.
 #' 
 #' @details
@@ -75,6 +73,19 @@
 #' target <- 0.4
 #' decision <- CFOeff.next(target,txs,tys,tns,currdose = 3, mineff = 0.3)
 #' summary(decision)
+#' \donttest{#early stop for overly toxic
+#' txs = c(13, 11, 7, 11, 26); tys = c(25, 18, 12, 17, 26); tns = c(36, 23, 22, 27, 36)
+#' target <- 0.4
+#' decision <- CFOeff.next(target,txs,tys,tns,currdose = 1, mineff = 0.3)
+#' summary(decision)
+#' }
+#' \donttest{#early stop for low efficacy
+#' txs = c(0, 0, 0, 0, 0); tys = c(2, 1, 1, 1, 6); tns = c(36, 23, 22, 27, 36)
+#' target <- 0.4
+#' decision <- CFOeff.next(target,txs,tys,tns,currdose = 1, mineff = 0.3)
+#' summary(decision)
+#' }
+
 CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.prior = target, bet.prior = 1 - target, alp.prior.eff = 0.5, 
                                                                          bet.prior.eff = 0.5), 
                         cutoff.eli=0.95, early.stop=0.95, effearly.stop=0.9, mineff){
@@ -299,7 +310,16 @@ CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.pri
       }
     }
   }
-  
+  cover.prob <- rep(0, length(tys))
+  for (i in 1:length(tys)){
+    ty <- tys[i]
+    tn <- tns[i]
+    if (is.na(tn)){
+      cover.prob[i] <- NA
+    }else{
+      cover.prob[i] <- post.prob.fn(target, ty, tn, alp.prior, bet.prior)
+    }
+  }
   
   if (cutoff.eli != early.stop) {
     cy <- cys[1]
@@ -380,6 +400,8 @@ CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.pri
   
 
   if (decision == 'stop_for_tox'){
+    set <- NULL
+    probs <- NULL
     nextdose <- 99
   }else{
     up.idx <- currdose + index
@@ -411,7 +433,7 @@ CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.pri
     probs <- moveprobs(ad.xs, ad.ns, prior.para$alp.prior.eff, prior.para$bet.prior.eff)
     if (sum(cunder.effs) == length(set)){
       nextdose <- 99
-      decision = 'stop_for_no_eff'
+      decision = 'stop_for_low_eff'
     }
     else {
       if (length(ad.xs) == 1) {
@@ -421,18 +443,12 @@ CFOeff.next <- function(target, txs, tys, tns, currdose, prior.para=list(alp.pri
         
       }
     }
-    
-    cover.prob <- rep(0, up.idx)
-    for (i in 1:length(ad.xs)){
-      ty <- ad.ys[i]
-      tn <- ad.ns[i]
-      if (is.na(tn)){
-        cover.prob[i] <- NA
-      }else{
-        cover.prob[i] <- post.prob.fn(target, ty, tn, alp.prior, bet.prior)
-      }
-    }
+    cover.prob = cover.prob[low.idx:up.idx]
+
   }
+  }
+  if(decision == "stop_for_tox"){#This only happen when current dose level is 1
+    cover.prob = cover.prob[1]
   }
   
   out <- list(target = target, txs = txs, tys = tys, tns = tns, decision = decision, currdose = currdose, 

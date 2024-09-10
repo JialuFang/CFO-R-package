@@ -228,7 +228,12 @@ summary.cfo<- function (object, ...)
   if(!is.null(object$correct)) { ###summary for XXX.simu()
     if (!is.null(object$class)) {#summary for CFOeff.simu
       if (object$OBD == 99) {
-        warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+        if (object$stopreason == "overly_toxic"){
+          warning("All tested doses are overly toxic. No OBD should be selected! \n\n")
+        }else if (object$stopreason == "low_efficacy"){
+          warning("All tested doses show low efficacy. No OBD should be selected! \n\n")
+        }
+        
       }
       else {
         cat("The selected OBD is dose level", paste0(object$OBD, "."), "\n")
@@ -294,9 +299,7 @@ summary.cfo<- function (object, ...)
   
   if(!is.null(object$decision)){
     if (!is.null(object$class)){### summary for CFOeff.next()
-      cat("The admissible set contains the dose level:\n")
-      cat(formatC(object$admset, format = "d"),
-          sep = "  ", "\n")
+
       cat("The expected toxicity probabilities of the dose levels in the admissible set:\n")
       cat(formatC(object$toxprob,  digits = 4, format = "f"),
           sep = "  ", "\n")
@@ -307,9 +310,15 @@ summary.cfo<- function (object, ...)
       }
       if (object$decision == "stop_for_tox"){
         cat("The lowest dose level is overly toxic. We terminate the entire trial for safety.")
-      }else if (object$decision == "stop_for_no_eff"){
+      }else if (object$decision == "stop_for_low_eff"){
+        cat("The admissible set contains the dose level:\n")
+        cat(formatC(object$admset, format = "d"),
+            sep = "  ", "\n")
         cat("All the dose levels in the admisble set show low efficacy. The trial was terminated")
       }else{
+        cat("The admissible set contains the dose level:\n")
+        cat(formatC(object$admset, format = "d"),
+            sep = "  ", "\n")
         cat("The current dose level is", paste0(object$currdose, "."), "\n")
         cat("The empirical probability of q[k] being the largest among all the dose levels in the admissible set:\n")
         cat(formatC(object$effprob,  digits = 4, format = "f"),

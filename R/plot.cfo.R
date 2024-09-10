@@ -219,140 +219,16 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
     ###############################################################################
     else if (!is.null(objectPlot$correct)) { 
       if (length(objectPlot$OBD) == 1){#plot for CFOeff
-        dose <- objectPlot$cohortdose
-        DLT <- objectPlot$patientDLT
-        EFF <- objectPlot$patienteff
-        ncohort <- length(objectPlot$cohortdose)
-        cohortsize <- sum(objectPlot$npatients)/ncohort
-        
-        # Generate y_labels
-        y_labels <- seq(1, max(dose))
-        
-        # Generate sequences for each patient
-        sequences <- 1:(ncohort * cohortsize)
-        
-        # Generate dose_levels for each patient
-        dose_levels <- rep(dose, each = cohortsize)
-        
-        # Generate DLT_observed for each patient
-        DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
-        
-        # Generate EFF_observed for each patient
-        EFF_observed <- matrix(EFF, nrow = cohortsize, ncol = ncohort)
-        
-        dfDLT <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
-        dfEFF <- data.frame(sequence = sequences, dose_levels = dose_levels, EFF_observed = EFF_observed)
-        
-        # Create the plot
-        # p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
-        #   geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
-        #   geom_step(direction = 'hv', color = 'black') +
-        #   scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-        #   labs(x = "Sequence of patients treated", 
-        #        y = "Dose level",
-        #        fill = 'DLT observed') +
-        #   theme_minimal() +
-        #   theme(text = element_text(size = 12), legend.title=element_blank(), 
-        #         legend.position= 'top', legend.margin = margin(0, 0, 0, 0)) +
-        #   scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
-        # 
-        p <- ggplot() +
-          # Plot toxicity data
-          geom_point(data = dfDLT, aes(x = sequence, y = dose_levels + 0.05, fill = as.factor(DLT_observed)), 
-                     size = 2.5, color = "black", shape = 22) +
-          # Plot efficacy data
-          geom_point(data = dfEFF, aes(x = sequence, y = dose_levels - 0.05, shape = as.factor(EFF_observed)), 
-                     size = 2.5, color = "black") +
-          scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed')) +
-          scale_shape_manual(values = c(13, 21), labels = c('No efficacy', 'Efficacy')) +
-          scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-          labs(x = "Sequence of patients treated", 
-               y = "Dose level",
-               fill = 'DLT observed') +
-          theme_minimal() +
-          theme(legend.position = "bottom",
-                legend.title = element_blank(),
-                legend.key = element_rect(fill = NA, color = "black"))
-        # Display the plot
-        print(p)
-      }
-      else if (length(objectPlot$MTD) == 1) {
-        if (!is.null(objectPlot$totaltime)){ #plot for lateonset.simu()
-          dose <- objectPlot$cohortdose
-          DLT <- objectPlot$patientDLT
-          ncohort <- length(objectPlot$cohortdose)
-          cohortsize <- sum(objectPlot$npatients)/ncohort
-          
-          # Generate y_labels
-          y_labels <- seq(1, max(dose))
-          
-          # Generate sequences for each patient
-          sequences <- objectPlot$entertimes
-          
-          # Generate dose_levels for each patient
-          dose_levels <- rep(dose, each = cohortsize)
-          
-          # Generate DLT_observed for each patient
-          DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
-          
-          new_seq <- ifelse(objectPlot$DLTtimes!=0, sequences+objectPlot$DLTtimes, NA)
-          new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels, NA)
-          
-          add_noise <- function(vec) {
-            counts <- table(vec)
-            counts <- table(names(counts))
-            result <- numeric(length(vec))
-            for (i in seq_along(vec)) {
-              if (!is.na(vec[i])) {
-                result[i] <- vec[i] + 0.1 * counts[as.character(vec[i])]  # add 0.05 for unique value
-                counts[as.character(vec[i])] <- counts[as.character(vec[i])] + 1
-              }
-            }
-            return(result)
+        if (objectPlot$OBD == 99){
+          if (objectPlot$stopreason == "overly_toxic"){
+            warning("All tested doses are overly toxic. No OBD should be selected! \n\n")
+          }else if (objectPlot$stopreason == "low_efficacy"){
+            warning("All tested doses show low efficacy. No OBD should be selected! \n\n")
           }
-          
-          new_y <- add_noise(new_y)
-          
-          null_data <- rep(NA, cohortsize)
-          sequences <- c(sequences, null_data)
-          dose_levels <- c(dose_levels, null_data)
-          DLT_observed <- cbind(DLT_observed,rep(2, cohortsize))
-          
-          df <- data.frame(sequences = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
-          dfnew <- data.frame(sequences = as.vector(na.omit(sequences)), dose_levels = as.vector(na.omit(dose_levels)), new_seq = new_seq, new_y = new_y)
-          dfnew <- na.omit(dfnew)
-          
-          suppressWarnings({
-            # Create the plot
-            p <- ggplot(df, aes(x = sequences, y = dose_levels)) +
-              geom_point(aes(shape = factor(DLT_observed,levels=c(0,1,2))), color = 'black', size = 2.5) +
-              geom_step(direction = 'hv', color = 'black') +
-              scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-              labs(x = "Time (in months)", 
-                   y = "Dose level",
-                   fill = 'DLT observed') +
-              theme_minimal() +
-              theme(text = element_text(size = 12), 
-                    legend.title=element_blank(), 
-                    legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
-              scale_shape_manual(values = c(1, 16, 4), 
-                                 labels = c('DLT not observed', 'DLT observed', 'DLT time'), 
-                                 drop = FALSE) 
-            
-            for (row in 1:(nrow(dfnew))){
-              xuse=c(dfnew[row,"sequences"],dfnew[row,"new_seq"])
-              yuse=c(dfnew[row,"dose_levels"],dfnew[row,"new_y"])
-              dfuse <-data.frame(xuse=xuse, yuse=yuse)
-              p <- p + 
-                annotate("point", x = xuse[2], y = yuse[2], shape = 4,size = 2.5) +
-                geom_step(aes(x = xuse, y = yuse), data = dfuse,direction = 'vh',
-                          linetype = 2)
-            }
-            print(p)})
-        }
-        else{ #plot for CFO.simu()
+        }else{
           dose <- objectPlot$cohortdose
           DLT <- objectPlot$patientDLT
+          EFF <- objectPlot$patienteff
           ncohort <- length(objectPlot$cohortdose)
           cohortsize <- sum(objectPlot$npatients)/ncohort
           
@@ -368,6 +244,181 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
           # Generate DLT_observed for each patient
           DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
           
+          # Generate EFF_observed for each patient
+          EFF_observed <- matrix(EFF, nrow = cohortsize, ncol = ncohort)
+          
+          dfDLT <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+          dfEFF <- data.frame(sequence = sequences, dose_levels = dose_levels, EFF_observed = EFF_observed)
+          
+          p <- ggplot() +
+            # Plot toxicity data
+            geom_point(data = dfDLT, aes(x = sequence, y = dose_levels + 0.05, fill = as.factor(DLT_observed)), 
+                       size = 2.5, color = "black", shape = 22) +
+            # Plot efficacy data
+            geom_point(data = dfEFF, aes(x = sequence, y = dose_levels - 0.05, shape = as.factor(EFF_observed)), 
+                       size = 2.5, color = "black") +
+            scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed')) +
+            scale_shape_manual(values = c(13, 21), labels = c('No efficacy', 'Efficacy')) +
+            scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+            labs(x = "Sequence of patients treated", 
+                 y = "Dose level",
+                 fill = 'DLT observed') +
+            theme_minimal() +
+            theme(legend.position = "bottom",
+                  legend.title = element_blank(),
+                  legend.key = element_rect(fill = NA, color = "black"))
+          # Display the plot
+          print(p)
+        }
+      }
+      else if (length(objectPlot$MTD) == 1) {
+        if (objectPlot$MTD == 99) {
+          warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+        }
+        else {
+          if (!is.null(objectPlot$totaltime)){ #plot for lateonset.simu()
+            dose <- objectPlot$cohortdose
+            DLT <- objectPlot$patientDLT
+            ncohort <- length(objectPlot$cohortdose)
+            cohortsize <- sum(objectPlot$npatients)/ncohort
+            
+            # Generate y_labels
+            y_labels <- seq(1, max(dose))
+            
+            # Generate sequences for each patient
+            sequences <- objectPlot$entertimes
+            
+            # Generate dose_levels for each patient
+            dose_levels <- rep(dose, each = cohortsize)
+            
+            # Generate DLT_observed for each patient
+            DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
+            
+            new_seq <- ifelse(objectPlot$DLTtimes!=0, sequences+objectPlot$DLTtimes, NA)
+            new_y <- ifelse(objectPlot$DLTtimes!=0, dose_levels, NA)
+            
+            add_noise <- function(vec) {
+              counts <- table(vec)
+              counts <- table(names(counts))
+              result <- numeric(length(vec))
+              for (i in seq_along(vec)) {
+                if (!is.na(vec[i])) {
+                  result[i] <- vec[i] + 0.1 * counts[as.character(vec[i])]  # add 0.05 for unique value
+                  counts[as.character(vec[i])] <- counts[as.character(vec[i])] + 1
+                }
+              }
+              return(result)
+            }
+            
+            new_y <- add_noise(new_y)
+            
+            null_data <- rep(NA, cohortsize)
+            sequences <- c(sequences, null_data)
+            dose_levels <- c(dose_levels, null_data)
+            DLT_observed <- cbind(DLT_observed,rep(2, cohortsize))
+            
+            df <- data.frame(sequences = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+            dfnew <- data.frame(sequences = as.vector(na.omit(sequences)), dose_levels = as.vector(na.omit(dose_levels)), new_seq = new_seq, new_y = new_y)
+            dfnew <- na.omit(dfnew)
+            
+            suppressWarnings({
+              # Create the plot
+              p <- ggplot(df, aes(x = sequences, y = dose_levels)) +
+                geom_point(aes(shape = factor(DLT_observed,levels=c(0,1,2))), color = 'black', size = 2.5) +
+                geom_step(direction = 'hv', color = 'black') +
+                scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+                labs(x = "Time (in months)", 
+                     y = "Dose level",
+                     fill = 'DLT observed') +
+                theme_minimal() +
+                theme(text = element_text(size = 12), 
+                      legend.title=element_blank(), 
+                      legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
+                scale_shape_manual(values = c(1, 16, 4), 
+                                   labels = c('DLT not observed', 'DLT observed', 'DLT time'), 
+                                   drop = FALSE) 
+              
+              for (row in 1:(nrow(dfnew))){
+                xuse=c(dfnew[row,"sequences"],dfnew[row,"new_seq"])
+                yuse=c(dfnew[row,"dose_levels"],dfnew[row,"new_y"])
+                dfuse <-data.frame(xuse=xuse, yuse=yuse)
+                p <- p + 
+                  annotate("point", x = xuse[2], y = yuse[2], shape = 4,size = 2.5) +
+                  geom_step(aes(x = xuse, y = yuse), data = dfuse,direction = 'vh',
+                            linetype = 2)
+              }
+              print(p)})
+          }
+          
+          
+          else{ #plot for CFO.simu()
+            if (objectPlot$MTD == 99) {
+              warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+            }
+            else {
+              dose <- objectPlot$cohortdose
+              DLT <- objectPlot$patientDLT
+              ncohort <- length(objectPlot$cohortdose)
+              cohortsize <- sum(objectPlot$npatients)/ncohort
+              
+              # Generate y_labels
+              y_labels <- seq(1, max(dose))
+              
+              # Generate sequences for each patient
+              sequences <- 1:(ncohort * cohortsize)
+              
+              # Generate dose_levels for each patient
+              dose_levels <- rep(dose, each = cohortsize)
+              
+              # Generate DLT_observed for each patient
+              DLT_observed <- matrix(DLT, nrow = cohortsize, ncol = ncohort)
+              
+              df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
+              
+              # Create the plot
+              p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
+                geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
+                geom_step(direction = 'hv', color = 'black') +
+                scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
+                labs(x = "Sequence of patients treated", 
+                     y = "Dose level",
+                     fill = 'DLT observed') +
+                theme_minimal() +
+                theme(text = element_text(size = 12), legend.title=element_blank(), 
+                      legend.position= 'top', legend.margin = margin(0, 0, 0, 0)) +
+                scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
+              
+              # Display the plot
+              print(p)
+            }
+          }
+        }
+      }
+      
+      else{
+        if (objectPlot$MTD[1] == 99 | objectPlot$MTD[2] == 99) {
+          warning("All tested doses are overly toxic. No MTD should be selected! \n\n")
+        }
+        else {
+          dose <- objectPlot$cohortdose
+          DLT <- objectPlot$patientDLT   ###need to change!!!!
+          ncohort <- dim(objectPlot$cohortdose)[1]
+          cohortsize <- sum(objectPlot$npatients)/ncohort
+          dim <- dim(objectPlot$ntox)
+          
+          # Generate y_labels
+          y_labels <- expand.grid(1:dim[1], 1:dim[2])
+          y_labels <- apply(y_labels, 1, function(x) paste('(', x[1], ',', x[2], ')'))
+          
+          # Generate sequences for each patient
+          sequences <- 1:(ncohort * cohortsize)
+          
+          # Generate dose_levels for each patient
+          dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
+          
+          # Generate DLT_observed for each patient
+          DLT_observed <- t(DLT)
+          
           df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
           
           # Create the plot
@@ -376,55 +427,18 @@ plot.cfo<- function (x,..., name = deparse(substitute(x)))
             geom_step(direction = 'hv', color = 'black') +
             scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
             labs(x = "Sequence of patients treated", 
-                 y = "Dose level",
+                 y = "Combined dose level",
                  fill = 'DLT observed') +
             theme_minimal() +
             theme(text = element_text(size = 12), legend.title=element_blank(), 
-                  legend.position= 'top', legend.margin = margin(0, 0, 0, 0)) +
+                  legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
             scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
-          
           # Display the plot
           print(p)
         }
       }
-      else{
-        dose <- objectPlot$cohortdose
-        DLT <- objectPlot$patientDLT   ###need to change!!!!
-        ncohort <- dim(objectPlot$cohortdose)[1]
-        cohortsize <- sum(objectPlot$npatients)/ncohort
-        dim <- dim(objectPlot$ntox)
-        
-        # Generate y_labels
-        y_labels <- expand.grid(1:dim[1], 1:dim[2])
-        y_labels <- apply(y_labels, 1, function(x) paste('(', x[1], ',', x[2], ')'))
-        
-        # Generate sequences for each patient
-        sequences <- 1:(ncohort * cohortsize)
-        
-        # Generate dose_levels for each patient
-        dose_levels <- rep(match(apply(dose, 1, function(x) paste('(', x[1], ',', x[2], ')')), y_labels), each = cohortsize)
-        
-        # Generate DLT_observed for each patient
-        DLT_observed <- t(DLT)
-        
-        df <- data.frame(sequence = sequences, dose_levels = dose_levels, DLT_observed = DLT_observed)
-        
-        # Create the plot
-        p <- ggplot(df, aes(x = sequence, y = dose_levels)) +
-          geom_point(aes(fill = as.factor(DLT_observed)), color = 'black', shape = 21, size = 2.5) +
-          geom_step(direction = 'hv', color = 'black') +
-          scale_y_continuous(breaks = 1:length(y_labels), labels = y_labels) +
-          labs(x = "Sequence of patients treated", 
-               y = "Combined dose level",
-               fill = 'DLT observed') +
-          theme_minimal() +
-          theme(text = element_text(size = 12), legend.title=element_blank(), 
-                legend.position = 'top', legend.margin = margin(0, 0, 0, 0)) +
-          scale_fill_manual(values = c('white', 'black'), labels = c('DLT not observed', 'DLT observed'))
-        # Display the plot
-        print(p)
-      }
     }
+    
     
     ###############################################################################
     #########################plot for CFO.selectmtd()###################################

@@ -2,7 +2,7 @@
 % Please edit documentation in R/CFOeff.simu.R
 \name{CFOeff.simu}
 \alias{CFOeff.simu}
-\title{Conduct one simulation using the calibration-free odds (CFO) for phase I/II trials}
+\title{Conduct one simulation using the calibration-free odds (CFO) design for phase I/II trials}
 \usage{
 CFOeff.simu(target, p.true, pE.true, ncohort=10, init.level=1,  cohortsize=3,
                    prior.para = list(alp.prior = target, bet.prior = 1 - target, 
@@ -19,33 +19,32 @@ CFOeff.simu(target, p.true, pE.true, ncohort=10, init.level=1,  cohortsize=3,
 
 \item{ncohort}{the total number of cohorts.}
 
-\item{init.level}{the dose level assigned to the first cohort. The default value \code{init.level} is 1.}
+\item{init.level}{the dose level assigned to the first cohort. The default value of \code{init.level} is 1.}
 
 \item{cohortsize}{the number of patients of each cohort.}
 
 \item{prior.para}{the prior parameters for two beta distributions, where set as \code{list(alp.prior = target, 
-                  bet.prior = 1 - target, alp.prior.eff = 0.5, bet.prior.eff = 0.5)} by default, \code{alp.prior} and \code{bet.prior}
+                 bet.prior = 1 - target, alp.prior.eff = 0.5, bet.prior.eff = 0.5)} by default. \code{alp.prior} and \code{bet.prior}
 represent the parameters of the prior distribution for the true DLT rate at any dose level. This prior distribution
-is specified as Beta(\code{alp.prior}, \code{bet.prior}). \code{alp.eff.prior} and \code{bet.eff.prior}
-represent the parameters of the Jeffreys' prior distribution for the true efficacy rate at any dose level.This prior distribution
-is specified as Beta(\code{alp.eff.prior}, \code{bet.eff.prior}).}
+is specified as Beta(\code{alpha.prior}, \code{beta.prior}). \code{alp.eff.prior} and \code{bet.eff.prior}
+represent the parameters of the Jeffreys' prior distribution for the efficacy probability at any dose level.
+This prior distribution is specified as Beta(\code{alpha.eff.prior}, \code{beta.eff.prior}).}
 
 \item{cutoff.eli}{the cutoff to eliminate overly toxic doses for safety. We recommend
 the default value of \code{cutoff.eli = 0.95} for general use.}
 
-\item{early.stop}{the threshold value for early stopping. The default value \code{early.stop = 0.95}
+\item{early.stop}{the threshold value for early stopping due to overly toxic. The default value \code{early.stop = 0.95}
 generally works well.}
 
-\item{effearly.stop}{the threshold value for early stopping when efficacy is lower than \code{mineff}. The trial would be terminated
-early for futility if \eqn{Pr(q_k<\psi |y_k,m_k \ge 3)} is smaller than the value of \code{effearly.stop} where \eqn{q_k}
-corresponding efficacy probability of dose level \eqn{k}, \eqn{\psi} is the the lowest acceptable efficacy rate which is
-set by \code{mineff} here and \eqn{y_k, m_k} are
-the number of efficacy outcomes and patient at dose level \eqn{k}. By default,
-\code{effearly.stop} is set as \code{effearly.stop = 0.9}.}
+\item{effearly.stop}{the threshold value for early stopping due to low efficacy. The trial would be terminated
+early if \eqn{Pr(q_k<\psi |y_k,m_k \ge 3)} is smaller than the value of \code{effearly.stop} where \eqn{q_k, y_k} and \eqn{m_k}
+are the efficacy probability, the number of efficacy outcomes and the number of patients at dose level \eqn{k}.
+\eqn{\psi} is the the lowest acceptable efficacy rate which is set by \code{mineff} here.
+By default, \code{effearly.stop} is set as \code{0.9}.}
 
 \item{mineff}{the lowest acceptable efficacy rate.}
 
-\item{seed}{a vector of random seeds for each simulation.}
+\item{seed}{an integer to be set as the seed of the random number generator for reproducible results. The default value is set to \code{NULL}.}
 }
 \value{
 The \code{CFOeff.simu} function returns a list object comprising the following components:
@@ -53,7 +52,7 @@ The \code{CFOeff.simu} function returns a list object comprising the following c
 \item OBD: the selected OBD. \code{OBD = 99} indicates that the simulation is terminated due to early stopping.
 \item target: the target DLT rate.
 \item npatients: the total number of patients allocated to all dose levels.
-\item neff: the total number of OBD selection for all dose levels.
+\item neff: the total number of efficacy outcomes for all dose levels.
 \item ntox: the total number of DLTs observed for all dose levels.
 \item pE.true: the true efficacy rates under the different dose levels.
 \item p.true: the true DLT rates under the different dose levels.
@@ -70,6 +69,9 @@ which has the highest true efficacy probability.
 \item sumDLT: the total number of DLT observed.
 \item sumeff: the total number of efficacy outcome observed.
 \item earlystop: a binary indicator of whether the trial is early stopped (1 for yes).
+\item stopreason: the reason for earlystop. \code{overly_toxic} represents the trial was terminated
+beacuse all tested doses were overly toxic. \code{low_efficacy} represents the trial was terminated
+because all tested doses show low efficacy.
 \item class: the phase of the trial.
 }
 }
@@ -78,7 +80,7 @@ In the CFO design for phase I/II trials, the function is used to conduct one sin
 }
 \note{
 The \code{CFOeff.simu} function is designed to conduct a single CFO simulation for phase I/II trials. The dose elimination rule is the
-same as the case in phase I(refer to the function\code{CFO.simu}). As for early stopping rule, compared to the case of phase I, the rule
+same as the case in phase I (refer to the function \code{CFO.simu}). As for early stopping rule, compared to the case of phase I, the rule
 in this case further considers the efficacy data to terminate the trial early if none of the admissible dose levels show adequate
 efficacious effect.
 }
@@ -92,6 +94,28 @@ result <- CFOeff.simu(target, p.true, pE.true, ncohort, init.level, cohortsize,
                        prior.para, mineff = mineff, seed = 1)
 summary(result)
 plot(result)
+\donttest{### overly toxic
+target <- 0.30; mineff <- 0.30; cohortsize = 3; ncohort = 20; init.level = 1
+prior.para = list(alp.prior = target, bet.prior = 1 - target, 
+                  alp.prior.eff = 0.5, bet.prior.eff = 0.5)
+p.true=c(0.55, 0.57, 0.61, 0.62, 0.66)
+pE.true=c(0.35, 0.45, 0.5, 0.55, 0.75)
+result <- CFOeff.simu(target, p.true, pE.true, ncohort, init.level, cohortsize,
+                       prior.para, mineff = mineff, seed = 1)
+summary(result)
+plot(result)
+}
+\donttest{### low efficacy
+target <- 0.30; mineff <- 0.30; cohortsize = 3; ncohort = 20; init.level = 1
+prior.para = list(alp.prior = target, bet.prior = 1 - target, 
+                  alp.prior.eff = 0.5, bet.prior.eff = 0.5)
+p.true=c(0.05, 0.07, 0.1, 0.12, 0.16)
+pE.true=c(0.001, 0.003, 0.004, 0.005, 0.006)
+result <- CFOeff.simu(target, p.true, pE.true, ncohort, init.level, cohortsize,
+                       prior.para, mineff = mineff, seed = 1)
+summary(result)
+plot(result)
+}
 }
 \references{
 Jin H, Yin G (2022). CFO: Calibration-free odds design for phase I/II clinical trials.
