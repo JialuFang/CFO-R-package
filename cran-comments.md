@@ -7,7 +7,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* added functionality to identify the optimal biological dose (OBD) using the CFO design in phase I/II trials.
+* added functionality about randomized CFO design.
 
 * More clearly identified the copyright holders in the DESCRIPTION
   and LICENSE files.
